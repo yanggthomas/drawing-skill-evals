@@ -6,9 +6,14 @@ drawing route, skill routing, leak check, the final images of both arms, and the
 hand-written observations in <case dir>/notes.md if present.
 """
 
+import colorsys
+import itertools
 import json
 import re
+import statistics
 from pathlib import Path
+
+from PIL import Image
 
 # Results files to include, in report order (one entry per `claude plugin eval --json` run).
 RESULTS_FILES = [
@@ -27,6 +32,10 @@ CASE_IDS = {
 SCORED_GRADERS = ["render", "correctness", "readability"]
 INDICATORS = ["skill-fired", "skill-misrouted"]
 ARM_LABEL = {"with": "带 skill", "without": "不带 skill"}
+GROUPS = {"G（graphviz 类，流程/架构图）": "G", "M（model-architecture 类，张量/结构图）": "M"}
+HUE_BINS = 12            # colour-style fingerprint: hue histogram of saturated pixels
+MIN_SAT, MIN_VAL = 0.05, 0.25  # 0.05 keeps pale fills (light blue, lavender); text and grey stay out
+REVIEW_KEYS = {"content": "信息完整", "layout": "版式清晰", "color": "配色"}  # Claude's 1-5 review per image
 
 
 def fmt(v, digits=2, prefix=""):
@@ -185,6 +194,122 @@ def case_section(c):
     return "\n".join(out)
 
 
+def hue_histogram(png):
+    """Normalized hue histogram of saturated pixels; white/grey/black background is ignored."""
+    img = Image.open(png).convert("RGB")
+    img.thumbnail((400, 400))
+    hist = [0.0] * HUE_BINS
+    pixels = img.get_flattened_data() if hasattr(img, "get_flattened_data") else img.getdata()
+    for r, g, b in pixels:
+        h, s, v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
+        if s >= MIN_SAT and v >= MIN_VAL:
+            hist[int(h * HUE_BINS) % HUE_BINS] += 1
+    total = sum(hist)
+    return [x / total for x in hist] if total else None
+
+
+def style_similarity(pngs):
+    """Mean pairwise histogram intersection (0..1) between images' hue histograms."""
+    hists = [h for h in (hue_histogram(p) for p in pngs) if h]
+    pairs = list(itertools.combinations(hists, 2))
+    if not pairs:
+        return None
+    return statistics.mean(sum(min(a, b) for a, b in zip(x, y)) for x, y in pairs)
+
+
+def spread(vals):
+    if len(vals) < 2:
+        return None
+    return statistics.pstdev(vals)
+
+
+def clip01(x):
+    return None if x is None else max(0.0, min(1.0, x))
+
+
+def load_review(case_dir):
+    f = case_dir / "review.json"
+    return json.loads(f.read_text()) if f.exists() else {}
+
+
+def consistency_section(cases):
+    lines = [
+        "## 一致性 / 可预测性", "",
+        "每个 case 每组只有 1 次运行，所以这里比较的是**同一类 case 之间**的波动：G 类 4 个，M 类 2 个（样本很少，只作参考）。",
+        "", "指标定义：",
+        "- **质量一致性** = 1 − 2·σ(得分)。得分在 0–1 之间，σ 最大 0.5，所以 1 = 各 case 得分完全一样，0 = 最分散。",
+        "- **耗时 / 花费可预测性** = 1 − CV，CV = σ / 均值（agent 部分，不含评委），截到 0–1。",
+        "- **风格一致性** = 各图色相直方图（只计有颜色的像素（含浅色填充），忽略白灰黑）两两交集的均值。1 = 配色分布完全相同。",
+        "- **看图评分一致性** = 1 − σ(看图均分)/2。看图分是 1–5 分，σ 最大 2，所以范围 0–1。",
+        "- σ 用总体标准差。", "",
+        "| 类别 | 组 | n | 得分 均值 [范围] | 质量一致性 | correctness 通过率 | readability 通过率 "
+        "| 耗时 均值 s (可预测性) | 花费 均值 $ (可预测性) | 风格一致性 | 看图均分 (一致性) | skill 正确触发 |",
+        "|---|---|---|---|---|---|---|---|---|---|---|---|",
+    ]
+    for label, prefix in GROUPS.items():
+        group = [c for c in cases if CASE_IDS.get(c["name"], "").startswith(prefix)]
+        if not group:
+            continue
+        for arm in ("with", "without"):
+            scores = [c["arms"][arm]["run"]["score"] for c in group]
+            secs = [c["arms"][arm]["fact"].get("agent_seconds") for c in group]
+            cost = [c["arms"][arm]["fact"].get("agent_cost_usd") for c in group]
+            secs = [x for x in secs if x is not None]
+            cost = [x for x in cost if x is not None]
+            corr = [c["arms"][arm]["graders"].get("correctness", {}).get("passed") for c in group]
+            read = [c["arms"][arm]["graders"].get("readability", {}).get("passed") for c in group]
+            imgs = [p for p in (image_for(c["dir"], arm) for c in group) if p]
+            reviews = []
+            for c in group:
+                r = load_review(c["dir"]).get(arm)
+                if r:
+                    reviews.append(statistics.mean(r[k] for k in REVIEW_KEYS))
+            sd = spread(scores)
+            q = "–" if sd is None else f"{clip01(1 - 2 * sd):.2f}"
+            def pred(vals):
+                if len(vals) < 2 or not statistics.mean(vals):
+                    return "–"
+                return f"{clip01(1 - statistics.pstdev(vals) / statistics.mean(vals)):.2f}"
+            style = style_similarity(imgs)
+            rv = "–"
+            if reviews:
+                rsd = spread(reviews)
+                rv = f"{statistics.mean(reviews):.1f} ({'–' if rsd is None else f'{clip01(1 - rsd / 2):.2f}'})"
+            fired = "–"
+            if arm == "with":
+                ok = [c["arms"]["with"]["graders"].get("skill-fired", {}).get("passed") for c in group]
+                bad = [not c["arms"]["with"]["graders"].get("skill-misrouted", {}).get("passed", True) for c in group]
+                fired = f"{sum(bool(x) for x in ok)}/{len(group)}" + (f"，误用 {sum(bad)}" if any(bad) else "")
+            lines.append(
+                f"| {label if arm == 'with' else ''} | {ARM_LABEL[arm]} | {len(group)} | "
+                f"{statistics.mean(scores):.2f} [{min(scores):.2f}–{max(scores):.2f}] | {q} | "
+                f"{sum(bool(x) for x in corr)}/{len(group)} | {sum(bool(x) for x in read)}/{len(group)} | "
+                f"{statistics.mean(secs):.0f} ({pred(secs)}) | {statistics.mean(cost):.2f} ({pred(cost)}) | "
+                f"{'–' if style is None else f'{style:.2f}'} | {rv} | {fired} |")
+    return "\n".join(lines)
+
+
+def review_table(cases):
+    if not any(load_review(c["dir"]) for c in cases):
+        return ""
+    head = " | ".join(f"{v} 带/不带" for v in REVIEW_KEYS.values())
+    lines = ["## Claude 看图评分（1–5）", "",
+             "我逐张检查了所有最终 PNG，按同一标准打分。这是模型打的分，**不是人工美观打分**（人工打分见 PLAN 第 9 步）。标准：",
+             "- **信息完整**：题目要求的机制是否都画出来、是否与代码一致；",
+             "- **版式清晰**：阅读方向、交叉线、文字大小、留白、分区；",
+             "- **配色**：色板克制、颜色有含义、对比度、整体协调。", "",
+             f"| Case | {head} | 均分 带/不带 |", "|---|" + "---|" * (len(REVIEW_KEYS) + 1)]
+    for c in cases:
+        r = load_review(c["dir"])
+        if not r:
+            continue
+        cells = [f"{r['with'][k]} / {r['without'][k]}" for k in REVIEW_KEYS]
+        mw = statistics.mean(r["with"][k] for k in REVIEW_KEYS)
+        mo = statistics.mean(r["without"][k] for k in REVIEW_KEYS)
+        lines.append(f"| {CASE_IDS.get(c['name'], '')} | " + " | ".join(cells) + f" | {mw:.1f} / {mo:.1f} |")
+    return "\n".join(lines)
+
+
 def main():
     cases = load_cases()
     table, agent_cost, judge_cost = summary_table(cases)
@@ -198,6 +323,10 @@ def main():
         "## 汇总", "", table, "",
         f"agent 花费合计 ${agent_cost:.2f}，评委花费合计 ${judge_cost:.2f}，总计 ${agent_cost + judge_cost:.2f}。", "",
     ]
+    head += [consistency_section(cases), ""]
+    rt = review_table(cases)
+    if rt:
+        head += [rt, ""]
     overall = Path("evals/notes.md")
     if overall.exists():
         head += ["## 总体观察", "", overall.read_text().strip(), ""]
