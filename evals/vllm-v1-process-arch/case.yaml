@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: vllm-v1-process-arch
+description: A1 — the process and component architecture of vLLM V1 serving (single node, tensor parallel, multiprocess executor).
+tags: [graphviz, arch]
+context:
+  add_dirs: [src]

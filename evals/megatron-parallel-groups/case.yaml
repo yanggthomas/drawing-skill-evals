@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: megatron-parallel-groups
+description: A3 — how Megatron-Core partitions 16 GPU ranks into tensor-, pipeline- and data-parallel groups (TP=2, PP=4, DP=2, 2 nodes × 8 GPUs).
+tags: [graphviz, arch]
+context:
+  add_dirs: [src]

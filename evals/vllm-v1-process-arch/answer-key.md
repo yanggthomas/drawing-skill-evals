@@ -1,0 +1,13 @@
+# A1 answer key — the process and component architecture of vLLM V1 serving (single node, tensor parallel, multiprocess executor)
+
+Paths are relative to `src/vllm/v1/`; `AL` = `engine/async_llm.py`, `CC` = `engine/core_client.py`, `EC` = `engine/core.py`, `IP` = `engine/input_processor.py`, `OP` = `engine/output_processor.py`, `MX` = `executor/multiproc_executor.py`, `GW` = `worker/gpu_worker.py`. Each fact describes a mechanism a diagram can show; the correctness grader's rubric includes the same 9 facts without the line references.
+
+1. **Frontend process holds AsyncLLM.** The serving frontend (the API server's process) holds `AsyncLLM`, the `EngineClient` that the HTTP layer calls (`AL:80`).
+2. **Pre- and post-processing stay in the frontend.** Inside `AsyncLLM` sit the `InputProcessor` (tokenization / multimodal preprocessing) and the `OutputProcessor` (per-request incremental detokenizer and per-request output queues), so tokenization and detokenization run in the frontend process, not in the engine (`AL:157`, `AL:167`, `IP:41`, `OP:51`, `OP:256`).
+3. **Engine-core client.** `AsyncLLM` reaches the engine through an `AsyncMPClient` (data-parallel variants exist) created by `EngineCoreClient.make_async_mp_client` (`AL:180`, `CC:137-175`, `CC:1086`).
+4. **ZMQ between frontend and engine core.** The client and the engine-core process are connected by ZMQ: requests go client ROUTER → engine DEALER, outputs come back engine PUSH → client PULL (`CC:616-662`, `EC:1775`, `EC:1878`).
+5. **EngineCore is its own process with I/O threads.** `EngineCoreProc` runs in a separate process: an input thread moves socket messages into an input queue, an output thread moves the output queue onto the socket, and the main thread runs the busy loop (`EC:1088-1199`, `EC:1473`, `EC:1757-1857`, `EC:1859-1894`).
+6. **EngineCore owns scheduler and executor.** The engine-core process owns the `Scheduler` (which holds the KV-cache manager), the structured-output manager, and the model executor; each step it schedules, calls the executor, and updates from the model output (`EC:140`, `EC:152`, `EC:168`, `EC:630-660`).
+7. **Multiprocess executor spawns one worker per GPU.** `MultiprocExecutor` starts one `WorkerProc` process per local GPU rank (`MX:111`, `MX:195`).
+8. **Shared-memory message queues to workers.** The executor broadcasts each `SchedulerOutput` / RPC to all workers over one shared-memory `MessageQueue` (`rpc_broadcast_mq`); each worker answers on its own `worker_response_mq` (`MX:164-170`, `MX:619`, `MX:1032-1036`).
+9. **Worker → GPUModelRunner.** Each worker process holds a GPU `Worker` whose `GPUModelRunner` owns that rank's model shard and KV-cache tensors on its GPU (`GW:536`).

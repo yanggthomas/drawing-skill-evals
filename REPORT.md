@@ -4,23 +4,25 @@
 
 > 每组只有 1 个样本，Δ 和耗时差都是单次观测，不是稳定结论。
 
+**读结果前先看题型。** graphviz skill 是为**架构图**设计的（SKILL.md：“topology-first graphs”，并明确“Not for UML sequence / activity”）。第 1、2 轮的 G1–G4 问的是单步算法、训练步骤顺序、跨线程请求生命周期，属于流程图 / 时序图，**在 graphviz skill 的设计范围之外**；M1、M2 在 model-architecture skill 的范围内。第 3 轮的 A1–A3 是只问组成与连接的架构题，用来测 graphviz skill 的主场。
+
 ## 汇总
 
-| Case | 得分 带 / 不带 | Δ | agent 耗时 带 / 不带 (s) | agent 花费 带 / 不带 ($) | 轮数 带 / 不带 | skill 路由 | 画图路线 带 / 不带 |
-|---|---|---|---|---|---|---|---|
-| G1 `vllm-v1-schedule` | 0.67 / 0.67 | +0.00 | 106 / 174 | 0.77 / 0.94 | 19 / 19 | ✅ | Graphviz / Graphviz |
-| G2 `verl-ppo-step` | 1.00 / 1.00 | +0.00 | 150 / 222 | 1.07 / 1.23 | 30 / 23 | ✅ | Graphviz / Pillow (逐个画形状) |
-| G3 `ffmpeg-transcode-threads` | 0.67 / 1.00 | -0.33 | 164 / 442 | 1.39 / 1.65 | 27 / 36 | ✅ | Graphviz / Graphviz |
-| G4 `redis-request-path` | 0.67 / 0.67 | +0.00 | 124 / 152 | 0.92 / 0.99 | 18 / 17 | ✅ | Graphviz / Graphviz |
-| M1 `megatron-tp-sp-mlp` | 1.00 / 1.00 | +0.00 | 187 / 121 | 1.05 / 0.67 | 27 / 18 | ✅ | TikZ / Graphviz |
-| M2 `vllm-v1-mixed-batch-attn` | 0.67 / 1.00 | -0.33 | 329 / 284 | 1.67 / 1.57 | 32 / 25 | ✅ | TikZ / Pillow (逐个画形状) |
-| **合计 / 平均** | **0.78 / 0.89** | **-0.11** | **1060 / 1395** | **6.87 / 7.05** | | | |
+| Case | 题型 | 得分 带 / 不带 | Δ | agent 耗时 带 / 不带 (s) | agent 花费 带 / 不带 ($) | 轮数 带 / 不带 | skill 路由 | 画图路线 带 / 不带 |
+|---|---|---|---|---|---|---|---|---|
+| G1 `vllm-v1-schedule` | 流程（单步算法） | 0.67 / 0.67 | +0.00 | 106 / 174 | 0.77 / 0.94 | 19 / 19 | ✅ | Graphviz / Graphviz |
+| G2 `verl-ppo-step` | 流程（训练步骤顺序） | 1.00 / 1.00 | +0.00 | 150 / 222 | 1.07 / 1.23 | 30 / 23 | ✅ | Graphviz / Pillow (逐个画形状) |
+| G3 `ffmpeg-transcode-threads` | 混合（线程拓扑 + 背压/同步） | 0.67 / 1.00 | -0.33 | 164 / 442 | 1.39 / 1.65 | 27 / 36 | ✅ | Graphviz / Graphviz |
+| G4 `redis-request-path` | 时序（跨线程请求生命周期） | 0.67 / 0.67 | +0.00 | 124 / 152 | 0.92 / 0.99 | 18 / 17 | ✅ | Graphviz / Graphviz |
+| M1 `megatron-tp-sp-mlp` | 模型内部（张量形状 + 通信） | 1.00 / 1.00 | +0.00 | 187 / 121 | 1.05 / 0.67 | 27 / 18 | ✅ | TikZ / Graphviz |
+| M2 `vllm-v1-mixed-batch-attn` | 模型内部（逐 token 元数据） | 0.67 / 1.00 | -0.33 | 329 / 284 | 1.67 / 1.57 | 32 / 25 | ✅ | TikZ / Pillow (逐个画形状) |
+| **合计 / 平均** | | **0.78 / 0.89** | **-0.11** | **1060 / 1395** | **6.87 / 7.05** | | | |
 
 agent 花费合计 $13.92，评委花费合计 $2.16，总计 $16.07。
 
 ## 一致性 / 可预测性
 
-每个 case 每组只有 1 次运行，所以这里比较的是**同一类 case 之间**的波动：G 类 4 个，M 类 2 个（样本很少，只作参考）。
+每个 case 每组只有 1 次运行，所以这里比较的是**同一题型的 case 之间**的波动（每类 2–4 个 case，样本很少，只作参考）。
 
 指标定义：
 - **质量一致性** = 1 − 2·σ(得分)。得分在 0–1 之间，σ 最大 0.5，所以 1 = 各 case 得分完全一样，0 = 最分散。
@@ -31,9 +33,9 @@ agent 花费合计 $13.92，评委花费合计 $2.16，总计 $16.07。
 
 | 类别 | 组 | n | 得分 均值 [范围] | 质量一致性 | correctness 通过率 | readability 通过率 | 耗时 均值 s (可预测性) | 花费 均值 $ (可预测性) | 风格一致性 | 看图均分 (一致性) | skill 正确触发 |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| G（graphviz 类，流程/架构图） | 带 skill | 4 | 0.75 [0.67–1.00] | 0.71 | 4/4 | 1/4 | 136 (0.83) | 1.04 (0.78) | 0.67 | 4.0 (1.00) | 4/4 |
+| 流程/时序/混合（graphviz 设计范围外） | 带 skill | 4 | 0.75 [0.67–1.00] | 0.71 | 4/4 | 1/4 | 136 (0.83) | 1.04 (0.78) | 0.67 | 4.0 (1.00) | 4/4 |
 |  | 不带 skill | 4 | 0.83 [0.67–1.00] | 0.67 | 4/4 | 2/4 | 248 (0.53) | 1.20 (0.77) | 0.52 | 4.3 (0.88) | – |
-| M（model-architecture 类，张量/结构图） | 带 skill | 2 | 0.83 [0.67–1.00] | 0.67 | 2/2 | 1/2 | 258 (0.73) | 1.36 (0.77) | 0.43 | 4.7 (0.83) | 2/2 |
+| 模型内部（model-architecture 范围内） | 带 skill | 2 | 0.83 [0.67–1.00] | 0.67 | 2/2 | 1/2 | 258 (0.73) | 1.36 (0.77) | 0.43 | 4.7 (0.83) | 2/2 |
 |  | 不带 skill | 2 | 1.00 [1.00–1.00] | 1.00 | 2/2 | 2/2 | 203 (0.60) | 1.12 (0.60) | 0.42 | 4.7 (0.83) | – |
 
 ## Claude 看图评分（1–5）
@@ -54,33 +56,41 @@ agent 花费合计 $13.92，评委花费合计 $2.16，总计 $16.07。
 
 ## 总体观察
 
-**一句话：** skill 让 agent **更快、更省、风格更统一**（G 类明显），路由也全部正确；但这一轮**评分并没有更高**：correctness 两组都满分，readability 上不带 skill 的组反而赢了 2 个 case，平均 Δ = −0.11。
+**一句话：** 前两轮测的大多是 **graphviz skill 设计范围之外的题**（流程/时序）。在这些题上 skill **没让评分更高**（readability 输了 1 个 case，平均 Δ = −0.11），但让 agent **更快、更省、风格更统一**。graphviz 的主场（架构图）放到第 3 轮 A1–A3 去测。
 
-1. **correctness 已经饱和。** 12 张图 12 张通过（全部 3:0）。Opus 不带 skill 也能把源码读透，并把答案要点画全，所以这个评分器在本题集上区分不了两组。Δ 完全来自 readability。
-2. **readability：带 skill 2/6，不带 skill 4/6。** 输掉的 G3、M2 有共同点：
-   - 带 skill 的 Graphviz 模板倾向于"一条竖直主干 + 旁边的分区"，控制流和回边要横穿全图，长边、交叉边多；M2 的 TikZ 图在"写入 KV"那一段有十几条交叉弯箭头。
-   - 不带 skill 的组更常画成**网格 / 泳道 / 卡片**（G2、M2 用 Pillow 逐格画表，G3 用横向 record 卡片），阅读方向单一，交叉少，评委更喜欢。
-   - 两组都有一个共同扣分点：节点里塞满 `file:line` 小字，原图 3000–4000 px，评委看到的是缩到约 2000 px 的 JPEG，小字不可读。
-3. **skill 路由 6/6 正确，无误用。** G 类都调用 `graphviz`，M 类都调用 `model-architecture` 并改走 TikZ。不带 skill 时，M1 画成了 Graphviz 流程图，M2 用 Pillow 自己画。skill 确实改变了画图路线。
-4. **效率：G 类带 skill 明显更快、更省、更可预测。**
-   - G 类 4/4 个 case 带 skill 都更快、更便宜：平均 136 秒 vs 248 秒（−45%），$1.04 vs $1.20（−13%）。耗时可预测性 0.83 vs 0.53，不带 skill 的 G3 一次用了 442 秒。
-   - M 类相反：TikZ 路线写得多、要编译，带 skill 平均 258 秒 / $1.36，不带 skill 203 秒 / $1.12。
-   - 全部 6 个 case 合计：带 skill 1060 秒 / $6.87，不带 skill 1395 秒 / $7.05。
-5. **风格一致性：skill 让配色更统一，但只在 graphviz 类明显。**
+1. **题型和 skill 不对口是主因。** graphviz skill 的模板、7 种语义节点（primary 系统、tool 存储、muted 外部依赖……）和自动布局，都是为了表达"由什么组成、怎么连接"。G1（单步算法）、G2（训练步骤顺序）、G4（跨线程请求生命周期）问的是"先做什么、后做什么、谁交给谁"，本质是流程图 / 时序图。SKILL.md 自己写着 "Not for UML sequence / activity"，但描述里的 "runtime data flow" 让这些题全部触发了它（4/4）。
+   - 结果：带 skill 的图都被模板拉成"一条竖直主干 + 旁边分区"的拓扑布局，回边和跨组的边横穿全图。不带 skill 的组更自然地画成泳道、按步骤排的表格或横向流水线（G2、G3、G4），评委更喜欢。
+   - G3 是混合题：线程和队列的拓扑在 skill 范围内，背压和 DTS 同步是动态行为。这是唯一一个带 skill 输掉 readability 的 G 类 case。
+2. **correctness 已经饱和。** 12 张图 12 张通过（全部 3:0）。Opus 不带 skill 也能读透源码、画全要点，所以 Δ 只来自 readability。
+3. **model-architecture 在自己的范围内表现合格。** M1、M2 都正确路由到它并改走 TikZ。M1 是这批图里最像论文插图的一张。M2 输在"写 KV"那一段有十几条交叉弯箭头；不带 skill 的组用"每个 block 一行 + 文字标注槽位"代替连线，更干净。
+4. **效率：graphviz 模板在范围外也有效。** G 类 4/4 个 case 带 skill 都更快、更便宜：平均 136 秒 vs 248 秒（−45%），$1.04 vs $1.20（−13%）；耗时可预测性 0.83 vs 0.53。M 类相反：TikZ 要写更多代码、还要编译，带 skill 258 秒 / $1.36，不带 skill 203 秒 / $1.12。
+5. **风格一致性：graphviz 的配色模板很稳。**
    - G 类跨 case 的色相相似度：带 skill 0.67，不带 skill 0.52。
-   - 同一题（G1）重复画两次：带 skill 0.93，不带 skill 0.58。可以看出 graphviz skill 的配色模板（紫色步骤、黄色判断、圆柱存储、红色异常）每次都会复现。
-   - M 类两组都在 0.42–0.43。model-architecture skill 没有强制统一的色板，每张 TikZ 图的配色都是按内容重新设计的。
-6. **质量一致性差不多。** G 类 0.71 vs 0.67，M 类 0.67 vs 1.00（M 类只有 2 个 case）。Claude 看图均分：带 skill 4.2，不带 skill 4.4。带 skill 在 G 类的"版式清晰"四个都是 3 分，打分很稳定，但是稳定在偏低的位置。
+   - 同一题（G1）画两次：带 skill 0.93，不带 skill 0.58。
+   - M 类两组都在 0.42–0.43：model-architecture 没有统一的色板。
+6. **质量一致性差不多。** G 类 0.71 vs 0.67；Claude 看图均分带 skill 4.2、不带 skill 4.4。带 skill 在 G 类"版式清晰"四个都是 3 分：很稳定，但稳定在偏低的位置，这正是模板不适合流程题的表现。
 
-**对 skill 的改进建议**（从输掉的 case 归纳）：
-- graphviz skill 加一段"版式"指引：有多个参与者时优先用**泳道**（`rank=same` + 每个参与者一个 cluster），回边用 `constraint=false` 并尽量缩短，避免一条竖直主干加四周分区的布局。
-- 节点标签里少放 `file:line`，把行号挪到图例或脚注；控制输出尺寸（例如长边 ≤ 2400 px），保证缩小后字还能看清。
-- model-architecture skill 对"逐 token / 逐槽位"的表格类图，用网格加颜色编码代替大量连线。
+**下一步：**
+- 第 3 轮跑 A1–A3 架构题，看 graphviz skill 在主场上能不能把 readability 也赢回来。
+- 按 [SKILL-IMPROVEMENTS.md](SKILL-IMPROVEMENTS.md) 强化 skill，再用同样的 9 个 case 做"旧 skill / 新 skill / 无 skill"三组对比。
 
-**局限：** 每个 case 每组只跑了 1 次；G1 的三次运行里带 skill 的 readability 结果就翻转过一次，所以单个 case 的 Δ 不可靠，看趋势比看单个数字更有意义。评委和看图评分都是模型给出的；人工美观打分（PLAN 第 9 步）还没做。本次评测总花费：冒烟 $3.18 + G1 正式 $2.12 + 第 2 轮 $13.95 = **$19.25**（含评委）。
+**局限：** 每个 case 每组只跑了 1 次；G1 跑过三次，带 skill 组的 readability 结果就翻转过一次，看趋势比看单个数字更有意义。评委和看图评分都是模型给出的；人工美观打分（PLAN 第 9 步）还没做。前两轮总花费：冒烟 $3.18 + G1 正式 $2.12 + 第 2 轮 $13.95 = **$19.25**（含评委）。
+
+## 待跑的 case
+
+以下 case 已写好（源码、答案要点、评分器齐全），还没有运行结果：
+
+- A1 `vllm-v1-process-arch`：架构（进程与组件）（[答案要点](evals/vllm-v1-process-arch/answer-key.md)）
+- A2 `verl-resource-placement`：架构（资源池与放置）（[答案要点](evals/verl-resource-placement/answer-key.md)）
+- A3 `megatron-parallel-groups`：架构（rank 与并行组拓扑）（[答案要点](evals/megatron-parallel-groups/answer-key.md)）
+
+## skill 强化方案
+
+见 [SKILL-IMPROVEMENTS.md](SKILL-IMPROVEMENTS.md)。
 
 ## G1 · `vllm-v1-schedule`
 
+**题型：** 流程（单步算法）  
 **代码库：** https://github.com/vllm-project/vllm @ `4c2d277643`（main）  
 **复制进来的源码：** `vllm/v1/core/sched/scheduler.py`, `vllm/v1/core/sched/output.py`, `vllm/v1/core/sched/request_queue.py`, `vllm/v1/core/kv_cache_manager.py`, `vllm/v1/request.py`  
 **答案要点：** [evals/vllm-v1-schedule/answer-key.md](evals/vllm-v1-schedule/answer-key.md)（9 条，通过线 7/9）
@@ -140,6 +150,7 @@ agent 花费合计 $13.92，评委花费合计 $2.16，总计 $16.07。
 
 ## G2 · `verl-ppo-step`
 
+**题型：** 流程（训练步骤顺序）  
 **代码库：** https://github.com/volcengine/verl @ `fbb4b3a8bf`（default branch）  
 **复制进来的源码：** `verl/trainer/ppo/ray_trainer.py`, `verl/trainer/ppo/core_algos.py`, `verl/checkpoint_engine/base.py`, `verl/workers/engine_workers.py`  
 **答案要点：** [evals/verl-ppo-step/answer-key.md](evals/verl-ppo-step/answer-key.md)（9 条，通过线 7/9）
@@ -199,6 +210,7 @@ agent 花费合计 $13.92，评委花费合计 $2.16，总计 $16.07。
 
 ## G3 · `ffmpeg-transcode-threads`
 
+**题型：** 混合（线程拓扑 + 背压/同步）  
 **代码库：** https://github.com/FFmpeg/FFmpeg @ `a344f0976c`（default branch）  
 **复制进来的源码：** `fftools/ffmpeg_sched.h`, `fftools/ffmpeg_sched.c`, `fftools/thread_queue.c`, `fftools/ffmpeg_demux.c`, `fftools/ffmpeg_dec.c`, `fftools/ffmpeg_filter.c`, `fftools/ffmpeg_enc.c`, `fftools/ffmpeg_mux.c`  
 **答案要点：** [evals/ffmpeg-transcode-threads/answer-key.md](evals/ffmpeg-transcode-threads/answer-key.md)（8 条，通过线 6/8）
@@ -257,6 +269,7 @@ agent 花费合计 $13.92，评委花费合计 $2.16，总计 $16.07。
 
 ## G4 · `redis-request-path`
 
+**题型：** 时序（跨线程请求生命周期）  
 **代码库：** https://github.com/redis/redis @ `498ecd0d6d`（8.10.2）  
 **复制进来的源码：** `src/ae.c`, `src/ae.h`, `src/networking.c`, `src/iothread.c`, `src/server.c`  
 **答案要点：** [evals/redis-request-path/answer-key.md](evals/redis-request-path/answer-key.md)（9 条，通过线 7/9）
@@ -315,6 +328,7 @@ agent 花费合计 $13.92，评委花费合计 $2.16，总计 $16.07。
 
 ## M1 · `megatron-tp-sp-mlp`
 
+**题型：** 模型内部（张量形状 + 通信）  
 **代码库：** https://github.com/NVIDIA/Megatron-LM @ `e998be072d`（default branch）  
 **复制进来的源码：** `megatron/core/tensor_parallel/layers.py`, `megatron/core/tensor_parallel/mappings.py`, `megatron/core/transformer/mlp.py`  
 **答案要点：** [evals/megatron-tp-sp-mlp/answer-key.md](evals/megatron-tp-sp-mlp/answer-key.md)（8 条，通过线 6/8）
@@ -374,6 +388,7 @@ agent 花费合计 $13.92，评委花费合计 $2.16，总计 $16.07。
 
 ## M2 · `vllm-v1-mixed-batch-attn`
 
+**题型：** 模型内部（逐 token 元数据）  
 **代码库：** https://github.com/vllm-project/vllm @ `4c2d277643`（default branch）  
 **复制进来的源码：** `vllm/v1/worker/gpu_model_runner.py`, `vllm/v1/worker/block_table.py`, `vllm/v1/attention/backends/flash_attn.py`  
 **答案要点：** [evals/vllm-v1-mixed-batch-attn/answer-key.md](evals/vllm-v1-mixed-batch-attn/answer-key.md)（9 条，通过线 7/9）

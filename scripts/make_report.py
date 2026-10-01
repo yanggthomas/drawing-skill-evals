@@ -19,6 +19,7 @@ from PIL import Image
 RESULTS_FILES = [
     Path("evals/vllm-v1-schedule/results.json"),  # round 1: G1
     Path("evals/results.json"),                   # round 2: G2 G3 G4 M1 M2
+    Path("evals/results-arch.json"),              # round 3: A1 A2 A3 (architecture)
 ]
 REPORT = Path("REPORT.md")
 CASE_IDS = {
@@ -28,11 +29,32 @@ CASE_IDS = {
     "redis-request-path": "G4",
     "megatron-tp-sp-mlp": "M1",
     "vllm-v1-mixed-batch-attn": "M2",
+    "vllm-v1-process-arch": "A1",
+    "verl-resource-placement": "A2",
+    "megatron-parallel-groups": "A3",
+}
+CASE_ORDER = list(CASE_IDS)
+# What kind of diagram each prompt asks for, and whether that is inside the routed skill's design scope.
+# graphviz is designed for architecture / topology; model-architecture for model internals (tensors, layers).
+CASE_KIND = {
+    "vllm-v1-schedule": "流程（单步算法）",
+    "verl-ppo-step": "流程（训练步骤顺序）",
+    "ffmpeg-transcode-threads": "混合（线程拓扑 + 背压/同步）",
+    "redis-request-path": "时序（跨线程请求生命周期）",
+    "megatron-tp-sp-mlp": "模型内部（张量形状 + 通信）",
+    "vllm-v1-mixed-batch-attn": "模型内部（逐 token 元数据）",
+    "vllm-v1-process-arch": "架构（进程与组件）",
+    "verl-resource-placement": "架构（资源池与放置）",
+    "megatron-parallel-groups": "架构（rank 与并行组拓扑）",
+}
+GROUPS = {  # consistency groups: label -> case ids
+    "流程/时序/混合（graphviz 设计范围外）": ["G1", "G2", "G3", "G4"],
+    "模型内部（model-architecture 范围内）": ["M1", "M2"],
+    "架构（graphviz 范围内）": ["A1", "A2", "A3"],
 }
 SCORED_GRADERS = ["render", "correctness", "readability"]
 INDICATORS = ["skill-fired", "skill-misrouted"]
 ARM_LABEL = {"with": "带 skill", "without": "不带 skill"}
-GROUPS = {"G（graphviz 类，流程/架构图）": "G", "M（model-architecture 类，张量/结构图）": "M"}
 HUE_BINS = 12            # colour-style fingerprint: hue histogram of saturated pixels
 MIN_SAT, MIN_VAL = 0.05, 0.25  # 0.05 keeps pale fills (light blue, lavender); text and grey stay out
 REVIEW_KEYS = {"content": "信息完整", "layout": "版式清晰", "color": "配色"}  # Claude's 1-5 review per image
@@ -98,7 +120,7 @@ def load_cases():
                              "graders": {g["name"]: g for g in run.get("graders", [])}}
             cases.append({"name": case["name"], "dir": case_dir, "arms": arms,
                           "report_url": results.get("reportUrl")})
-    return sorted(cases, key=lambda c: CASE_IDS.get(c["name"], "Z"))
+    return sorted(cases, key=lambda c: CASE_ORDER.index(c["name"]) if c["name"] in CASE_ORDER else 99)
 
 
 def final_route(case_dir, arm, fact):
@@ -133,8 +155,8 @@ def image_for(case_dir, arm):
 
 def summary_table(cases):
     lines = [
-        "| Case | 得分 带 / 不带 | Δ | agent 耗时 带 / 不带 (s) | agent 花费 带 / 不带 ($) | 轮数 带 / 不带 | skill 路由 | 画图路线 带 / 不带 |",
-        "|---|---|---|---|---|---|---|---|",
+        "| Case | 题型 | 得分 带 / 不带 | Δ | agent 耗时 带 / 不带 (s) | agent 花费 带 / 不带 ($) | 轮数 带 / 不带 | skill 路由 | 画图路线 带 / 不带 |",
+        "|---|---|---|---|---|---|---|---|---|",
     ]
     tot = {"with": [0.0, 0.0, 0.0], "without": [0.0, 0.0, 0.0]}  # seconds, agent $, judge $
     for c in cases:
@@ -150,7 +172,7 @@ def summary_table(cases):
         routing = ("✅" if fired and fired["passed"] else "❌ 未触发") + (
             "" if not misrouted or misrouted["passed"] else " ⚠ 误用")
         lines.append(
-            f"| {CASE_IDS.get(c['name'], '')} `{c['name']}` | {sw:.2f} / {so:.2f} | {sw - so:+.2f} | "
+            f"| {CASE_IDS.get(c['name'], '')} `{c['name']}` | {CASE_KIND.get(c['name'], '')} | {sw:.2f} / {so:.2f} | {sw - so:+.2f} | "
             f"{fmt(fw.get('agent_seconds'), 0)} / {fmt(fo.get('agent_seconds'), 0)} | "
             f"{fmt(fw.get('agent_cost_usd'))} / {fmt(fo.get('agent_cost_usd'))} | "
             f"{fmt(fw.get('agent_turns'))} / {fmt(fo.get('agent_turns'))} | {routing} | "
@@ -159,7 +181,7 @@ def summary_table(cases):
     mean_w = sum(c["arms"]["with"]["run"]["score"] for c in cases) / n
     mean_o = sum(c["arms"]["without"]["run"]["score"] for c in cases) / n
     lines.append(
-        f"| **合计 / 平均** | **{mean_w:.2f} / {mean_o:.2f}** | **{mean_w - mean_o:+.2f}** | "
+        f"| **合计 / 平均** | | **{mean_w:.2f} / {mean_o:.2f}** | **{mean_w - mean_o:+.2f}** | "
         f"**{tot['with'][0]:.0f} / {tot['without'][0]:.0f}** | **{tot['with'][1]:.2f} / {tot['without'][1]:.2f}** | | | |")
     judge = tot["with"][2] + tot["without"][2]
     agent = tot["with"][1] + tot["without"][1]
@@ -205,7 +227,7 @@ def case_section(c):
     cid = CASE_IDS.get(c["name"], "")
     repo, ref, commit, files = pinned(d)
     titles = answer_key_titles(d)
-    out = [f"## {cid} · `{c['name']}`", ""]
+    out = [f"## {cid} · `{c['name']}`", "", f"**题型：** {CASE_KIND.get(c['name'], '–')}  "]
     out += [f"**代码库：** {repo} @ `{commit[:10]}`（{ref}）  ",
             f"**复制进来的源码：** {', '.join(f'`{f}`' for f in files)}  ",
             f"**答案要点：** [{d}/answer-key.md]({d}/answer-key.md)（{len(titles)} 条，通过线 {pass_rule(d)}）", ""]
@@ -264,7 +286,7 @@ def load_review(case_dir):
 def consistency_section(cases):
     lines = [
         "## 一致性 / 可预测性", "",
-        "每个 case 每组只有 1 次运行，所以这里比较的是**同一类 case 之间**的波动：G 类 4 个，M 类 2 个（样本很少，只作参考）。",
+        "每个 case 每组只有 1 次运行，所以这里比较的是**同一题型的 case 之间**的波动（每类 2–4 个 case，样本很少，只作参考）。",
         "", "指标定义：",
         "- **质量一致性** = 1 − 2·σ(得分)。得分在 0–1 之间，σ 最大 0.5，所以 1 = 各 case 得分完全一样，0 = 最分散。",
         "- **耗时 / 花费可预测性** = 1 − CV，CV = σ / 均值（agent 部分，不含评委），截到 0–1。",
@@ -275,8 +297,8 @@ def consistency_section(cases):
         "| 耗时 均值 s (可预测性) | 花费 均值 $ (可预测性) | 风格一致性 | 看图均分 (一致性) | skill 正确触发 |",
         "|---|---|---|---|---|---|---|---|---|---|---|---|",
     ]
-    for label, prefix in GROUPS.items():
-        group = [c for c in cases if CASE_IDS.get(c["name"], "").startswith(prefix)]
+    for label, ids in GROUPS.items():
+        group = [c for c in cases if CASE_IDS.get(c["name"]) in ids]
         if not group:
             continue
         for arm in ("with", "without"):
@@ -349,6 +371,9 @@ def main():
         "prompt 不指定画图工具，只要求输出一张 PNG。分数 = render、correctness、readability 三个评分器的通过比例；"
         "skill 是否触发只作指示，不计分。美观和配色由人工另行打分（见 PLAN 第 9 步）。", "",
         "> 每组只有 1 个样本，Δ 和耗时差都是单次观测，不是稳定结论。", "",
+        "**读结果前先看题型。** graphviz skill 是为**架构图**设计的（SKILL.md：“topology-first graphs”，并明确“Not for UML sequence / activity”）。"
+        "第 1、2 轮的 G1–G4 问的是单步算法、训练步骤顺序、跨线程请求生命周期，属于流程图 / 时序图，**在 graphviz skill 的设计范围之外**；"
+        "M1、M2 在 model-architecture skill 的范围内。第 3 轮的 A1–A3 是只问组成与连接的架构题，用来测 graphviz skill 的主场。", "",
         "## 汇总", "", table, "",
         f"agent 花费合计 ${agent_cost:.2f}，评委花费合计 ${judge_cost:.2f}，总计 ${agent_cost + judge_cost:.2f}。", "",
     ]
@@ -359,6 +384,15 @@ def main():
     overall = Path("evals/notes.md")
     if overall.exists():
         head += ["## 总体观察", "", overall.read_text().strip(), ""]
+    pending = [n for n in CASE_ORDER if n not in {c["name"] for c in cases} and Path("evals", n, "prompt.md").exists()]
+    if pending:
+        head += ["## 待跑的 case", "",
+                 "以下 case 已写好（源码、答案要点、评分器齐全），还没有运行结果：", ""]
+        head += [f"- {CASE_IDS[n]} `{n}`：{CASE_KIND[n]}（[答案要点](evals/{n}/answer-key.md)）" for n in pending]
+        head += [""]
+    improvements = Path("SKILL-IMPROVEMENTS.md")
+    if improvements.exists():
+        head += ["## skill 强化方案", "", f"见 [{improvements}]({improvements})。", ""]
     body = [case_section(c) for c in cases]
     REPORT.write_text("\n".join(head) + "\n" + "\n\n".join(body) + "\n")
     print(f"wrote {REPORT} with {len(cases)} cases")

@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: verl-resource-placement
+description: A2 — how verl places its roles onto Ray resource pools and GPUs (single-controller PPO).
+tags: [graphviz, arch]
+context:
+  add_dirs: [src]
