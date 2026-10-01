@@ -1,0 +1,52 @@
+[
+  {
+    "arm": "with",
+    "run": 1,
+    "score": 0.6666666666666666,
+    "error": null,
+    "judge_cost_usd": 0.1465,
+    "skills": [
+      "drawing-skills:graphviz"
+    ],
+    "routes": [
+      "graphviz"
+    ],
+    "written": [],
+    "leaks": [],
+    "agent_seconds": 136.3,
+    "agent_api_seconds": 128.8,
+    "agent_cost_usd": 0.8828,
+    "agent_turns": 22,
+    "artifacts": [
+      "process-arch.dot",
+      "process-arch.png",
+      "trace.jsonl.gz"
+    ]
+  },
+  {
+    "arm": "without",
+    "run": 1,
+    "score": 1,
+    "error": null,
+    "judge_cost_usd": 0.1368,
+    "skills": [],
+    "routes": [
+      "matplotlib",
+      "graphviz",
+      "pillow"
+    ],
+    "written": [
+      "/tmp/claude-eval-MSgphe/home/cwd/out/draw_process_arch.py"
+    ],
+    "leaks": [],
+    "agent_seconds": 369.7,
+    "agent_api_seconds": 364.1,
+    "agent_cost_usd": 1.9007,
+    "agent_turns": 39,
+    "artifacts": [
+      "draw_process_arch.py",
+      "process-arch.png",
+      "trace.jsonl.gz"
+    ]
+  }
+]

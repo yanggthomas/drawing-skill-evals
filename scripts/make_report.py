@@ -141,10 +141,16 @@ def final_route(case_dir, arm, fact):
             if re.search(r"^\s*from PIL", src, re.M):
                 return "Pillow (逐个画形状)"
             return "Python"
-    # Source kept outside out/: fall back to the routes seen in the trace, minus mere probes.
-    routes = [r for r in fact.get("routes") or [] if r not in ("matplotlib", "pillow")]
-    return {"graphviz": "Graphviz", "mermaid": "Mermaid", "tikz/latex": "TikZ", "svg": "SVG"}.get(
-        routes[0], routes[0]) if routes else "–"
+    # Source kept outside out/: fall back to the routes seen in the trace. matplotlib / Pillow
+    # are often only probed, so they count only when no real diagram tool was touched.
+    routes = fact.get("routes") or []
+    names = {"graphviz": "Graphviz", "mermaid": "Mermaid", "tikz/latex": "TikZ", "svg": "SVG"}
+    for r in routes:
+        if r in names:
+            return names[r]
+    if "pillow" in routes:
+        return "Pillow (逐个画形状)"
+    return "matplotlib" if "matplotlib" in routes else "–"
 
 
 def image_for(case_dir, arm):

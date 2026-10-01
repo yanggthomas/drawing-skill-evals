@@ -1,0 +1,53 @@
+[
+  {
+    "arm": "with",
+    "run": 1,
+    "score": 0.6666666666666666,
+    "error": null,
+    "judge_cost_usd": 0.1564,
+    "skills": [
+      "drawing-skills:graphviz"
+    ],
+    "routes": [
+      "graphviz"
+    ],
+    "written": [
+      "/tmp/claude-eval-dkR0n2/home/cwd/out/resource-placement.dot"
+    ],
+    "leaks": [],
+    "agent_seconds": 129.3,
+    "agent_api_seconds": 126.0,
+    "agent_cost_usd": 0.8593,
+    "agent_turns": 27,
+    "artifacts": [
+      "resource-placement.dot",
+      "resource-placement.png",
+      "trace.jsonl.gz"
+    ]
+  },
+  {
+    "arm": "without",
+    "run": 1,
+    "score": 0.6666666666666666,
+    "error": null,
+    "judge_cost_usd": 0.1468,
+    "skills": [],
+    "routes": [
+      "graphviz",
+      "matplotlib"
+    ],
+    "written": [
+      "/tmp/claude-eval-1sMsaX/home/cwd/out/resource-placement.dot"
+    ],
+    "leaks": [],
+    "agent_seconds": 146.9,
+    "agent_api_seconds": 138.3,
+    "agent_cost_usd": 0.903,
+    "agent_turns": 25,
+    "artifacts": [
+      "resource-placement.dot",
+      "resource-placement.png",
+      "trace.jsonl.gz"
+    ]
+  }
+]

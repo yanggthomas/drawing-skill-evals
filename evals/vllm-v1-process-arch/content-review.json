@@ -1,0 +1,23 @@
+{
+  "questions": [
+    "有哪些 OS 进程",
+    "每个进程里有哪些组件",
+    "进程之间用什么传输",
+    "每条链路上传的是什么"
+  ],
+  "with": [
+    2,
+    2,
+    2,
+    1
+  ],
+  "without": [
+    2,
+    2,
+    2,
+    2
+  ],
+  "with_score": 4,
+  "without_score": 5,
+  "note": "两张都把四类进程（前端、EngineCore、每张 GPU 一个 worker）和组件画全了。带 skill 的图（Graphviz）把前端放在右侧、EngineCore 居中、worker 在左下，读者要从右往左、再往下读；传输方式写在边上（ZMQ ROUTER→DEALER、shared memory），但每条链路传什么只有边上的小字；图 4519×3232，缩小后几乎看不清。不带 skill 的图（Pillow 手工排版）是三列从左到右：前端 → EngineCore → workers，进程框里嵌组件框，**连线按传输方式上色并配图例**（蓝 = ZMQ，橙 = 共享内存广播，绿 = 共享内存回复，紫 = NCCL），每条箭头旁写着传输内容。四个子问题都能直接读到。"
+}

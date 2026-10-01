@@ -1,0 +1,4 @@
+- **画图路线**：带 skill 用 Graphviz（graphviz skill）；不带 skill 写了 Pillow 脚本手工排版。
+- **评委**：带 skill 的 readability 0:3，不带 skill 3:0；correctness 两组 3:0。
+- **效率**：带 skill **136 秒 / $0.88** / 22 轮，不带 skill **370 秒 / $1.90** / 39 轮。这是所有 case 里 skill 省得最多的一次：时间和花费都约是不带 skill 的一半，不带 skill 的组在手工排版上反复调整。
+- **观察**：这是标准的架构图题，也是 graphviz 的主场，但 Graphviz 的自动布局把三个进程摆成了"右、中、左下"，主线不直；手工排版的三列布局更清楚。

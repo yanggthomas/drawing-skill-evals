@@ -1,0 +1,623 @@
+{
+  "schemaVersion": 1,
+  "claudeVersion": "2.1.286",
+  "startedAt": "2026-10-01T06:05:57.418Z",
+  "durationSeconds": 1339,
+  "costUsd": 7.214702800000001,
+  "partial": false,
+  "suite": {
+    "root": "/home/user/drawing-skill-evals",
+    "ablation": "with-without",
+    "modelOverride": "opus",
+    "judgeModel": "opus",
+    "tagFilters": [
+      "arch"
+    ],
+    "threshold": 0,
+    "concurrency": 1,
+    "plugins": [
+      {
+        "name": "drawing-skills",
+        "version": "0.1.0",
+        "path": "/home/user/drawing-skill-evals"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "name": "megatron-parallel-groups",
+      "dir": "evals/megatron-parallel-groups",
+      "source": "mixed",
+      "promptMarkdown": "I want an architecture view of how Megatron-Core lays out its process groups. The source, pinned at the commit in `PINNED.txt`, is in the read-only source directory available to this session. For 16 GPUs on 2 nodes (8 per node) with tensor-parallel size 2, pipeline-parallel size 4 and no context or expert parallelism, draw one diagram that shows every rank, which node it is on, and which tensor-parallel, pipeline-parallel, data-parallel and model-parallel group it belongs to, plus the embedding group. Make clear the rule that assigns ranks to groups. Ground every element in the code. Save the finished diagram as a PNG image at `out/parallel-groups.png`.",
+      "runsPerCase": 1,
+      "timeoutSeconds": 1800,
+      "maxTurns": 60,
+      "graders": [
+        {
+          "name": "correctness",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "You are grading a diagram (the attached PNG) that is meant to explain how Megatron-Core partitions 16 GPU ranks into tensor-, pipeline- and data-parallel groups (TP=2, PP=4, DP=2, 2 nodes × 8 GPUs). Judge only what the picture shows. Do not credit anything you would have to infer from code that is not drawn. Exact identifiers are not required when the mechanism is drawn unambiguously.\n\nReference facts:\n\n1. **Rank order and DP size.** Ranks are laid out in the order `tp-cp-ep-dp-pp` (TP varies fastest), and DP = world / (TP·PP·CP) = 16 / 8 = 2.\n2. **Rank formula.** With CP = EP = 1 a rank decomposes as `rank = tp_rank + dp_rank·2 + pp_rank·4` (orthogonal groups from `generate_masked_orthogonal_rank_groups`).\n3. **TP groups.** 8 tensor-parallel groups of adjacent pairs: [0,1], [2,3], …, [14,15].\n4. **DP groups.** 8 data-parallel groups: [0,2], [1,3], [4,6], [5,7], [8,10], [9,11], [12,14], [13,15].\n5. **PP groups.** 4 pipeline-parallel groups with stride 4: [0,4,8,12], [1,5,9,13], [2,6,10,14], [3,7,11,15]; each spans both nodes.\n6. **Node placement.** Ranks 0–7 sit on node 0 and 8–15 on node 1, so every TP group and every DP group stays inside one node while PP groups cross the node boundary.\n7. **Model-parallel groups.** The model-parallel group is all TP×PP ranks that share a DP rank, e.g. [0,1,4,5,8,9,12,13] and [2,3,6,7,10,11,14,15].\n8. **Embedding group.** The embedding group of each pipeline is its first and last stage, e.g. [0,12], [1,13], [2,14], [3,15].\n\nFor each fact, decide: SHOWN (drawn correctly), ABSENT (not drawn), or CONTRADICTED (drawn in a way that conflicts with the fact). Examples of a contradiction: TP groups drawn across nodes; PP groups drawn as adjacent ranks; DP size other than 2.\n\nPASS if at least 6 of the 8 facts are SHOWN and none is CONTRADICTED.\nFAIL otherwise. Begin your explanation by listing the SHOWN / ABSENT / CONTRADICTED verdict for each fact number.",
+          "config": {
+            "criteria": "You are grading a diagram (the attached PNG) that is meant to explain how Megatron-Core partitions 16 GPU ranks into tensor-, pipeline- and data-parallel groups (TP=2, PP=4, DP=2, 2 nodes × 8 GPUs). Judge only what the picture shows. Do not credit anything you would have to infer from code that is not drawn. Exact identifiers are not required when the mechanism is drawn unambiguously.\n\nReference facts:\n\n1. **Rank order and DP size.** Ranks are laid out in the order `tp-cp-ep-dp-pp` (TP varies fastest), and DP = world / (TP·PP·CP) = 16 / 8 = 2.\n2. **Rank formula.** With CP = EP = 1 a rank decomposes as `rank = tp_rank + dp_rank·2 + pp_rank·4` (orthogonal groups from `generate_masked_orthogonal_rank_groups`).\n3. **TP groups.** 8 tensor-parallel groups of adjacent pairs: [0,1], [2,3], …, [14,15].\n4. **DP groups.** 8 data-parallel groups: [0,2], [1,3], [4,6], [5,7], [8,10], [9,11], [12,14], [13,15].\n5. **PP groups.** 4 pipeline-parallel groups with stride 4: [0,4,8,12], [1,5,9,13], [2,6,10,14], [3,7,11,15]; each spans both nodes.\n6. **Node placement.** Ranks 0–7 sit on node 0 and 8–15 on node 1, so every TP group and every DP group stays inside one node while PP groups cross the node boundary.\n7. **Model-parallel groups.** The model-parallel group is all TP×PP ranks that share a DP rank, e.g. [0,1,4,5,8,9,12,13] and [2,3,6,7,10,11,14,15].\n8. **Embedding group.** The embedding group of each pipeline is its first and last stage, e.g. [0,12], [1,13], [2,14], [3,15].\n\nFor each fact, decide: SHOWN (drawn correctly), ABSENT (not drawn), or CONTRADICTED (drawn in a way that conflicts with the fact). Examples of a contradiction: TP groups drawn across nodes; PP groups drawn as adjacent ranks; DP size other than 2.\n\nPASS if at least 6 of the 8 facts are SHOWN and none is CONTRADICTED.\nFAIL otherwise. Begin your explanation by listing the SHOWN / ABSENT / CONTRADICTED verdict for each fact number.",
+            "focus": {
+              "source": "file",
+              "path": "out/parallel-groups.png"
+            }
+          }
+        },
+        {
+          "name": "readability",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "You are grading the visual quality of a technical diagram (the attached PNG). Ignore whether its content is technically correct; grade only how readable it is.\n\nCheck each criterion:\n1. Every label is legible at 100% zoom: no text is truncated, clipped, or too small to read.\n2. No nodes overlap, and no labels overlap nodes, edges, or each other.\n3. There is one clear reading direction (top-to-bottom or left-to-right) that a reader can follow from start to end.\n4. Edges are distinguishable: a reader can trace each edge from its source to its target, and edges that mean different things (e.g. control flow vs. data handed off) are visually different or labeled.\n5. The visual grammar is consistent: shape and/or colour encode the role of a node (e.g. decision, action, data structure, queue), and the same role always looks the same.\n6. There are no orphan nodes (unconnected, without an obvious reason) and no purely decorative elements.\n\nPASS if criteria 1, 2 and 3 all hold and at most one of criteria 4–6 fails.\nFAIL otherwise. Begin your explanation by giving a pass/fail for each criterion number.",
+          "config": {
+            "criteria": "You are grading the visual quality of a technical diagram (the attached PNG). Ignore whether its content is technically correct; grade only how readable it is.\n\nCheck each criterion:\n1. Every label is legible at 100% zoom: no text is truncated, clipped, or too small to read.\n2. No nodes overlap, and no labels overlap nodes, edges, or each other.\n3. There is one clear reading direction (top-to-bottom or left-to-right) that a reader can follow from start to end.\n4. Edges are distinguishable: a reader can trace each edge from its source to its target, and edges that mean different things (e.g. control flow vs. data handed off) are visually different or labeled.\n5. The visual grammar is consistent: shape and/or colour encode the role of a node (e.g. decision, action, data structure, queue), and the same role always looks the same.\n6. There are no orphan nodes (unconnected, without an obvious reason) and no purely decorative elements.\n\nPASS if criteria 1, 2 and 3 all hold and at most one of criteria 4–6 fails.\nFAIL otherwise. Begin your explanation by giving a pass/fail for each criterion number.",
+            "focus": {
+              "source": "file",
+              "path": "out/parallel-groups.png"
+            }
+          }
+        },
+        {
+          "name": "render",
+          "type": "file_exists",
+          "weight": 1,
+          "config": {
+            "path": "out/parallel-groups.png",
+            "exists": true
+          }
+        },
+        {
+          "name": "skill-fired",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "Skill",
+            "input_match": "\"skill\"\\s*:\\s*\"(?:[\\w-]+:)?graphviz\""
+          }
+        },
+        {
+          "name": "skill-misrouted",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "Skill",
+            "input_match": "\"skill\"\\s*:\\s*\"(?:[\\w-]+:)?model-architecture\"",
+            "min": 0,
+            "max": 0,
+            "arm": "with-only"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 20,
+            "costUsd": 1.1443032,
+            "judgeCostUsd": 0.1211,
+            "durationSeconds": 213,
+            "startedAt": "2026-10-01T06:05:57.524Z",
+            "error": null,
+            "tracePath": "/tmp/claude-eval-gXZPbK/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "correctness",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS (image)",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "[image shown to the judge: out/parallel-groups.png — sent as image/jpeg, 382.9KB, 2000x1113px; file on disk: image/png, 580.7KB, 2698x1501px]"
+              },
+              {
+                "name": "readability",
+                "passed": false,
+                "weight": 1,
+                "explanation": "judge votes: FAIL FAIL FAIL (image)",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  false,
+                  false,
+                  false
+                ],
+                "evidence": "[image shown to the judge: out/parallel-groups.png — sent as image/jpeg, 382.9KB, 2000x1113px; file on disk: image/png, 580.7KB, 2698x1501px]"
+              },
+              {
+                "name": "render",
+                "passed": true,
+                "weight": 1,
+                "explanation": "out/parallel-groups.png exists as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "skill-fired",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Skill called 1x (expected 1..∞)",
+                "withOnly": true,
+                "scored": false
+              },
+              {
+                "name": "skill-misrouted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Skill called 0x (expected 0..0)",
+                "withOnly": true,
+                "scored": false
+              }
+            ]
+          }
+        ],
+        "without": [
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 15,
+            "costUsd": 0.9379952,
+            "judgeCostUsd": 0.13730000000000003,
+            "durationSeconds": 203,
+            "startedAt": "2026-10-01T06:09:30.856Z",
+            "error": null,
+            "tracePath": "/tmp/claude-eval-5jLou9/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "correctness",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS (image)",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "[image shown to the judge: out/parallel-groups.png — sent as image/jpeg, 468KB, 2000x1257px; file on disk: image/png, 348.5KB, 2800x1760px]"
+              },
+              {
+                "name": "readability",
+                "passed": false,
+                "weight": 1,
+                "explanation": "judge votes: FAIL FAIL FAIL (image)",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  false,
+                  false,
+                  false
+                ],
+                "evidence": "[image shown to the judge: out/parallel-groups.png — sent as image/jpeg, 468KB, 2000x1257px; file on disk: image/png, 348.5KB, 2800x1760px]"
+              },
+              {
+                "name": "render",
+                "passed": true,
+                "weight": 1,
+                "explanation": "out/parallel-groups.png exists as expected",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 0.6666666666666666,
+        "passRate": 0,
+        "scoreWithout": 0.6666666666666666,
+        "passRateWithout": 0,
+        "delta": 0
+      }
+    },
+    {
+      "name": "verl-resource-placement",
+      "dir": "evals/verl-resource-placement",
+      "source": "mixed",
+      "promptMarkdown": "I want an architecture overview of how verl lays out a PPO/GRPO job on a Ray cluster. The trainer source, pinned at the commit in `PINNED.txt`, is in the read-only source directory available to this session. Draw one architecture diagram showing the driver, the Ray resource pools and what GPUs they cover, which roles (actor, rollout, reference, critic, reward model, teacher) are mapped to which pool, which roles share the same worker processes, and how the rollout servers, the reward loop and the weight-sync component are connected to them. This is about structure and placement, not about the order of the training steps. Ground every element in the code. Save the finished diagram as a PNG image at `out/resource-placement.png`.",
+      "runsPerCase": 1,
+      "timeoutSeconds": 1800,
+      "maxTurns": 60,
+      "graders": [
+        {
+          "name": "correctness",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "You are grading a diagram (the attached PNG) that is meant to explain how verl places its roles onto Ray resource pools and GPUs (single-controller PPO). Judge only what the picture shows. Do not credit anything you would have to infer from code that is not drawn. Exact identifiers are not required when the mechanism is drawn unambiguously.\n\nReference facts:\n\n1. **Single controller on the driver.** The driver (`TaskRunner` → `RayPPOTrainer`) holds handles to all worker groups and managers and does no GPU work itself.\n2. **Resource pools.** `global_pool` spans `n_gpus_per_node × nnodes` GPUs; optional `reward_pool` and `teacher_pool` give the reward model and the distillation teacher their own GPUs.\n3. **Pools are Ray placement groups.** Each `RayResourcePool` is built from Ray placement groups, one per node, with one bundle per GPU (strategy `STRICT_PACK`).\n4. **Role → pool mapping.** ActorRollout(Ref) and Critic map to `global_pool`; RewardModel maps to `reward_pool` if it has its own pool, else `global_pool`; TeacherModel maps to `teacher_pool`.\n5. **Colocation: one process per GPU, several roles.** All roles mapped to the same pool are fused by `create_colocated_worker_cls` into one Ray actor class, spawned once per GPU bundle, and then split into separately named worker groups that share those processes.\n6. **Hybrid engine worker.** `ActorRolloutRefWorker` combines the actor's training engine (FSDP/Megatron), the rollout adapter and the reference policy in one worker group; the reference gets its own group only in the LoRA case.\n7. **Rollout servers on the actor's GPUs.** The rollout replicas (vLLM / SGLang servers via `LLMServerManager`) are created on the actor-rollout worker group's resource pool, i.e. the same GPUs as training; `AgentLoopManager` drives them.\n8. **Reward loop.** A `RewardLoopManager` runs reward workers that can score samples while rollout streams; with a reward model and its own pool it uses `reward_pool`.\n9. **Weight-sync component.** `CheckpointEngineManager` connects the actor worker group to the rollout replicas and is the only path weights take from training to rollout.\n\nFor each fact, decide: SHOWN (drawn correctly), ABSENT (not drawn), or CONTRADICTED (drawn in a way that conflicts with the fact). Examples of a contradiction: the rollout servers drawn on GPUs separate from the actor in the default hybrid setup; the driver drawn as owning GPUs or running training; the critic on its own pool by default.\n\nPASS if at least 7 of the 9 facts are SHOWN and none is CONTRADICTED.\nFAIL otherwise. Begin your explanation by listing the SHOWN / ABSENT / CONTRADICTED verdict for each fact number.",
+          "config": {
+            "criteria": "You are grading a diagram (the attached PNG) that is meant to explain how verl places its roles onto Ray resource pools and GPUs (single-controller PPO). Judge only what the picture shows. Do not credit anything you would have to infer from code that is not drawn. Exact identifiers are not required when the mechanism is drawn unambiguously.\n\nReference facts:\n\n1. **Single controller on the driver.** The driver (`TaskRunner` → `RayPPOTrainer`) holds handles to all worker groups and managers and does no GPU work itself.\n2. **Resource pools.** `global_pool` spans `n_gpus_per_node × nnodes` GPUs; optional `reward_pool` and `teacher_pool` give the reward model and the distillation teacher their own GPUs.\n3. **Pools are Ray placement groups.** Each `RayResourcePool` is built from Ray placement groups, one per node, with one bundle per GPU (strategy `STRICT_PACK`).\n4. **Role → pool mapping.** ActorRollout(Ref) and Critic map to `global_pool`; RewardModel maps to `reward_pool` if it has its own pool, else `global_pool`; TeacherModel maps to `teacher_pool`.\n5. **Colocation: one process per GPU, several roles.** All roles mapped to the same pool are fused by `create_colocated_worker_cls` into one Ray actor class, spawned once per GPU bundle, and then split into separately named worker groups that share those processes.\n6. **Hybrid engine worker.** `ActorRolloutRefWorker` combines the actor's training engine (FSDP/Megatron), the rollout adapter and the reference policy in one worker group; the reference gets its own group only in the LoRA case.\n7. **Rollout servers on the actor's GPUs.** The rollout replicas (vLLM / SGLang servers via `LLMServerManager`) are created on the actor-rollout worker group's resource pool, i.e. the same GPUs as training; `AgentLoopManager` drives them.\n8. **Reward loop.** A `RewardLoopManager` runs reward workers that can score samples while rollout streams; with a reward model and its own pool it uses `reward_pool`.\n9. **Weight-sync component.** `CheckpointEngineManager` connects the actor worker group to the rollout replicas and is the only path weights take from training to rollout.\n\nFor each fact, decide: SHOWN (drawn correctly), ABSENT (not drawn), or CONTRADICTED (drawn in a way that conflicts with the fact). Examples of a contradiction: the rollout servers drawn on GPUs separate from the actor in the default hybrid setup; the driver drawn as owning GPUs or running training; the critic on its own pool by default.\n\nPASS if at least 7 of the 9 facts are SHOWN and none is CONTRADICTED.\nFAIL otherwise. Begin your explanation by listing the SHOWN / ABSENT / CONTRADICTED verdict for each fact number.",
+            "focus": {
+              "source": "file",
+              "path": "out/resource-placement.png"
+            }
+          }
+        },
+        {
+          "name": "readability",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "You are grading the visual quality of a technical diagram (the attached PNG). Ignore whether its content is technically correct; grade only how readable it is.\n\nCheck each criterion:\n1. Every label is legible at 100% zoom: no text is truncated, clipped, or too small to read.\n2. No nodes overlap, and no labels overlap nodes, edges, or each other.\n3. There is one clear reading direction (top-to-bottom or left-to-right) that a reader can follow from start to end.\n4. Edges are distinguishable: a reader can trace each edge from its source to its target, and edges that mean different things (e.g. control flow vs. data handed off) are visually different or labeled.\n5. The visual grammar is consistent: shape and/or colour encode the role of a node (e.g. decision, action, data structure, queue), and the same role always looks the same.\n6. There are no orphan nodes (unconnected, without an obvious reason) and no purely decorative elements.\n\nPASS if criteria 1, 2 and 3 all hold and at most one of criteria 4–6 fails.\nFAIL otherwise. Begin your explanation by giving a pass/fail for each criterion number.",
+          "config": {
+            "criteria": "You are grading the visual quality of a technical diagram (the attached PNG). Ignore whether its content is technically correct; grade only how readable it is.\n\nCheck each criterion:\n1. Every label is legible at 100% zoom: no text is truncated, clipped, or too small to read.\n2. No nodes overlap, and no labels overlap nodes, edges, or each other.\n3. There is one clear reading direction (top-to-bottom or left-to-right) that a reader can follow from start to end.\n4. Edges are distinguishable: a reader can trace each edge from its source to its target, and edges that mean different things (e.g. control flow vs. data handed off) are visually different or labeled.\n5. The visual grammar is consistent: shape and/or colour encode the role of a node (e.g. decision, action, data structure, queue), and the same role always looks the same.\n6. There are no orphan nodes (unconnected, without an obvious reason) and no purely decorative elements.\n\nPASS if criteria 1, 2 and 3 all hold and at most one of criteria 4–6 fails.\nFAIL otherwise. Begin your explanation by giving a pass/fail for each criterion number.",
+            "focus": {
+              "source": "file",
+              "path": "out/resource-placement.png"
+            }
+          }
+        },
+        {
+          "name": "render",
+          "type": "file_exists",
+          "weight": 1,
+          "config": {
+            "path": "out/resource-placement.png",
+            "exists": true
+          }
+        },
+        {
+          "name": "skill-fired",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "Skill",
+            "input_match": "\"skill\"\\s*:\\s*\"(?:[\\w-]+:)?graphviz\""
+          }
+        },
+        {
+          "name": "skill-misrouted",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "Skill",
+            "input_match": "\"skill\"\\s*:\\s*\"(?:[\\w-]+:)?model-architecture\"",
+            "min": 0,
+            "max": 0,
+            "arm": "with-only"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 27,
+            "costUsd": 1.0156572000000001,
+            "judgeCostUsd": 0.156368,
+            "durationSeconds": 169,
+            "startedAt": "2026-10-01T06:12:53.402Z",
+            "error": null,
+            "tracePath": "/tmp/claude-eval-dkR0n2/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "correctness",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS (image)",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "[image shown to the judge: out/resource-placement.png — sent as image/jpeg, 241.5KB, 2000x1034px; file on disk: image/png, 741.9KB, 4019x2077px]"
+              },
+              {
+                "name": "readability",
+                "passed": false,
+                "weight": 1,
+                "explanation": "judge votes: FAIL FAIL FAIL (image)",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  false,
+                  false,
+                  false
+                ],
+                "evidence": "[image shown to the judge: out/resource-placement.png — sent as image/jpeg, 241.5KB, 2000x1034px; file on disk: image/png, 741.9KB, 4019x2077px]"
+              },
+              {
+                "name": "render",
+                "passed": true,
+                "weight": 1,
+                "explanation": "out/resource-placement.png exists as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "skill-fired",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Skill called 1x (expected 1..∞)",
+                "withOnly": true,
+                "scored": false
+              },
+              {
+                "name": "skill-misrouted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Skill called 0x (expected 0..0)",
+                "withOnly": true,
+                "scored": false
+              }
+            ]
+          }
+        ],
+        "without": [
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 25,
+            "costUsd": 1.0498756,
+            "judgeCostUsd": 0.14684799999999998,
+            "durationSeconds": 188,
+            "startedAt": "2026-10-01T06:15:42.360Z",
+            "error": null,
+            "tracePath": "/tmp/claude-eval-1sMsaX/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "correctness",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS (image)",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "[image shown to the judge: out/resource-placement.png — sent as image/jpeg, 247.5KB, 2000x874px; file on disk: image/png, 831.8KB, 4186x1829px]"
+              },
+              {
+                "name": "readability",
+                "passed": false,
+                "weight": 1,
+                "explanation": "judge votes: FAIL FAIL FAIL (image)",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  false,
+                  false,
+                  false
+                ],
+                "evidence": "[image shown to the judge: out/resource-placement.png — sent as image/jpeg, 247.5KB, 2000x874px; file on disk: image/png, 831.8KB, 4186x1829px]"
+              },
+              {
+                "name": "render",
+                "passed": true,
+                "weight": 1,
+                "explanation": "out/resource-placement.png exists as expected",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 0.6666666666666666,
+        "passRate": 0,
+        "scoreWithout": 0.6666666666666666,
+        "passRateWithout": 0,
+        "delta": 0
+      }
+    },
+    {
+      "name": "vllm-v1-process-arch",
+      "dir": "evals/vllm-v1-process-arch",
+      "source": "mixed",
+      "promptMarkdown": "I want an architecture overview of how vLLM V1 is put together when it serves a model on one node with tensor parallelism and the multiprocess executor. The engine source, pinned at the commit in `PINNED.txt`, is in the read-only source directory available to this session. Draw one architecture diagram showing which OS processes exist, which components live in each process, and how the processes are connected (what transport, what travels over each link). This is about structure, not about the order of steps. Ground every element in the code. Save the finished diagram as a PNG image at `out/process-arch.png`.",
+      "runsPerCase": 1,
+      "timeoutSeconds": 1800,
+      "maxTurns": 60,
+      "graders": [
+        {
+          "name": "correctness",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "You are grading a diagram (the attached PNG) that is meant to explain the process and component architecture of vLLM V1 serving (single node, tensor parallel, multiprocess executor). Judge only what the picture shows. Do not credit anything you would have to infer from code that is not drawn. Exact identifiers are not required when the mechanism is drawn unambiguously.\n\nReference facts:\n\n1. **Frontend process holds AsyncLLM.** The serving frontend (the API server's process) holds `AsyncLLM`, the `EngineClient` that the HTTP layer calls.\n2. **Pre- and post-processing stay in the frontend.** Inside `AsyncLLM` sit the `InputProcessor` (tokenization / multimodal preprocessing) and the `OutputProcessor` (per-request incremental detokenizer and per-request output queues), so tokenization and detokenization run in the frontend process, not in the engine.\n3. **Engine-core client.** `AsyncLLM` reaches the engine through an `AsyncMPClient` (data-parallel variants exist) created by `EngineCoreClient.make_async_mp_client`.\n4. **ZMQ between frontend and engine core.** The client and the engine-core process are connected by ZMQ: requests go client ROUTER → engine DEALER, outputs come back engine PUSH → client PULL.\n5. **EngineCore is its own process with I/O threads.** `EngineCoreProc` runs in a separate process: an input thread moves socket messages into an input queue, an output thread moves the output queue onto the socket, and the main thread runs the busy loop.\n6. **EngineCore owns scheduler and executor.** The engine-core process owns the `Scheduler` (which holds the KV-cache manager), the structured-output manager, and the model executor; each step it schedules, calls the executor, and updates from the model output.\n7. **Multiprocess executor spawns one worker per GPU.** `MultiprocExecutor` starts one `WorkerProc` process per local GPU rank.\n8. **Shared-memory message queues to workers.** The executor broadcasts each `SchedulerOutput` / RPC to all workers over one shared-memory `MessageQueue` (`rpc_broadcast_mq`); each worker answers on its own `worker_response_mq`.\n9. **Worker → GPUModelRunner.** Each worker process holds a GPU `Worker` whose `GPUModelRunner` owns that rank's model shard and KV-cache tensors on its GPU.\n\nFor each fact, decide: SHOWN (drawn correctly), ABSENT (not drawn), or CONTRADICTED (drawn in a way that conflicts with the fact). Examples of a contradiction: tokenization or detokenization drawn inside the engine-core or worker processes; the scheduler drawn inside a GPU worker; workers talking to the frontend directly.\n\nPASS if at least 7 of the 9 facts are SHOWN and none is CONTRADICTED.\nFAIL otherwise. Begin your explanation by listing the SHOWN / ABSENT / CONTRADICTED verdict for each fact number.",
+          "config": {
+            "criteria": "You are grading a diagram (the attached PNG) that is meant to explain the process and component architecture of vLLM V1 serving (single node, tensor parallel, multiprocess executor). Judge only what the picture shows. Do not credit anything you would have to infer from code that is not drawn. Exact identifiers are not required when the mechanism is drawn unambiguously.\n\nReference facts:\n\n1. **Frontend process holds AsyncLLM.** The serving frontend (the API server's process) holds `AsyncLLM`, the `EngineClient` that the HTTP layer calls.\n2. **Pre- and post-processing stay in the frontend.** Inside `AsyncLLM` sit the `InputProcessor` (tokenization / multimodal preprocessing) and the `OutputProcessor` (per-request incremental detokenizer and per-request output queues), so tokenization and detokenization run in the frontend process, not in the engine.\n3. **Engine-core client.** `AsyncLLM` reaches the engine through an `AsyncMPClient` (data-parallel variants exist) created by `EngineCoreClient.make_async_mp_client`.\n4. **ZMQ between frontend and engine core.** The client and the engine-core process are connected by ZMQ: requests go client ROUTER → engine DEALER, outputs come back engine PUSH → client PULL.\n5. **EngineCore is its own process with I/O threads.** `EngineCoreProc` runs in a separate process: an input thread moves socket messages into an input queue, an output thread moves the output queue onto the socket, and the main thread runs the busy loop.\n6. **EngineCore owns scheduler and executor.** The engine-core process owns the `Scheduler` (which holds the KV-cache manager), the structured-output manager, and the model executor; each step it schedules, calls the executor, and updates from the model output.\n7. **Multiprocess executor spawns one worker per GPU.** `MultiprocExecutor` starts one `WorkerProc` process per local GPU rank.\n8. **Shared-memory message queues to workers.** The executor broadcasts each `SchedulerOutput` / RPC to all workers over one shared-memory `MessageQueue` (`rpc_broadcast_mq`); each worker answers on its own `worker_response_mq`.\n9. **Worker → GPUModelRunner.** Each worker process holds a GPU `Worker` whose `GPUModelRunner` owns that rank's model shard and KV-cache tensors on its GPU.\n\nFor each fact, decide: SHOWN (drawn correctly), ABSENT (not drawn), or CONTRADICTED (drawn in a way that conflicts with the fact). Examples of a contradiction: tokenization or detokenization drawn inside the engine-core or worker processes; the scheduler drawn inside a GPU worker; workers talking to the frontend directly.\n\nPASS if at least 7 of the 9 facts are SHOWN and none is CONTRADICTED.\nFAIL otherwise. Begin your explanation by listing the SHOWN / ABSENT / CONTRADICTED verdict for each fact number.",
+            "focus": {
+              "source": "file",
+              "path": "out/process-arch.png"
+            }
+          }
+        },
+        {
+          "name": "readability",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "You are grading the visual quality of a technical diagram (the attached PNG). Ignore whether its content is technically correct; grade only how readable it is.\n\nCheck each criterion:\n1. Every label is legible at 100% zoom: no text is truncated, clipped, or too small to read.\n2. No nodes overlap, and no labels overlap nodes, edges, or each other.\n3. There is one clear reading direction (top-to-bottom or left-to-right) that a reader can follow from start to end.\n4. Edges are distinguishable: a reader can trace each edge from its source to its target, and edges that mean different things (e.g. control flow vs. data handed off) are visually different or labeled.\n5. The visual grammar is consistent: shape and/or colour encode the role of a node (e.g. decision, action, data structure, queue), and the same role always looks the same.\n6. There are no orphan nodes (unconnected, without an obvious reason) and no purely decorative elements.\n\nPASS if criteria 1, 2 and 3 all hold and at most one of criteria 4–6 fails.\nFAIL otherwise. Begin your explanation by giving a pass/fail for each criterion number.",
+          "config": {
+            "criteria": "You are grading the visual quality of a technical diagram (the attached PNG). Ignore whether its content is technically correct; grade only how readable it is.\n\nCheck each criterion:\n1. Every label is legible at 100% zoom: no text is truncated, clipped, or too small to read.\n2. No nodes overlap, and no labels overlap nodes, edges, or each other.\n3. There is one clear reading direction (top-to-bottom or left-to-right) that a reader can follow from start to end.\n4. Edges are distinguishable: a reader can trace each edge from its source to its target, and edges that mean different things (e.g. control flow vs. data handed off) are visually different or labeled.\n5. The visual grammar is consistent: shape and/or colour encode the role of a node (e.g. decision, action, data structure, queue), and the same role always looks the same.\n6. There are no orphan nodes (unconnected, without an obvious reason) and no purely decorative elements.\n\nPASS if criteria 1, 2 and 3 all hold and at most one of criteria 4–6 fails.\nFAIL otherwise. Begin your explanation by giving a pass/fail for each criterion number.",
+            "focus": {
+              "source": "file",
+              "path": "out/process-arch.png"
+            }
+          }
+        },
+        {
+          "name": "render",
+          "type": "file_exists",
+          "weight": 1,
+          "config": {
+            "path": "out/process-arch.png",
+            "exists": true
+          }
+        },
+        {
+          "name": "skill-fired",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "Skill",
+            "input_match": "\"skill\"\\s*:\\s*\"(?:[\\w-]+:)?graphviz\""
+          }
+        },
+        {
+          "name": "skill-misrouted",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "Skill",
+            "input_match": "\"skill\"\\s*:\\s*\"(?:[\\w-]+:)?model-architecture\"",
+            "min": 0,
+            "max": 0,
+            "arm": "with-only"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 22,
+            "costUsd": 1.0292872000000002,
+            "judgeCostUsd": 0.14650800000000008,
+            "durationSeconds": 161,
+            "startedAt": "2026-10-01T06:18:50.796Z",
+            "error": null,
+            "tracePath": "/tmp/claude-eval-fucZng/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "correctness",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS (image)",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "[image shown to the judge: out/process-arch.png — sent as image/jpeg, 273.2KB, 2000x1430px; file on disk: image/png, 1.1MB, 4519x3232px]"
+              },
+              {
+                "name": "readability",
+                "passed": false,
+                "weight": 1,
+                "explanation": "judge votes: FAIL FAIL FAIL (image)",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  false,
+                  false,
+                  false
+                ],
+                "evidence": "[image shown to the judge: out/process-arch.png — sent as image/jpeg, 273.2KB, 2000x1430px; file on disk: image/png, 1.1MB, 4519x3232px]"
+              },
+              {
+                "name": "render",
+                "passed": true,
+                "weight": 1,
+                "explanation": "out/process-arch.png exists as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "skill-fired",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Skill called 1x (expected 1..∞)",
+                "withOnly": true,
+                "scored": false
+              },
+              {
+                "name": "skill-misrouted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Skill called 0x (expected 0..0)",
+                "withOnly": true,
+                "scored": false
+              }
+            ]
+          }
+        ],
+        "without": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 39,
+            "costUsd": 2.0375844,
+            "judgeCostUsd": 0.13684000000000007,
+            "durationSeconds": 404,
+            "startedAt": "2026-10-01T06:21:32.095Z",
+            "error": null,
+            "tracePath": "/tmp/claude-eval-MSgphe/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "correctness",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS (image)",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "[image shown to the judge: out/process-arch.png — sent as image/jpeg, 367KB, 2000x990px; file on disk: image/png, 610.6KB, 3960x1960px]"
+              },
+              {
+                "name": "readability",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS (image)",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "[image shown to the judge: out/process-arch.png — sent as image/jpeg, 367KB, 2000x990px; file on disk: image/png, 610.6KB, 3960x1960px]"
+              },
+              {
+                "name": "render",
+                "passed": true,
+                "weight": 1,
+                "explanation": "out/process-arch.png exists as expected",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 0.6666666666666666,
+        "passRate": 0,
+        "scoreWithout": 1,
+        "passRateWithout": 1,
+        "delta": -0.33333333333333337
+      }
+    }
+  ],
+  "aggregates": {
+    "casesTotal": 3,
+    "casesPassed": 3,
+    "overallScore": 0.6666666666666666,
+    "overallPassRate": 0,
+    "meanDelta": -0.11111111111111112
+  }
+}

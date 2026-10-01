@@ -1,0 +1,115 @@
+// verl PPO/GRPO resource placement on Ray -- grounded in verl @ fbb4b3a8 (see PINNED.txt)
+// Render: dot -Tpng -Gdpi=150 out/resource-placement.dot -o out/resource-placement.png
+digraph verl_placement {
+  graph [rankdir=TB, fontname="Helvetica", fontsize=13, newrank=true, nodesep=0.35, ranksep=0.55,
+         label=<<b>verl PPO/GRPO on Ray — resource pools, role mapping, colocation</b><br/><font point-size="10">verl @ fbb4b3a8 · trainer/main_ppo_v0.py · trainer/ppo/ray_trainer.py · single_controller/ray/base.py · checkpoint_engine/base.py</font>>,
+         labelloc=t, pad=0.3, compound=true];
+  node  [fontname="Helvetica", fontsize=10, shape=box, style="rounded,filled", fillcolor="#ffffff", color="#555555"];
+  edge  [fontname="Helvetica", fontsize=9, color="#444444"];
+
+  // ───────────────────────── Driver ─────────────────────────
+  subgraph cluster_driver {
+    label=<<b>Driver: TaskRunner</b> (@ray.remote actor, main_ppo_v0.py:136)<br/><font point-size="9">hosts RayPPOTrainer — "runs on the driver process" (ray_trainer.py:312)</font>>;
+    style="rounded,filled"; fillcolor="#eef3fb"; color="#3b6db3";
+
+    taskrunner [label=<<b>TaskRunner.run()</b><br/><font point-size="9">role_worker_mapping: Role → ray.remote(worker cls)<br/>mapping: Role → pool name<br/>(main_ppo_v0.py:30-121)</font>>];
+    rpm [label=<<b>ResourcePoolManager</b><br/><font point-size="9">resource_pool_spec + mapping<br/>max_colocate_count = 3<br/>create_resource_pool() (base.py:189-233)</font>>];
+    trainer [label=<<b>RayPPOTrainer.init_workers()</b><br/><font point-size="9">groups roles by pool → create_colocated_worker_cls<br/>→ RayWorkerGroup → spawn(prefix_set)<br/>(ray_trainer.py:772-981)</font>>];
+
+    wg_actor  [label=<<b>actor_rollout_wg</b><br/><font point-size="9">spawned view "actor_rollout(_ref)"</font>>, fillcolor="#fff6e0"];
+    wg_critic [label=<<b>critic_wg</b><br/><font point-size="9">spawned view "critic" (if need_critic)</font>>, fillcolor="#fff6e0"];
+    wg_ref    [label=<<b>ref_policy_wg</b><br/><font point-size="9">= actor_rollout_wg (ActorRolloutRef, or LoRA ref_in_actor)<br/>ray_trainer.py:893-907</font>>, fillcolor="#fff6e0", style="rounded,filled,dashed"];
+
+    llmsm   [label=<<b>LLMServerManager</b><br/><font point-size="9">.create(worker_group=actor_rollout_wg,<br/>rollout_resource_pool=actor pool)<br/>ray_trainer.py:951</font>>, fillcolor="#e8f6ec"];
+    alm     [label=<<b>AgentLoopManager</b><br/><font point-size="9">.create(llm_client, teacher_client,<br/>reward_loop_worker_handles)<br/>ray_trainer.py:960</font>>, fillcolor="#e8f6ec"];
+    rlm     [label=<<b>RewardLoopManager</b><br/><font point-size="9">rm_resource_pool = pool(RewardModel) if use_rm else None<br/>ray_trainer.py:915</font>>, fillcolor="#fdeaea"];
+    tmm     [label=<<b>MultiTeacherModelManager</b><br/><font point-size="9">resource_pool = pool(TeacherModel)<br/>(only if distillation enabled) ray_trainer.py:926</font>>, fillcolor="#f1eafb"];
+    cem     [label=<<b>CheckpointEngineManager</b><br/><font point-size="9">actor_wg = actor_rollout_wg<br/>replicas = llm_server_manager.get_replicas()<br/>ray_trainer.py:974 · checkpoint_engine/base.py:380</font>>, fillcolor="#fff0d9"];
+
+    taskrunner -> rpm [label="init_resource_pool_mgr"];
+    taskrunner -> trainer;
+    trainer -> wg_actor; trainer -> wg_critic; trainer -> wg_ref [style=dashed];
+    { rank=same; rpm; trainer; }
+    { rank=same; wg_actor; wg_critic; wg_ref; cem; }
+    { rank=same; llmsm; alm; rlm; tmm; }
+    wg_actor -> llmsm [style=invis]; wg_critic -> alm [style=invis]; cem -> rlm [style=invis]; cem -> tmm [style=invis];
+  }
+
+  // ───────────────────────── Ray cluster ─────────────────────────
+  subgraph cluster_ray {
+    label=<<b>Ray cluster</b> — each pool = one placement group per node; one bundle per GPU = {CPU: 3, GPU: 1}<br/><font point-size="9">every worker process requests num_gpus = 1 / max_colocate_count = 1/3 → up to 3 processes share a GPU (base.py:135-167, 637)</font>>;
+    style="rounded"; color="#888888";
+
+    // ---------- global_pool ----------
+    subgraph cluster_global {
+      label=<<b>global_pool</b> = [trainer.n_gpus_per_node] × trainer.nnodes<br/><font point-size="9">mapped roles: ActorRollout / ActorRolloutRef, Critic, (RewardModel if not enable_resource_pool)</font>>;
+      style="rounded,filled"; fillcolor="#fbf8ef"; color="#b38a3b"; penwidth=1.6;
+
+      subgraph cluster_gpu {
+        label=<<b>each GPU bundle (rank r)</b>  — repeated n_gpus_per_node × nnodes times>;
+        style="rounded,dashed"; color="#999999"; fillcolor="#ffffff";
+
+        subgraph cluster_workerdict {
+          label=<<b>WorkerDict</b> — ONE Ray actor process (create_colocated_worker_cls, base.py:1008)<br/><font point-size="9">all roles mapped to global_pool are instantiated inside it</font>>;
+          style="rounded,filled"; fillcolor="#fff6e0"; color="#c58a1a"; penwidth=1.6;
+          w_actor  [label=<<b>ActorRolloutRefWorker</b><br/><font point-size="9">actor (model engine) + rollout adapter<br/>+ reference policy (fused)<br/>+ checkpoint engine sender</font>>];
+          w_critic [label=<<b>TrainingWorker</b> (critic)<br/><font point-size="9">value model; only if need_critic<br/>(PPO/GAE yes; GRPO typically no)</font>>];
+        }
+
+        subgraph cluster_rollout {
+          label=<<b>Rollout replica worker</b> (hybrid engine — same GPU)>;
+          style="rounded,filled"; fillcolor="#e8f6ec"; color="#3a9a5b";
+          r_proc [label=<<b>inference engine WorkerProc</b><br/><font point-size="9">vLLM / SGLang server rank</font>>];
+          r_ce   [label=<<b>CheckpointEngineWorker</b><br/><font point-size="9">separate Ray actor, same GPU<br/>checkpoint_engine/base.py:304</font>>];
+        }
+        rm_colo [label=<<b>Reward-model server</b> (colocated case)<br/><font point-size="9">only if reward_model.enable and<br/>NOT enable_resource_pool</font>>, fillcolor="#fdeaea", style="rounded,filled,dashed"];
+      }
+    }
+
+    // ---------- reward_pool ----------
+    subgraph cluster_reward {
+      label=<<b>reward_pool</b> (optional)<br/><font point-size="9">= [reward_model.n_gpus_per_node] × reward_model.nnodes<br/>only if reward.reward_model.enable_resource_pool</font>>;
+      style="rounded,filled"; fillcolor="#fdf2f2"; color="#b34a4a"; penwidth=1.6;
+      rm_sep [label=<<b>Reward-model servers</b><br/><font point-size="9">Role.RewardModel → "reward_pool"<br/>(no WorkerGroup; mapping only)</font>>, fillcolor="#fdeaea"];
+    }
+
+    // ---------- teacher_pool ----------
+    subgraph cluster_teacher {
+      label=<<b>teacher_pool</b> (optional)<br/><font point-size="9">= [distillation.n_gpus_per_node] × distillation.nnodes<br/>only if distillation enabled</font>>;
+      style="rounded,filled"; fillcolor="#f7f2fd"; color="#7a4ab3"; penwidth=1.6;
+      teacher [label=<<b>Teacher-model servers</b><br/><font point-size="9">Role.TeacherModel → "teacher_pool"<br/>(no WorkerGroup; mapping only)</font>>, fillcolor="#f1eafb"];
+    }
+  }
+
+  rlw [label=<<b>reward_loop_workers</b><br/><font point-size="9">Ray actors owned by RewardLoopManager<br/>(placement defined outside pinned files)</font>>, fillcolor="#fdeaea"];
+
+  // ───────────── placement / ownership edges ─────────────
+
+  wg_actor  -> w_actor  [color="#c58a1a", penwidth=1.5, label="RPC (dispatch)"];
+  wg_critic -> w_critic [color="#c58a1a", penwidth=1.5];
+  wg_ref    -> w_actor  [color="#c58a1a", style=dashed];
+
+  llmsm -> r_proc [color="#3a9a5b", penwidth=1.5, label="launches replicas\non actor pool"];
+  alm   -> llmsm  [color="#3a9a5b", label="llm_client", constraint=false];
+  alm   -> r_proc [color="#3a9a5b", style=dashed, label="generate\nrequests"];
+  alm   -> rlw    [color="#b34a4a", label="reward_loop_worker_handles\n(if no RM, or RM in reward_pool)"];
+  alm   -> tmm    [color="#7a4ab3", label="teacher_client", constraint=false];
+
+  rlm -> rlw     [color="#b34a4a", penwidth=1.5, label="owns"];
+  rlw -> rm_sep  [color="#b34a4a", label="RM scoring"];
+  rlm -> rm_colo [color="#b34a4a", style=dashed, label="compute_rm_score\n(colocated RM)"];
+  tmm -> teacher [color="#7a4ab3", penwidth=1.5, label="servers on teacher_pool"];
+
+  // ───────────── weight sync ─────────────
+  cem -> wg_actor [color="#d08000", label="actor_wg", constraint=false];
+  cem -> r_ce     [color="#d08000", label="replicas' workers\n(temp RayWorkerGroup)"];
+  w_actor -> r_ce [color="#d08000", penwidth=2.2, label="weights: nccl / nixl / ...\n(backend='naive': in-process\nactor_wg.update_weights)"];
+  r_ce -> r_proc  [color="#d08000", penwidth=2.2, label="CUDA IPC"];
+
+  // layout: driver above cluster, reward loop between
+  llmsm -> rm_colo [style=invis]; rlm -> rlw [style=invis]; tmm -> teacher [style=invis];
+  // pool creation
+  rpm -> w_actor [constraint=false, style=dotted, color="#888888", lhead=cluster_global, label="placement groups"];
+  rpm -> rm_sep  [constraint=false, style=dotted, color="#888888", lhead=cluster_reward];
+  rpm -> teacher [constraint=false, style=dotted, color="#888888", lhead=cluster_teacher];
+}

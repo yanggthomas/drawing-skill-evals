@@ -1,0 +1,208 @@
+// verl PPO/GRPO resource placement on a Ray cluster
+// Source: volcengine/verl @ fbb4b3a8bf636f290c9c59fc346f756849e9c241
+// Render: dot -Tpng resource-placement.dot -o resource-placement.png
+
+digraph verl_resource_placement {
+
+  graph [
+    rankdir    = TB
+    bgcolor    = "white"
+    fontname   = "Helvetica"
+    pad        = "0.4"
+    nodesep    = 0.45
+    ranksep    = 0.7
+    splines    = true
+    compound   = true
+    newrank    = true
+    labelloc   = t
+    fontsize   = 20
+    label      = <<b>verl PPO / GRPO: Ray resource pools, role placement and service wiring</b><br/><font point-size="11">volcengine/verl @ fbb4b3a8 — main_ppo_v0.py · ray_trainer.py · single_controller/ray/base.py · checkpoint_engine/base.py</font><br/> >
+  ]
+
+  edge [color="#555555", fontname="Helvetica", fontsize=9]
+
+  node [
+    shape     = ellipse
+    style     = filled
+    fillcolor = "#E8F4FD"
+    fontname  = "Helvetica"
+    fontsize  = 11
+    color     = "#2E86AB"
+  ]
+
+  // ── Driver / single controller ──────────────────────────────────────────
+  launcher [
+    label     = "Driver script\n(calls TaskRunner.run(config);\nlauncher not in pinned files)"
+    fillcolor = "#F5F5F5", color = "#CCCCCC", style = "filled,dashed"
+  ]
+
+  subgraph cluster_driver {
+    label     = <<b>TaskRunner</b> — @ray.remote actor, no GPU bundle  (main_ppo_v0.py:136)>
+    style     = "rounded,filled"
+    fillcolor = "#FFF8F0"
+    color     = "#E76F51"
+    fontsize  = 12
+
+    taskrunner [
+      shape = box, style = "rounded,filled", fillcolor = "#E1BEE7", color = "#6A1B9A"
+      label = "Build placement config  (main_ppo_v0.py:30-121)\nrole_worker_mapping: Role → ray.remote(worker cls)\nmapping: Role → pool name"
+    ]
+    trainer [
+      shape = hexagon, fillcolor = "#F4A261", color = "#E76F51"
+      label = "RayPPOTrainer\n(single controller)\ninit_workers()  ray_trainer.py:772"
+    ]
+    rpm [
+      shape = box, style = "rounded,filled", fillcolor = "#E1BEE7", color = "#6A1B9A"
+      label = "ResourcePoolManager  (base.py:189)\none RayResourcePool per pool name\nmax_colocate_count = 3 (1 on TPU)"
+    ]
+    taskrunner -> rpm     [label=" resource_pool_spec\n + mapping"]
+    taskrunner -> trainer [label=" role_worker_mapping"]
+    rpm -> trainer        [label=" get_resource_pool(role)", style=dashed]
+  }
+
+  launcher -> taskrunner [lhead=cluster_driver, label=" .run(config)"]
+
+  // ── Control-plane managers created by init_workers() ───────────────────
+  subgraph cluster_managers {
+    label     = <<b>Managers created by init_workers()</b> — held by the trainer  (ray_trainer.py:909-981)>
+    style     = "rounded,dashed"
+    color     = "#D68A1A"
+    fontsize  = 12
+
+    ckptmgr [
+      shape = hexagon, fillcolor = "#F4D35E", color = "#D68A1A"
+      label = "CheckpointEngineManager\n(actor_wg, replicas)\nweight sync  ckpt_engine/base.py:380"
+    ]
+    llmsrv [
+      shape = hexagon, fillcolor = "#F4D35E", color = "#D68A1A"
+      label = "LLMServerManager\n.create(worker_group=actor_rollout_wg,\nrollout_resource_pool=global pool)"
+    ]
+    agentloop [
+      shape = hexagon, fillcolor = "#F4D35E", color = "#D68A1A"
+      label = "AgentLoopManager\n(= async_rollout_manager)\nhas llm_client, teacher_client,\nreward_loop_worker_handles"
+    ]
+    rewardmgr [
+      shape = hexagon, fillcolor = "#F4D35E", color = "#D68A1A"
+      label = "RewardLoopManager\n(rm_resource_pool = pool of\nRole.RewardModel, or None)"
+    ]
+    teachermgr [
+      shape = hexagon, fillcolor = "#F4D35E", color = "#D68A1A"
+      label = "MultiTeacherModelManager\n(only if distillation on)"
+    ]
+  }
+
+  trainer -> agentloop  [lhead=cluster_managers, label=" builds & holds", penwidth=1.4, color="#E76F51", weight=10]
+
+  // ── Ray cluster: resource pools ─────────────────────────────────────────
+  subgraph cluster_ray {
+    label     = <<b>Ray cluster</b> — each pool = one STRICT_PACK placement group per node; bundle per GPU = {GPU: 1, CPU: max_colocate_count}  (base.py:135-167)>
+    style     = "rounded"
+    color     = "#2E86AB"
+    fontsize  = 12
+
+    // global_pool
+    subgraph cluster_global {
+      label     = <<b>global_pool</b><br/>[trainer.n_gpus_per_node] × trainer.nnodes GPUs  (main_ppo_v0.py:70-73)>
+      style     = "rounded,filled"
+      fillcolor = "#EEF7FC"
+      color     = "#2E86AB"
+      fontsize  = 12
+
+      subgraph cluster_workerdict {
+        label     = <<b>WorkerDict process × 1 per GPU</b> (create_colocated_worker_cls, base.py:1008)<br/>all roles mapped to this pool share these processes; wg.spawn() gives one WorkerGroup view per role>
+        style     = "rounded,filled"
+        fillcolor = "#FFE9EC"
+        color     = "#B71C1C"
+        fontsize  = 11
+
+        actor_ref [
+          shape = folder, fillcolor = "#FFCDD2", color = "#B71C1C"
+          label = "ActorRolloutRefWorker\nrole = ActorRolloutRef (ref fused in)\nor ActorRollout (LoRA → ref = actor w/o adapter)\n= actor + rollout hybrid engine + reference\n→ actor_rollout_wg / ref_policy_wg"
+        ]
+        critic [
+          shape = folder, fillcolor = "#FFCDD2", color = "#B71C1C"
+          label = "TrainingWorker (value_model)\nrole = Critic — only if need_critic\n(PPO with GAE; not GRPO)\n→ critic_wg"
+        ]
+        ce_actor [
+          shape = box, style = "rounded,filled", fillcolor = "#E1BEE7", color = "#6A1B9A"
+          label = "checkpoint engine (sender)\nsame process as model engine"
+        ]
+        actor_ref -> ce_actor [style=dotted, arrowhead=none]
+      }
+
+      replicas [
+        shape = folder, fillcolor = "#FFCDD2", color = "#B71C1C"
+        label = "Rollout server replicas\n(vLLM / SGLang / ...)\non the same global_pool GPUs (hybrid engine)"
+      ]
+      ce_rollout [
+        shape = box, style = "rounded,filled", fillcolor = "#E1BEE7", color = "#6A1B9A"
+        label = "CheckpointEngineWorker × rollout rank\n(receiver; separate process,\nCUDA IPC into inference engine)"
+      ]
+      rm_coloc [
+        shape = cylinder, fillcolor = "#FFF2B2", color = "#B8860B"
+        label = "Reward model servers (colocated)\nRole.RewardModel → global_pool\nwhen reward_model.enable_resource_pool = false"
+      ]
+      ce_rollout -> replicas [label=" cuda ipc", color="#6A1B9A"]
+    }
+
+    // reward_pool
+    subgraph cluster_reward {
+      label     = <<b>reward_pool</b>  (optional)<br/>[reward_model.n_gpus_per_node] × reward_model.nnodes<br/>only if reward_model.enable_resource_pool  (main_ppo_v0.py:75-82)>
+      style     = "rounded,filled,dashed"
+      fillcolor = "#FFFBEA"
+      color     = "#B8860B"
+      fontsize  = 12
+
+      rm_sep [
+        shape = cylinder, fillcolor = "#FFF2B2", color = "#B8860B"
+        label = "Reward model servers\nRole.RewardModel → reward_pool\n(pool mapping only; no entry in\nrole_worker_mapping)"
+      ]
+    }
+
+    // teacher_pool
+    subgraph cluster_teacher {
+      label     = <<b>teacher_pool</b>  (optional)<br/>[distillation.n_gpus_per_node] × distillation.nnodes<br/>only if distillation enabled  (main_ppo_v0.py:87-95)>
+      style     = "rounded,filled,dashed"
+      fillcolor = "#FFFBEA"
+      color     = "#B8860B"
+      fontsize  = 12
+
+      teacher [
+        shape = cylinder, fillcolor = "#FFF2B2", color = "#B8860B"
+        label = "Teacher model servers\nRole.TeacherModel → teacher_pool\n(pool mapping only)"
+      ]
+    }
+  }
+
+  // ── Wiring: trainer ↔ worker groups ────────────────────────────────────
+  trainer -> actor_ref [label=" actor_rollout_wg\n ref_policy_wg", color="#E76F51", penwidth=1.4]
+  trainer -> critic    [label=" critic_wg", color="#E76F51", penwidth=1.4]
+
+  // ── Wiring: rollout servers ─────────────────────────────────────────────
+  llmsrv    -> replicas  [label=" creates replicas\n from actor_rollout_wg", color="#D68A1A"]
+  llmsrv    -> actor_ref [style=dashed, color="#D68A1A", label=" worker_group"]
+  agentloop -> llmsrv    [label=" llm_client", color="#D68A1A"]
+  agentloop -> replicas  [label=" generate requests", style=dashed, color="#D68A1A"]
+
+  // ── Wiring: reward loop ────────────────────────────────────────────────
+  rewardmgr -> rm_sep    [label=" rm_resource_pool", color="#D68A1A"]
+  rewardmgr -> rm_coloc  [label=" rm_resource_pool", color="#D68A1A", style=dashed]
+  agentloop -> rewardmgr [label=" reward_loop_worker_handles\n(streaming; only if no RM\n or RM in reward_pool)", color="#D68A1A"]
+  trainer   -> rewardmgr [label=" compute_rm_score()\n (RM colocated in global_pool)", style=dashed, color="#E76F51"]
+
+  // ── Wiring: teacher ─────────────────────────────────────────────────────
+  teachermgr -> teacher  [label=" resource_pool =\n teacher_pool", color="#D68A1A"]
+  agentloop  -> teachermgr [label=" teacher_client", color="#D68A1A"]
+
+  // ── Wiring: weight sync ─────────────────────────────────────────────────
+  ckptmgr  -> actor_ref  [xlabel="actor_wg (naive: in-process)", color="#D68A1A"]
+  ckptmgr  -> replicas   [label=" replicas = llm_server_manager\n .get_replicas()\n sleep / wake / abort", color="#D68A1A"]
+  ce_actor -> ce_rollout [label=" weights via NCCL / NIXL / ...\n (non-naive backends)", color="#6A1B9A", penwidth=1.6]
+
+  // layout hints
+  { rank=same; ckptmgr; llmsrv; agentloop; rewardmgr; teachermgr }
+  ckptmgr -> llmsrv -> agentloop -> rewardmgr -> teachermgr [style=invis]
+  { rank=same; actor_ref; critic; rm_coloc; rm_sep; teacher }
+  critic -> actor_ref [style=invis]
+  actor_ref -> rm_coloc -> rm_sep -> teacher [style=invis]
+}

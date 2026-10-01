@@ -1,0 +1,26 @@
+{
+  "questions": [
+    "driver 是什么、做什么",
+    "有哪些资源池、覆盖哪些 GPU",
+    "每个角色映射到哪个池",
+    "哪些角色共用同一批进程",
+    "rollout、reward、权重同步怎么接进来"
+  ],
+  "with": [
+    2,
+    2,
+    2,
+    2,
+    1
+  ],
+  "without": [
+    2,
+    2,
+    2,
+    2,
+    1
+  ],
+  "with_score": 4,
+  "without_score": 4,
+  "note": "两组都选了 Graphviz，图也很像：左上 driver、中间一排 manager、右下 Ray 集群里嵌套资源池。不带 skill 的图多了一层\"每个 GPU bundle\"的框，把 WorkerDict（actor + critic）和 rollout worker 放进同一个 bundle 里，\"同一张 GPU 上共存\"表达得更直接；带 skill 的图则用文字写明\"WorkerDict process × 1 per GPU\"，并把 rollout replicas 标成\"on the same global_pool GPUs\"。两张共同的问题是：manager 连到各个 pool 和 worker 的边又长又交叉，第 5 个子问题都要顺着线去找。内容打平。"
+}

@@ -16,9 +16,12 @@
 | G4 `redis-request-path` | 时序（跨线程请求生命周期） | 0.67 / 0.67 | +0.00 | 124 / 152 | 0.92 / 0.99 | 18 / 17 | ✅ | Graphviz / Graphviz |
 | M1 `megatron-tp-sp-mlp` | 模型内部（张量形状 + 通信） | 1.00 / 1.00 | +0.00 | 187 / 121 | 1.05 / 0.67 | 27 / 18 | ✅ | TikZ / Graphviz |
 | M2 `vllm-v1-mixed-batch-attn` | 模型内部（逐 token 元数据） | 0.67 / 1.00 | -0.33 | 329 / 284 | 1.67 / 1.57 | 32 / 25 | ✅ | TikZ / Pillow (逐个画形状) |
-| **合计 / 平均** | | **0.78 / 0.89** | **-0.11** | **1060 / 1395** | **6.87 / 7.05** | | | |
+| A1 `vllm-v1-process-arch` | 架构（进程与组件） | 0.67 / 1.00 | -0.33 | 136 / 370 | 0.88 / 1.90 | 22 / 39 | ✅ | Graphviz / Pillow (逐个画形状) |
+| A2 `verl-resource-placement` | 架构（资源池与放置） | 0.67 / 0.67 | +0.00 | 129 / 147 | 0.86 / 0.90 | 27 / 25 | ✅ | Graphviz / Graphviz |
+| A3 `megatron-parallel-groups` | 架构（rank 与并行组拓扑） | 0.67 / 0.67 | +0.00 | 188 / 174 | 1.02 / 0.80 | 20 / 15 | ✅ | Graphviz / Pillow (逐个画形状) |
+| **合计 / 平均** | | **0.74 / 0.85** | **-0.11** | **1514 / 2086** | **9.63 / 10.65** | | | |
 
-agent 花费合计 $13.92，评委花费合计 $2.16，总计 $16.07。
+agent 花费合计 $20.29，评委花费合计 $3.00，总计 $23.29。
 
 ## 一致性 / 可预测性
 
@@ -37,6 +40,8 @@ agent 花费合计 $13.92，评委花费合计 $2.16，总计 $16.07。
 |  | 不带 skill | 4 | 0.83 [0.67–1.00] | 0.67 | 4/4 | 2/4 | 248 (0.53) | 1.20 (0.77) | 0.52 | 4.3 (0.88) | – |
 | 模型内部（model-architecture 范围内） | 带 skill | 2 | 0.83 [0.67–1.00] | 0.67 | 2/2 | 1/2 | 258 (0.73) | 1.36 (0.77) | 0.43 | 4.7 (0.83) | 2/2 |
 |  | 不带 skill | 2 | 1.00 [1.00–1.00] | 1.00 | 2/2 | 2/2 | 203 (0.60) | 1.12 (0.60) | 0.42 | 4.7 (0.83) | – |
+| 架构（graphviz 范围内） | 带 skill | 3 | 0.67 [0.67–0.67] | 1.00 | 3/3 | 0/3 | 151 (0.83) | 0.92 (0.92) | 0.43 | 4.1 (0.92) | 3/3 |
+|  | 不带 skill | 3 | 0.78 [0.67–1.00] | 0.69 | 3/3 | 1/3 | 230 (0.57) | 1.20 (0.59) | 0.54 | 4.6 (0.79) | – |
 
 ## 内容可读性（Claude 逐子问题检查）
 
@@ -50,7 +55,10 @@ agent 花费合计 $13.92，评委花费合计 $2.16，总计 $16.07。
 | G4 | 时序（跨线程请求生命周期） | 10/10 / 10/10 | 4 / 5 |
 | M1 | 模型内部（张量形状 + 通信） | 6/6 / 6/6 | 5 / 4 |
 | M2 | 模型内部（逐 token 元数据） | 7/8 / 8/8 | 4 / 5 |
-| **合计 / 平均** | | **49/52 / 51/52** | **4.2 / 4.7** |
+| A1 | 架构（进程与组件） | 7/8 / 8/8 | 4 / 5 |
+| A2 | 架构（资源池与放置） | 9/10 / 9/10 | 4 / 4 |
+| A3 | 架构（rank 与并行组拓扑） | 10/10 / 10/10 | 4 / 5 |
+| **合计 / 平均** | | **75/80 / 78/80** | **4.1 / 4.7** |
 
 ## Claude 看图评分（1–5）
 
@@ -67,10 +75,13 @@ agent 花费合计 $13.92，评委花费合计 $2.16，总计 $16.07。
 | G4 | 5 / 5 | 3 / 4 | 4 / 3 | 4.0 / 4.0 |
 | M1 | 5 / 5 | 5 / 4 | 5 / 4 | 5.0 / 4.3 |
 | M2 | 5 / 5 | 4 / 5 | 4 / 5 | 4.3 / 5.0 |
+| A1 | 5 / 5 | 3 / 5 | 4 / 4 | 4.0 / 4.7 |
+| A2 | 5 / 5 | 3 / 3 | 4 / 4 | 4.0 / 4.0 |
+| A3 | 5 / 5 | 4 / 5 | 4 / 5 | 4.3 / 5.0 |
 
 ## 总体观察
 
-**一句话：** 前两轮测的大多是 **graphviz skill 设计范围之外的题**（流程/时序）。在这些题上 skill **没让评分更高**（readability 输了 1 个 case，平均 Δ = −0.11），但让 agent **更快、更省、风格更统一**。graphviz 的主场（架构图）放到第 3 轮 A1–A3 去测。
+**一句话：** 三轮共 9 个 case，skill 在 **correctness 上和不带 skill 一样（全部满分）**，**readability 和内容可读性上没有领先，连架构题这个 graphviz 的主场也一样**；但它在大多数 case 上让 agent **更快、更省、风格更统一**。可读性真正的瓶颈是 **Graphviz 自动布局遇到信息密集的图**：用 Graphviz 渲染的图 readability 只有 3/12 通过，手工排版（Pillow）的有 3/4 通过。
 
 1. **题型和 skill 不对口是主因。** graphviz skill 的模板、7 种语义节点（primary 系统、tool 存储、muted 外部依赖……）和自动布局，都是为了表达"由什么组成、怎么连接"。G1（单步算法）、G2（训练步骤顺序）、G4（跨线程请求生命周期）问的是"先做什么、后做什么、谁交给谁"，本质是流程图 / 时序图。SKILL.md 自己写着 "Not for UML sequence / activity"，但描述里的 "runtime data flow" 让这些题全部触发了它（4/4）。
    - 结果：带 skill 的图都被模板拉成"一条竖直主干 + 旁边分区"的拓扑布局，回边和跨组的边横穿全图。不带 skill 的组更自然地画成泳道、按步骤排的表格或横向流水线（G2、G3、G4），评委更喜欢。
@@ -89,21 +100,23 @@ agent 花费合计 $13.92，评委花费合计 $2.16，总计 $16.07。
    - graphviz 模板用颜色和形状表示**节点是什么角色**（系统、存储、外部依赖），这正好回答架构和依赖图要回答的问题："有什么、谁依赖谁"。但流程和时序题问的是"什么时候、由谁做"，角色配色帮不上忙，读者得自己把时间线拼出来。
    - 反例是 M1：带 skill 的图用底色划出 SP 区和 TP 区，空间编码正好对应题目问的"在哪里切分"，所以内容可读性反而更高（5 vs 4）。**编码方式和题目问的维度一致时，skill 就能加分。**
 
-**人工评价（用户看图后的判断）：** 流程类题目更适合画成时序图 / 泳道图。G3 FFmpeg 两组**打平**；G1、G2、G4 不带 skill 的泳道 / 表格画法**更清楚**。这和评委的结论**正好错开**：在 G1、G2、G4 上，评委的 readability 没有分出高下（G1、G4 两组都没通过，G2 两组都通过），而人工明确认为不带 skill 的泳道更清楚；在 G3 上，评委判不带 skill 的组完胜（3:0 对 0:3），人工却认为打平。可见在流程题上，评委的通过/不通过和人对版式的判断并不一致，人工打分不能省。这也支持 SKILL-IMPROVEMENTS.md 里 P0"先判断图的类型，再选模板"的建议。
+8. **第 3 轮：架构题（graphviz 的主场）也没有赢回 readability。** A1–A3 只问组成和连接：
+   - readability：带 skill 0/3，不带 skill 1/3（A1 通过）；平均得分 0.67 vs 0.78，Δ = −0.11。
+   - 内容可读性：带 skill 4.0，不带 skill 4.7。A2 两组都用 Graphviz，图几乎一样，打平；A1、A3 不带 skill 的组都改用 Pillow 手工排版（A1 三列从左到右、传输方式按颜色区分并配图例；A3 每个 rank 卡片里直接写组号），读法更直接。
+   - 效率：A1 带 skill 136 秒 / $0.88，不带 skill 370 秒 / $1.90，是所有 case 里 skill 省得最多的一次；A2 小幅领先；A3 小幅落后。
+   - 风格一致性：带 skill 0.43，**低于**不带 skill 的 0.54，和 G 类（0.67 vs 0.52）相反。A3 带 skill 的组用 Python 脚本生成 `.dot`，用了自己定义的配色，没有沿用 skill 模板的语义色板。可见"风格统一"只在 agent 直接套用模板时成立。
+9. **可读性的瓶颈在"自动布局 vs 手工排版"，而不只在 skill。** 按最终画图工具统计全部 18 次运行的 readability：Graphviz 3/12（带 skill 1/7，不带 skill 2/5）、Pillow 3/4、TikZ 1/2。
+   - Graphviz 的自动布局遇到 15 个以上信息密集的节点、再加跨 cluster 的边时，就容易出现横穿全图的长边和大片空白，两组都一样（A2 最明显）。
+   - skill 把 agent 固定在 Graphviz 上（7/7）。不带 skill 的 agent 在网格、表格、多列结构的题上（G2、M2、A1、A3）会自己改用 Pillow 手工排版。
+   - 样本很小，且 Pillow 的图通常还带图例和总结，所以这条只能当作趋势，不是定论。
+
+**人工评价（用户看图后的判断）：** graphviz 更适合架构和依赖图；流程类题目更适合画成时序图 / 泳道图。G3 FFmpeg 两组**打平**（两张图视角不同：带 skill 是以 Scheduler 为中心的结构 / 依赖图，不带 skill 是以线程为中心的流水线讲解图）；G1、G2、G4 不带 skill 的泳道 / 表格画法**更清楚**。这和评委的结论**正好错开**：在 G1、G2、G4 上，评委的 readability 没有分出高下（G1、G4 两组都没通过，G2 两组都通过），而人工明确认为不带 skill 的泳道更清楚；在 G3 上，评委判不带 skill 的组完胜（3:0 对 0:3），人工却认为打平。可见在流程题上，评委的通过/不通过和人对版式的判断并不一致，人工打分不能省。这也支持 SKILL-IMPROVEMENTS.md 里 P0"先判断图的类型，再选模板"的建议。
 
 **下一步：**
-- 第 3 轮跑 A1–A3 架构题（组件、进程、资源放置、rank 拓扑），看 graphviz skill 在主场上能不能把 readability 和内容可读性也赢回来。目前还缺一个纯**依赖图**题（例如模块或包之间的依赖关系），可以作为下一个补充 case。
+- 还缺一个纯**依赖图**题（例如模块或包之间的依赖关系），可以作为下一个补充 case。
 - skill 本身暂不修改（用户决定）；[SKILL-IMPROVEMENTS.md](SKILL-IMPROVEMENTS.md) 留作参考。
 
-**局限：** 每个 case 每组只跑了 1 次；G1 跑过三次，带 skill 组的 readability 结果就翻转过一次，看趋势比看单个数字更有意义。评委和看图评分都是模型给出的；人工美观打分（PLAN 第 9 步）还没做。前两轮总花费：冒烟 $3.18 + G1 正式 $2.12 + 第 2 轮 $13.95 = **$19.25**（含评委）。
-
-## 待跑的 case
-
-以下 case 已写好（源码、答案要点、评分器齐全），还没有运行结果：
-
-- A1 `vllm-v1-process-arch`：架构（进程与组件）（[答案要点](evals/vllm-v1-process-arch/answer-key.md)）
-- A2 `verl-resource-placement`：架构（资源池与放置）（[答案要点](evals/verl-resource-placement/answer-key.md)）
-- A3 `megatron-parallel-groups`：架构（rank 与并行组拓扑）（[答案要点](evals/megatron-parallel-groups/answer-key.md)）
+**局限：** 每个 case 每组只跑了 1 次；G1 跑过三次，带 skill 组的 readability 结果就翻转过一次，看趋势比看单个数字更有意义。评委和看图评分都是模型给出的；人工美观打分（PLAN 第 9 步）还没做。总花费：冒烟 $3.18 + G1 正式 $2.12 + 第 2 轮 $13.95 + 第 3 轮 $7.21 = **$26.46**（含评委）。
 
 ## skill 强化方案
 
@@ -540,4 +553,213 @@ agent 花费合计 $13.92，评委花费合计 $2.16，总计 $16.07。
   - 带 skill：四段式（输入 → 展平 → 写 → 读），排版像论文插图；但"写"那一段有十几条弯箭头从 token 指向 block，彼此交叉，整体字很小。评委 readability 0:3。
   - 不带 skill：0–6 共 7 个面板，每个请求固定一种颜色贯穿全图，`seq_lens` / `block_table` 用合并单元格表示，写入用"block 行 + 箭头注释"代替连线，更干净。评委 3:0。
 - **效率**：带 skill 329 秒 / $1.67 / 32 轮（本轮带 skill 中最慢）；不带 skill 284 秒 / $1.57 / 25 轮。两组都很贵，因为都在逐格排版。
+
+
+## A1 · `vllm-v1-process-arch`
+
+**题型：** 架构（进程与组件）  
+**代码库：** https://github.com/vllm-project/vllm @ `4c2d277643`（main）  
+**复制进来的源码：** `vllm/v1/engine/async_llm.py`, `vllm/v1/engine/core_client.py`, `vllm/v1/engine/core.py`, `vllm/v1/engine/input_processor.py`, `vllm/v1/engine/output_processor.py`, `vllm/v1/executor/multiproc_executor.py`, `vllm/v1/worker/gpu_worker.py`  
+**答案要点：** [evals/vllm-v1-process-arch/answer-key.md](evals/vllm-v1-process-arch/answer-key.md)（9 条，通过线 7/9）
+
+**Prompt：**
+
+> I want an architecture overview of how vLLM V1 is put together when it serves a model on one node with tensor parallelism and the multiprocess executor. The engine source, pinned at the commit in `PINNED.txt`, is in the read-only source directory available to this session. Draw one architecture diagram showing which OS processes exist, which components live in each process, and how the processes are connected (what transport, what travels over each link). This is about structure, not about the order of steps. Ground every element in the code. Save the finished diagram as a PNG image at `out/process-arch.png`.
+
+**答案要点标题：** 1. Frontend process holds AsyncLLM. · 2. Pre- and post-processing stay in the frontend. · 3. Engine-core client. · 4. ZMQ between frontend and engine core. · 5. EngineCore is its own process with I/O threads. · 6. EngineCore owns scheduler and executor. · 7. Multiprocess executor spawns one worker per GPU. · 8. Shared-memory message queues to workers. · 9. Worker → GPUModelRunner.
+
+### 评分
+
+| 评分器 | 带 skill | 不带 skill | 说明 |
+|---|---|---|---|
+| render | ✅ | ✅ | 生成了 PNG |
+| correctness | ✅ ✓✓✓ | ✅ ✓✓✓ | 答案要点至少 7/9 画对且无矛盾 |
+| readability | ❌ ✗✗✗ | ✅ ✓✓✓ | 可读性（文字、重叠、方向、连线、视觉语法、孤立节点） |
+| skill-fired | ✅ | – | 调用了应调用的 skill（只作指示） |
+| skill-misrouted | ✅ | – | 没有调用另一个 skill（只作指示） |
+
+### 运行数据（agent 部分不含评委）
+
+| | 带 skill | 不带 skill |
+|---|---|---|
+| 得分 | 0.67 | 1 |
+| agent 耗时 (s) | 136.3 | 369.7 |
+| agent API 耗时 (s) | 128.8 | 364.1 |
+| agent 花费 ($) | 0.883 | 1.901 |
+| 评委花费 ($) | 0.146 | 0.137 |
+| 轮数 | 22 | 39 |
+| 调用的 skill | drawing-skills:graphviz | 无 |
+| 最终画图路线 | Graphviz | Pillow (逐个画形状) |
+| 碰过的绘图工具（含只探测过的） | graphviz | matplotlib, graphviz, pillow |
+| 越界读文件 | 0 | 0 |
+| 错误 | 无 | 无 |
+
+### 内容可读性
+
+| 子问题 | 带 skill | 不带 skill |
+|---|---|---|
+| 有哪些 OS 进程 | 2 一眼可读 | 2 一眼可读 |
+| 每个进程里有哪些组件 | 2 一眼可读 | 2 一眼可读 |
+| 进程之间用什么传输 | 2 一眼可读 | 2 一眼可读 |
+| 每条链路上传的是什么 | 1 要找 | 2 一眼可读 |
+| **整体 (1–5)** | **4** | **5** |
+
+两张都把四类进程（前端、EngineCore、每张 GPU 一个 worker）和组件画全了。带 skill 的图（Graphviz）把前端放在右侧、EngineCore 居中、worker 在左下，读者要从右往左、再往下读；传输方式写在边上（ZMQ ROUTER→DEALER、shared memory），但每条链路传什么只有边上的小字；图 4519×3232，缩小后几乎看不清。不带 skill 的图（Pillow 手工排版）是三列从左到右：前端 → EngineCore → workers，进程框里嵌组件框，**连线按传输方式上色并配图例**（蓝 = ZMQ，橙 = 共享内存广播，绿 = 共享内存回复，紫 = NCCL），每条箭头旁写着传输内容。四个子问题都能直接读到。
+
+### 最终的图
+
+**带 skill**
+
+![vllm-v1-process-arch 带 skill](evals/vllm-v1-process-arch/artifacts/with-1/process-arch.png)
+
+**不带 skill**
+
+![vllm-v1-process-arch 不带 skill](evals/vllm-v1-process-arch/artifacts/without-1/process-arch.png)
+
+### 观察
+
+- **画图路线**：带 skill 用 Graphviz（graphviz skill）；不带 skill 写了 Pillow 脚本手工排版。
+- **评委**：带 skill 的 readability 0:3，不带 skill 3:0；correctness 两组 3:0。
+- **效率**：带 skill **136 秒 / $0.88** / 22 轮，不带 skill **370 秒 / $1.90** / 39 轮。这是所有 case 里 skill 省得最多的一次：时间和花费都约是不带 skill 的一半，不带 skill 的组在手工排版上反复调整。
+- **观察**：这是标准的架构图题，也是 graphviz 的主场，但 Graphviz 的自动布局把三个进程摆成了"右、中、左下"，主线不直；手工排版的三列布局更清楚。
+
+
+## A2 · `verl-resource-placement`
+
+**题型：** 架构（资源池与放置）  
+**代码库：** https://github.com/volcengine/verl @ `fbb4b3a8bf`（main）  
+**复制进来的源码：** `verl/trainer/main_ppo_v0.py`, `verl/trainer/ppo/ray_trainer.py`, `verl/single_controller/ray/base.py`, `verl/checkpoint_engine/base.py`  
+**答案要点：** [evals/verl-resource-placement/answer-key.md](evals/verl-resource-placement/answer-key.md)（9 条，通过线 7/9）
+
+**Prompt：**
+
+> I want an architecture overview of how verl lays out a PPO/GRPO job on a Ray cluster. The trainer source, pinned at the commit in `PINNED.txt`, is in the read-only source directory available to this session. Draw one architecture diagram showing the driver, the Ray resource pools and what GPUs they cover, which roles (actor, rollout, reference, critic, reward model, teacher) are mapped to which pool, which roles share the same worker processes, and how the rollout servers, the reward loop and the weight-sync component are connected to them. This is about structure and placement, not about the order of the training steps. Ground every element in the code. Save the finished diagram as a PNG image at `out/resource-placement.png`.
+
+**答案要点标题：** 1. Single controller on the driver. · 2. Resource pools. · 3. Pools are Ray placement groups. · 4. Role → pool mapping. · 5. Colocation: one process per GPU, several roles. · 6. Hybrid engine worker. · 7. Rollout servers on the actor's GPUs. · 8. Reward loop. · 9. Weight-sync component.
+
+### 评分
+
+| 评分器 | 带 skill | 不带 skill | 说明 |
+|---|---|---|---|
+| render | ✅ | ✅ | 生成了 PNG |
+| correctness | ✅ ✓✓✓ | ✅ ✓✓✓ | 答案要点至少 7/9 画对且无矛盾 |
+| readability | ❌ ✗✗✗ | ❌ ✗✗✗ | 可读性（文字、重叠、方向、连线、视觉语法、孤立节点） |
+| skill-fired | ✅ | – | 调用了应调用的 skill（只作指示） |
+| skill-misrouted | ✅ | – | 没有调用另一个 skill（只作指示） |
+
+### 运行数据（agent 部分不含评委）
+
+| | 带 skill | 不带 skill |
+|---|---|---|
+| 得分 | 0.67 | 0.67 |
+| agent 耗时 (s) | 129.3 | 146.9 |
+| agent API 耗时 (s) | 126.0 | 138.3 |
+| agent 花费 ($) | 0.859 | 0.903 |
+| 评委花费 ($) | 0.156 | 0.147 |
+| 轮数 | 27 | 25 |
+| 调用的 skill | drawing-skills:graphviz | 无 |
+| 最终画图路线 | Graphviz | Graphviz |
+| 碰过的绘图工具（含只探测过的） | graphviz | graphviz, matplotlib |
+| 越界读文件 | 0 | 0 |
+| 错误 | 无 | 无 |
+
+### 内容可读性
+
+| 子问题 | 带 skill | 不带 skill |
+|---|---|---|
+| driver 是什么、做什么 | 2 一眼可读 | 2 一眼可读 |
+| 有哪些资源池、覆盖哪些 GPU | 2 一眼可读 | 2 一眼可读 |
+| 每个角色映射到哪个池 | 2 一眼可读 | 2 一眼可读 |
+| 哪些角色共用同一批进程 | 2 一眼可读 | 2 一眼可读 |
+| rollout、reward、权重同步怎么接进来 | 1 要找 | 1 要找 |
+| **整体 (1–5)** | **4** | **4** |
+
+两组都选了 Graphviz，图也很像：左上 driver、中间一排 manager、右下 Ray 集群里嵌套资源池。不带 skill 的图多了一层"每个 GPU bundle"的框，把 WorkerDict（actor + critic）和 rollout worker 放进同一个 bundle 里，"同一张 GPU 上共存"表达得更直接；带 skill 的图则用文字写明"WorkerDict process × 1 per GPU"，并把 rollout replicas 标成"on the same global_pool GPUs"。两张共同的问题是：manager 连到各个 pool 和 worker 的边又长又交叉，第 5 个子问题都要顺着线去找。内容打平。
+
+### 最终的图
+
+**带 skill**
+
+![verl-resource-placement 带 skill](evals/verl-resource-placement/artifacts/with-1/resource-placement.png)
+
+**不带 skill**
+
+![verl-resource-placement 不带 skill](evals/verl-resource-placement/artifacts/without-1/resource-placement.png)
+
+### 观察
+
+- **画图路线**：两组都用 Graphviz。
+- **评委**：两组 readability 都是 0:3，correctness 都是 3:0。
+- **效率**：带 skill 129 秒 / $0.86 / 27 轮，不带 skill 147 秒 / $0.90 / 25 轮。
+- **观察**：同一种工具画出来的图，两组差别很小，共同的问题是自动布局下的长交叉边。说明在这道题上，限制可读性的是 Graphviz 的自动布局，而不是 skill。
+
+
+## A3 · `megatron-parallel-groups`
+
+**题型：** 架构（rank 与并行组拓扑）  
+**代码库：** https://github.com/NVIDIA/Megatron-LM @ `e998be072d`（main）  
+**复制进来的源码：** `megatron/core/parallel_state.py`  
+**答案要点：** [evals/megatron-parallel-groups/answer-key.md](evals/megatron-parallel-groups/answer-key.md)（8 条，通过线 6/8）
+
+**Prompt：**
+
+> I want an architecture view of how Megatron-Core lays out its process groups. The source, pinned at the commit in `PINNED.txt`, is in the read-only source directory available to this session. For 16 GPUs on 2 nodes (8 per node) with tensor-parallel size 2, pipeline-parallel size 4 and no context or expert parallelism, draw one diagram that shows every rank, which node it is on, and which tensor-parallel, pipeline-parallel, data-parallel and model-parallel group it belongs to, plus the embedding group. Make clear the rule that assigns ranks to groups. Ground every element in the code. Save the finished diagram as a PNG image at `out/parallel-groups.png`.
+
+**答案要点标题：** 1. Rank order and DP size. · 2. Rank formula. · 3. TP groups. · 4. DP groups. · 5. PP groups. · 6. Node placement. · 7. Model-parallel groups. · 8. Embedding group.
+
+### 评分
+
+| 评分器 | 带 skill | 不带 skill | 说明 |
+|---|---|---|---|
+| render | ✅ | ✅ | 生成了 PNG |
+| correctness | ✅ ✓✓✓ | ✅ ✓✓✓ | 答案要点至少 6/8 画对且无矛盾 |
+| readability | ❌ ✗✗✗ | ❌ ✗✗✗ | 可读性（文字、重叠、方向、连线、视觉语法、孤立节点） |
+| skill-fired | ✅ | – | 调用了应调用的 skill（只作指示） |
+| skill-misrouted | ✅ | – | 没有调用另一个 skill（只作指示） |
+
+### 运行数据（agent 部分不含评委）
+
+| | 带 skill | 不带 skill |
+|---|---|---|
+| 得分 | 0.67 | 0.67 |
+| agent 耗时 (s) | 187.9 | 173.7 |
+| agent API 耗时 (s) | 183.9 | 166.2 |
+| agent 花费 ($) | 1.023 | 0.801 |
+| 评委花费 ($) | 0.121 | 0.137 |
+| 轮数 | 20 | 15 |
+| 调用的 skill | drawing-skills:graphviz | 无 |
+| 最终画图路线 | Graphviz | Pillow (逐个画形状) |
+| 碰过的绘图工具（含只探测过的） | graphviz | matplotlib, pillow |
+| 越界读文件 | 0 | 0 |
+| 错误 | 无 | 无 |
+
+### 内容可读性
+
+| 子问题 | 带 skill | 不带 skill |
+|---|---|---|
+| 每个 rank 及所在节点 | 2 一眼可读 | 2 一眼可读 |
+| TP / PP / DP 组 | 2 一眼可读 | 2 一眼可读 |
+| MP 组 | 2 一眼可读 | 2 一眼可读 |
+| embedding 组 | 2 一眼可读 | 2 一眼可读 |
+| rank 到组的分配规则 | 2 一眼可读 | 2 一眼可读 |
+| **整体 (1–5)** | **4** | **5** |
+
+两张都是 4×4 的 rank 网格，五个子问题都答全了。带 skill 的图（Python 生成 .dot）用绿框表示 TP 组、竖向箭头表示 PP、填充色区分 MP、红边框标 embedding，右侧一张规则表；但 DP 组用金色虚线弧在网格上方来回绕，彼此交叠，要读每个 rank 框里的小字才能确认 DP 成员。不带 skill 的图（Pillow）每个 rank 卡片里用彩色标签直接写 TP/DP/PP/MP/EMB 编号，DP 用橙色括号连接，MP 用紫色竖带，左下角有"How to read the grid"图例，右侧按 ①–④ 讲尺寸、分配规则、结果和节点放置。读法更直接。
+
+### 最终的图
+
+**带 skill**
+
+![megatron-parallel-groups 带 skill](evals/megatron-parallel-groups/artifacts/with-1/parallel-groups.png)
+
+**不带 skill**
+
+![megatron-parallel-groups 不带 skill](evals/megatron-parallel-groups/artifacts/without-1/parallel-groups.png)
+
+### 观察
+
+- **画图路线**：带 skill 用 Python 脚本生成 `.dot` 再用 Graphviz 渲染；不带 skill 用 Pillow 手工画网格。
+- **评委**：两组 readability 都是 0:3（图里都是 16 个信息密集的小卡片），correctness 都是 3:0。
+- **效率**：带 skill 188 秒 / $1.02 / 20 轮，不带 skill 174 秒 / $0.80 / 15 轮。
+- **观察**：带 skill 的组用 Python 生成 `.dot`，这个做法很聪明，网格是算出来的，不会写错。但 DP 关系用弧线表示，在网格上方挤成一团；手工排版直接把编号写进卡片，读法更直接。
 

@@ -1,0 +1,26 @@
+{
+  "questions": [
+    "每个 rank 及所在节点",
+    "TP / PP / DP 组",
+    "MP 组",
+    "embedding 组",
+    "rank 到组的分配规则"
+  ],
+  "with": [
+    2,
+    2,
+    2,
+    2,
+    2
+  ],
+  "without": [
+    2,
+    2,
+    2,
+    2,
+    2
+  ],
+  "with_score": 4,
+  "without_score": 5,
+  "note": "两张都是 4×4 的 rank 网格，五个子问题都答全了。带 skill 的图（Python 生成 .dot）用绿框表示 TP 组、竖向箭头表示 PP、填充色区分 MP、红边框标 embedding，右侧一张规则表；但 DP 组用金色虚线弧在网格上方来回绕，彼此交叠，要读每个 rank 框里的小字才能确认 DP 成员。不带 skill 的图（Pillow）每个 rank 卡片里用彩色标签直接写 TP/DP/PP/MP/EMB 编号，DP 用橙色括号连接，MP 用紫色竖带，左下角有\"How to read the grid\"图例，右侧按 ①–④ 讲尺寸、分配规则、结果和节点放置。读法更直接。"
+}

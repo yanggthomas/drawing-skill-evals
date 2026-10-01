@@ -1,0 +1,150 @@
+// vLLM V1 — process architecture, single node, TP=N, MultiprocExecutor
+// Source: vllm @ 4c2d277643e2 (see PINNED.txt). Line refs are file:line in vllm/v1/.
+digraph vllm_v1_process_arch {
+  graph [
+    rankdir=TB bgcolor="white" fontname="Helvetica" pad="0.4"
+    nodesep=0.45 ranksep=0.75 splines=true compound=true newrank=true
+    label=<<b>vLLM V1 — OS processes on one node (tensor parallel = N, MultiprocExecutor)</b><br/><font point-size="10">Boxes = OS processes · nodes = components living in that process · edges = transport : payload · refs are file:line under vllm/v1/ at commit 4c2d2776</font>>
+    labelloc=t fontsize=18
+  ]
+  edge [color="#555555" fontname="Helvetica" fontsize=9]
+  node [shape=ellipse style=filled fillcolor="#E8F4FD" color="#2E86AB" fontname="Helvetica" fontsize=11]
+
+  // ───────────────────────── Process 1: frontend ─────────────────────────
+  subgraph cluster_frontend {
+    label=<<b>Process 1 — Frontend / API server</b><br/><font point-size="9">runs AsyncLLM on an asyncio event loop</font>>
+    style="rounded,filled" fillcolor="#FFF8F0" color="#E76F51" penwidth=2 fontsize=13
+
+    asyncllm [shape=hexagon fillcolor="#F4A261" color="#E76F51"
+      label="AsyncLLM\n(engine/async_llm.py:80)"]
+    inproc [label="InputProcessor + renderer\nprompt → EngineCoreRequest\n(async_llm.py:154-157)"]
+    outproc [label="OutputProcessor\ndetokenize, stop strings,\nper-request RequestOutputCollector\n(async_llm.py:167, 495)"]
+    outhandler [shape=box style="rounded,filled" fillcolor="#E1BEE7" color="#6A1B9A"
+      label="output_handler asyncio task\n(async_llm.py:874)"]
+    client [shape=hexagon fillcolor="#F4D35E" color="#D68A1A"
+      label="AsyncMPClient (MPClient)\nmsgpack encoder / decoder\n(core_client.py:562, 1086)"]
+    outtask [shape=box style="rounded,filled" fillcolor="#E1BEE7" color="#6A1B9A"
+      label="process_outputs_socket task\n→ outputs_queue (asyncio.Queue)\n(core_client.py:1111, 1151)"]
+    router [shape=cylinder fillcolor="#FFF2B2" color="#B8860B"
+      label="ZMQ ROUTER (bind)\ninput socket\n(core_client.py:654)"]
+    pull [shape=cylinder fillcolor="#FFF2B2" color="#B8860B"
+      label="ZMQ PULL (bind)\noutput socket\n(core_client.py:661)"]
+
+    asyncllm -> inproc [label="owns"]
+    asyncllm -> outproc [label="owns"]
+    asyncllm -> client [label="engine_core"]
+    asyncllm -> outhandler [label="starts"]
+    client -> router [label="send_multipart\n(ADD/ABORT/UTILITY)"]
+    pull -> outtask
+    outtask -> outhandler [label="get_output_async()"]
+    outhandler -> outproc [label="process_outputs()"]
+  }
+
+  // ───────────────────────── Process 2: EngineCore ─────────────────────────
+  subgraph cluster_core {
+    label=<<b>Process 2 — EngineCore (EngineCoreProc)</b><br/><font point-size="9">started by launch_core_engines (core_client.py:674); entry run_engine_core (core.py:1351)</font>>
+    style="rounded,filled" fillcolor="#FFFDF0" color="#D68A1A" penwidth=2 fontsize=13
+
+    in_thread [shape=box style="rounded,filled" fillcolor="#E1BEE7" color="#6A1B9A"
+      label="input IO thread\nprocess_input_sockets\nZMQ DEALER (connect) + msgpack decode\n(core.py:1178, 1757)"]
+    inq [shape=cylinder fillcolor="#FFF2B2" color="#B8860B" label="input_queue\nqueue.Queue\n(core.py:1107)"]
+    busy [shape=hexagon fillcolor="#F4D35E" color="#D68A1A"
+      label="main thread: run_busy_loop\nEngineCore.step()\n(core.py:1473, 630)"]
+    sched [label="Scheduler\n(+ KV cache manager)\n(core.py:168)"]
+    som [label="StructuredOutputManager\n(core.py:152)"]
+    executor [shape=hexagon fillcolor="#F4D35E" color="#D68A1A"
+      label="MultiprocExecutor\ncollective_rpc()\n(executor/multiproc_executor.py:111, 380)"]
+    monitor [shape=box style="rounded,filled" fillcolor="#E1BEE7" color="#6A1B9A"
+      label="MultiprocWorkerMonitor thread\nwaits on worker proc sentinels\n(multiproc_executor.py:298-328)"]
+    outq [shape=cylinder fillcolor="#FFF2B2" color="#B8860B" label="output_queue\nqueue.Queue\n(core.py:1108)"]
+    out_thread [shape=box style="rounded,filled" fillcolor="#E1BEE7" color="#6A1B9A"
+      label="output IO thread\nprocess_output_sockets\nmsgpack encode + ZMQ PUSH\n(core.py:1190, 1859)"]
+
+    in_thread -> inq [label="put_nowait"]
+    inq -> busy [label="_process_input_queue\n(core.py:1499)"]
+    busy -> sched [label="schedule() /\nupdate_from_output()"]
+    busy -> som
+    busy -> executor [label="execute_model /\nsample_tokens\n(core.py:641, 649)"]
+    busy -> outq [label="EngineCoreOutputs\n(core.py:1535)"]
+    outq -> out_thread
+    executor -> monitor [label="starts" style=dashed]
+  }
+
+  // ───────────────────────── Shared-memory message queues ─────────────────────────
+  bcast [shape=cylinder fillcolor="#FFF2B2" color="#B8860B" penwidth=2
+    label="rpc_broadcast_mq\nshm_broadcast.MessageQueue\n1 writer (executor) → N readers (workers)\n(multiproc_executor.py:164)"]
+  respmq [shape=cylinder fillcolor="#FFF2B2" color="#B8860B" penwidth=2
+    label="worker_response_mq × N\nMessageQueue(1, 1) per worker\n1 writer (worker) → 1 reader (executor)\n(multiproc_executor.py:619, 766)"]
+
+  // ───────────────────────── Processes 3..N+2: workers ─────────────────────────
+  subgraph cluster_w0 {
+    label=<<b>Process 3 — VllmWorker-0</b><br/><font point-size="9">TP rank 0 = output_rank (multiproc_executor.py:543)</font>>
+    style="rounded,filled" fillcolor="#FFF5F5" color="#B71C1C" penwidth=2 fontsize=13
+    wp0 [shape=folder fillcolor="#FFCDD2" color="#B71C1C"
+      label="WorkerProc\nworker_busy_loop (main thread)\n(multiproc_executor.py:602, 1032)"]
+    w0 [label="gpu_worker.Worker\ninit_device / load_model\n(worker/gpu_worker.py:187)"]
+    mr0 [label="GPUModelRunner\nmodel shard + KV cache\n(gpu_worker.py:536)"]
+    th0 [shape=box style="rounded,filled" fillcolor="#E1BEE7" color="#6A1B9A"
+      label="death-pipe monitor thread\n+ WorkerAsyncOutputCopy thread\n(if async scheduling)\n(multiproc_executor.py:829, 688)"]
+    wp0 -> w0 [label="getattr(worker, method)"]
+    wp0 -> th0 [style=invis]
+    w0 -> mr0
+  }
+
+
+  subgraph cluster_wn {
+    label=<<b>Processes 4 … N+2 — VllmWorker-1 … VllmWorker-(N-1)</b><br/><font point-size="9">one process per local TP rank (multiproc_executor.py:189)</font><br/><font point-size="9">same components; executes every RPC, replies only when output_rank is None</font>>
+    style="rounded,filled" fillcolor="#FFF5F5" color="#B71C1C" penwidth=2 fontsize=13
+    wpn [shape=folder fillcolor="#FFCDD2" color="#B71C1C"
+      label="WorkerProc\nworker_busy_loop"]
+    wn [label="gpu_worker.Worker"]
+    mrn [label="GPUModelRunner\nmodel shard + KV cache"]
+    thn [shape=box style="rounded,filled" fillcolor="#E1BEE7" color="#6A1B9A"
+      label="death-pipe monitor thread\n+ WorkerAsyncOutputCopy thread"]
+    wpn -> wn
+    wn -> mrn
+    wpn -> thn [style=invis]
+  }
+
+  gpu0 [shape=box3d style=filled fillcolor="#F5F5F5" color="#999999" label="GPU 0"]
+  gpun [shape=box3d style=filled fillcolor="#F5F5F5" color="#999999" label="GPU N-1"]
+  mr0 -> gpu0 [label="set_device_index\n(gpu_worker.py:483)" style=dashed color="#999999"]
+  mrn -> gpun [style=dashed color="#999999"]
+
+  // ───────────────────────── Inter-process links ─────────────────────────
+  // Frontend <-> EngineCore : ZMQ
+  router -> in_thread [color="#2E86AB" penwidth=2.2 fontcolor="#1B5E7A"
+    label=<<b>ZMQ ROUTER→DEALER</b> (ipc:// or tcp://)<br/>msgpack EngineCoreRequest<br/>ADD · ABORT · UTILITY calls>]
+  out_thread -> pull [color="#2E86AB" penwidth=2.2 fontcolor="#1B5E7A"
+    label=<<b>ZMQ PUSH→PULL</b><br/>msgpack EngineCoreOutputs<br/>(new tokens, finish reasons,<br/>utility results, scheduler stats)>]
+
+  // EngineCore <-> workers : shared memory
+  executor -> bcast [color="#6A1B9A" penwidth=2.2 fontcolor="#6A1B9A"
+    label=<<b>shared memory</b> enqueue<br/>(method, args, kwargs, output_rank)<br/>e.g. SchedulerOutput, GrammarOutput>]
+  bcast -> wp0 [color="#6A1B9A" penwidth=2.2 label="dequeue"]
+  bcast -> wpn [color="#6A1B9A" penwidth=2.2 label="dequeue"]
+  wp0 -> respmq [color="#6A1B9A" penwidth=2.2 fontcolor="#6A1B9A"
+    label=<(status, result)<br/>ModelRunnerOutput>]
+  wpn -> respmq [color="#6A1B9A" penwidth=1.2 style=dashed
+    label="only for RPCs that\nwant all ranks' replies"]
+  respmq -> executor [color="#6A1B9A" penwidth=2.2 fontcolor="#6A1B9A"
+    label=<<b>shared memory</b> dequeue<br/>(multiproc_executor.py:430)>]
+
+  // Workers <-> workers : torch.distributed
+  mr0 -> mrn [dir=both color="#B71C1C" penwidth=2.4 fontcolor="#B71C1C" constraint=false
+    label=<<b>NCCL / custom all-reduce</b><br/>TP collectives on activations<br/>(init_worker_distributed_environment,<br/>gpu_worker.py:1586)>]
+
+  // Lifecycle / control links : multiprocessing Pipes
+  executor -> wp0 [style=dashed color="#888888" fontcolor="#666666" constraint=false
+    label="spawns via get_mp_context().Process\n(multiproc_executor.py:739)\nmp.Pipe ×2: ready_pipe (READY + response_mq handle)\ndeath_pipe (EOF ⇒ worker shuts down)\n(multiproc_executor.py:719-721)"]
+  executor -> wpn [style=dashed color="#888888" constraint=false]
+
+  // Process creation (ownership)
+  client -> in_thread [style=dotted color="#E76F51" arrowhead=empty constraint=false fontcolor="#E76F51" lhead=cluster_core
+    label="spawns process\n(launch_core_engines)"]
+
+  // Layout hints
+  { rank=same; bcast; respmq }
+  { rank=same; wp0; wpn }
+  { rank=same; gpu0; gpun }
+}

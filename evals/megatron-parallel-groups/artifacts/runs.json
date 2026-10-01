@@ -1,0 +1,51 @@
+[
+  {
+    "arm": "with",
+    "run": 1,
+    "score": 0.6666666666666666,
+    "error": null,
+    "judge_cost_usd": 0.1211,
+    "skills": [
+      "drawing-skills:graphviz"
+    ],
+    "routes": [
+      "graphviz"
+    ],
+    "written": [
+      "/tmp/claude-eval-gXZPbK/home/cwd/out/gen_parallel_groups.py"
+    ],
+    "leaks": [],
+    "agent_seconds": 187.9,
+    "agent_api_seconds": 183.9,
+    "agent_cost_usd": 1.0232,
+    "agent_turns": 20,
+    "artifacts": [
+      "gen_parallel_groups.py",
+      "parallel-groups.dot",
+      "parallel-groups.png",
+      "trace.jsonl.gz"
+    ]
+  },
+  {
+    "arm": "without",
+    "run": 1,
+    "score": 0.6666666666666666,
+    "error": null,
+    "judge_cost_usd": 0.1373,
+    "skills": [],
+    "routes": [
+      "matplotlib",
+      "pillow"
+    ],
+    "written": [],
+    "leaks": [],
+    "agent_seconds": 173.7,
+    "agent_api_seconds": 166.2,
+    "agent_cost_usd": 0.8007,
+    "agent_turns": 15,
+    "artifacts": [
+      "parallel-groups.png",
+      "trace.jsonl.gz"
+    ]
+  }
+]
