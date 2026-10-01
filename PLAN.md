@@ -13,10 +13,10 @@ Measure whether the two diagram skills in `skills/` (`graphviz`, `model-architec
 | Harness | `claude plugin eval` | Built-in with/without-plugin ablation, isolated runs, image-capable LLM judge |
 | Agent model | `opus` | The user's daily model; the delta should reflect daily use |
 | Judge model | `opus` | User's choice. Self-preference bias inflates both arms roughly equally; read the delta, not the absolute score |
-| Runs per arm | `5` | With one case, 3 runs gives 33-point score steps; 5 reduces noise |
+| Runs per arm | `1` | User's choice (cost). Results are one sample per arm: report them as such, not as a stable Δ |
 | Round 1 scope | Case G1 only | User's choice; other cases are documented in §4 as backlog |
 | Plugin contents | Both skills | Also tests that the agent routes a scheduling-flow question to `graphviz`, not `model-architecture` |
-| Budget | Cloud session credit ($100, expires 2026-11-05); `--max-cost-usd 60` on the full run | Leaves margin for authoring work in the same session |
+| Budget | Cloud session credit ($100, expires 2026-11-05); `--max-cost-usd 10` on the full run (one run per arm, about $2.5 incl. judges) | Leaves margin for authoring work in the same session |
 | Branch | `g1-vllm-schedule` | Never push to `main` |
 
 ## 3. Harness facts the design depends on
@@ -67,7 +67,7 @@ evals/vllm-v1-schedule/
 ### 5.2 prompt.md frontmatter
 
 ```yaml
-runs: 5
+runs: 1
 max_turns: 60
 timeout_seconds: 1800
 allowed_tools: [Read, Glob, Grep, Skill, Write, Bash]
@@ -117,7 +117,7 @@ Work on branch `g1-vllm-schedule`. Commit after each step.
    claude plugin eval . --case vllm-v1-schedule \
      --model opus --judge-model opus \
      --allow-tools Write Bash \
-     --trust-plugin --keep-temp --max-cost-usd 60 --threshold 0 \
+     --trust-plugin --keep-temp --max-cost-usd 10 --threshold 0 \
      --json evals/vllm-v1-schedule/results.json --publish-report
    ```
 8. **Collect.** Run `python3 scripts/collect.py`: it copies each run's `out/` into `evals/vllm-v1-schedule/artifacts/{with,without}-<n>/` and writes `artifacts/runs.json` (route taken, programs run, leaks). Commit `results.json` and `artifacts/`, push the branch, then delete the kept temp dirs.
