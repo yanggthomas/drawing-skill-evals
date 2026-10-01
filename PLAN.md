@@ -121,7 +121,8 @@ Work on branch `g1-vllm-schedule`. Commit after each step.
      --json evals/vllm-v1-schedule/results.json --publish-report
    ```
 8. **Collect.** Run `python3 scripts/collect.py`: it copies each run's `out/` into `evals/vllm-v1-schedule/artifacts/{with,without}-<n>/` and writes `artifacts/runs.json` (route taken, programs run, leaks). Commit `results.json` and `artifacts/`, push the branch, then delete the kept temp dirs.
-9. **Report.** Give: suite score per arm and Δ; per-grader pass rates per arm; whether the skill fired in each with-arm run; which drawing route each run took; any leak flagged by `collect.py`; the judges' main reasons for failures; total cost estimate; the published report URL. Then **STOP**.
+9. **Human aesthetics rating.** Aesthetics (palette, contrast, polish) is not an automated grader; the user rates it by hand. Present the PNGs from `artifacts/` blind: shuffled, with arm labels hidden, and reveal the arm mapping only after the ratings are recorded.
+10. **Report.** Give: suite score per arm and Δ; per-grader pass rates per arm; whether the skill fired in each with-arm run; which drawing route each run took; any leak flagged by `collect.py`; the judges' main reasons for failures; total cost estimate; the published report URL. Then **STOP**.
 
 ## 7. Known unknowns (resolve in steps 1, 5, 6)
 
