@@ -2,8 +2,8 @@
 
 For every run in the results JSON this script:
   - copies the run's workspace `out/` files to <CASE_DIR>/artifacts/<arm>-<n>/
-  - records which drawing route the agent took (skills invoked, programs run via
-    Bash, files written)
+  - records which drawing route the agent took (skills invoked, drawing tools
+    used via Bash or written files)
   - flags reads of files outside the vendored `src/` that would leak the skill or
     the answer key into a run (checked post hoc, not as a grader, so it does not
     change either arm's score)
@@ -41,14 +41,22 @@ def iter_tool_uses(trace_path):
                 yield block["name"], block.get("input") or {}
 
 
-def programs_in(command):
-    """First word of each simple command in a shell line, e.g. 'cd x && dot -T' -> cd, dot."""
-    progs = []
-    for part in re.split(r"&&|\|\||;|\||\n", command):
-        words = [w for w in part.strip().split() if "=" not in w.split("/")[0]]
-        if words:
-            progs.append(Path(words[0]).name)
-    return progs
+# Drawing routes the agent touched (used or just probed, e.g. checking that
+# matplotlib is installed), detected by keyword anywhere in a Bash command or written file
+# (heredoc bodies included, so `python3 - <<EOF import matplotlib` counts).
+ROUTES = {
+    "graphviz": r"\b(dot|neato|fdp|sfdp|circo|twopi)\b\s+-T|\.dot\b|\bgraphviz\b",
+    "mermaid": r"\bmmdc\b|\.mmd\b|mermaid",
+    "tikz/latex": r"\b(pdflatex|xelatex|lualatex|latexmk)\b|tikzpicture",
+    "matplotlib": r"\bmatplotlib\b",
+    "pillow": r"\bfrom PIL\b|\bimport PIL\b",
+    "svg": r"<svg\b|\.svg\b",
+    "image-model/network": r"\b(curl|wget|diffusers|openai|stability|replicate|dall-?e|imagen|gpt-image)\b",
+}
+
+
+def routes_in(text):
+    return [name for name, pat in ROUTES.items() if re.search(pat, text, re.I)]
 
 
 def is_leak(arm, text):
@@ -66,7 +74,7 @@ def is_leak(arm, text):
 def summarize_run(arm, n, run):
     trace = Path(run["tracePath"])
     info = {"arm": arm, "run": n, "score": run.get("score"), "error": run.get("error"),
-            "skills": [], "programs": [], "written": [], "leaks": []}
+            "skills": [], "routes": [], "written": [], "leaks": []}
     if not trace.exists():
         info["error"] = (info["error"] or "") + f" [trace missing: {trace}]"
         return info
@@ -74,10 +82,11 @@ def summarize_run(arm, n, run):
     for name, inp in iter_tool_uses(trace):
         if name == "Skill":
             info["skills"].append(inp.get("skill"))
-        elif name == "Bash":
-            info["programs"] += [p for p in programs_in(inp.get("command", "")) if p not in info["programs"]]
-        elif name == "Write":
-            info["written"].append(inp.get("file_path"))
+        elif name in ("Bash", "Write"):
+            if name == "Write":
+                info["written"].append(inp.get("file_path"))
+            body = inp.get("command", "") + inp.get("file_path", "") + inp.get("content", "")
+            info["routes"] += [r for r in routes_in(body) if r not in info["routes"]]
         text = json.dumps(inp)
         if is_leak(arm, text):
             info["leaks"].append(f"{name}: {text[:200]}")
@@ -108,7 +117,7 @@ def main():
     (CASE_DIR / "artifacts" / "runs.json").write_text(json.dumps(runs, indent=2))
     for r in runs:
         print(f"{r['arm']:>7}-{r['run']}  score={r['score']}  skills={r['skills']}  "
-              f"programs={r['programs']}  artifacts={r['artifacts']}  leaks={len(r['leaks'])}")
+              f"routes={r['routes']}  artifacts={r['artifacts']}  leaks={len(r['leaks'])}")
         for leak in r["leaks"]:
             print("          LEAK", leak)
 
