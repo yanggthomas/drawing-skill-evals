@@ -1,7 +1,7 @@
 """Collect per-run artifacts and trace facts from a `claude plugin eval --keep-temp` run.
 
 For every case and run in the results JSON this script:
-  - copies the run's workspace `out/` files to <case dir>/artifacts/<arm>-<n>/
+  - copies the run's workspace `out/` files to <run dir>/cases/<name>/artifacts/<arm>-<n>/
   - records which drawing route the agent took (skills invoked, drawing tools
     used via Bash or written files)
   - reads agent-only time, cost and turns from the trace's final `result` record
@@ -10,8 +10,8 @@ For every case and run in the results JSON this script:
   - flags reads of files outside the vendored `src/` that would leak the skill or
     the answer key into a run (checked post hoc, not as a grader, so it does not
     change either arm's score)
-and writes per-run facts to <case dir>/artifacts/runs.json plus per-arm stats to
-<case dir>/artifacts/summary.json, then prints one table for the whole suite.
+and writes per-run facts to <run dir>/cases/<name>/artifacts/runs.json plus per-arm stats to
+<run dir>/cases/<name>/artifacts/summary.json, then prints one table for the whole suite.
 
 Reads the kept workspaces as data only: nothing inside them is executed.
 """
@@ -23,7 +23,8 @@ import shutil
 import statistics
 from pathlib import Path
 
-RESULTS_JSON = Path("evals/results.json")  # the --json file of the run to collect
+RUN_DIR = Path("runs/2026-10-01-skill-v0.1.0")      # archive for this run
+RESULTS_JSON = RUN_DIR / "results" / "round3-arch.json"  # the --json file of the run to collect
 OUT_SUBDIR = "out"  # where the prompt asks the agent to save its diagram
 
 REPO_ROOT = "/home/user/drawing-skill-evals"
@@ -120,7 +121,7 @@ def summarize_run(case_dir, arm, n, run):
 
     # Workspace layout: <tmp>/out/trace.jsonl and <tmp>/home/cwd/<agent files>.
     out_dir = trace.parent.parent / "home" / "cwd" / OUT_SUBDIR
-    dest = case_dir / "artifacts" / f"{arm}-{n}"
+    dest = RUN_DIR / "cases" / case_dir.name / "artifacts" / f"{arm}-{n}"
     if out_dir.is_dir():
         dest.mkdir(parents=True, exist_ok=True)
         for f in out_dir.iterdir():
@@ -162,9 +163,10 @@ def main():
         runs = [summarize_run(case_dir, arm, n, run)
                 for arm, arm_runs in case["arms"].items()
                 for n, run in enumerate(arm_runs, start=1)]
-        (case_dir / "artifacts").mkdir(parents=True, exist_ok=True)
-        (case_dir / "artifacts" / "runs.json").write_text(json.dumps(runs, indent=2))
-        (case_dir / "artifacts" / "summary.json").write_text(json.dumps(arm_stats(runs), indent=2))
+        out = RUN_DIR / "cases" / case_dir.name / "artifacts"
+        out.mkdir(parents=True, exist_ok=True)
+        (out / "runs.json").write_text(json.dumps(runs, indent=2))
+        (out / "summary.json").write_text(json.dumps(arm_stats(runs), indent=2))
         for r in runs:
             score = f"{r['score']:.2f}" if r["score"] is not None else "-"
             print(f"{case['name']:<26} {r['arm']}-{r['run']:<6} {score:>5} "

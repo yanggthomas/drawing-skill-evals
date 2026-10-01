@@ -1,0 +1,691 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Eval report — drawing-skills v0.1.0</title>
+</head>
+<body>
+<style>
+:root{--plane:#f9f9f7;--surface:#fcfcfb;--ink:#0b0b0b;--ink-2:#52514e;--ink-3:#6b6a64;--hairline:rgba(11,11,11,.10);--grid:#e1e0d9;--inset:rgba(11,11,11,.04);--accent:#2a78d6;--base-fill:#6b6a64;--delta-good:#006300;--good:#067d06;--warning:#8a6100;--critical:#d03b3b;
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){:root{--plane:#0d0d0d;--surface:#1a1a19;--ink:#ffffff;--ink-2:#c3c2b7;--ink-3:#898781;--hairline:rgba(255,255,255,.10);--grid:#2c2c2a;--inset:rgba(255,255,255,.05);--accent:#3987e5;--base-fill:#898781;--delta-good:#0ca30c;--good:#0ca30c;--warning:#fab219;--critical:#e06c6c;color-scheme:dark}}
+:root[data-theme="dark"]{--plane:#0d0d0d;--surface:#1a1a19;--ink:#ffffff;--ink-2:#c3c2b7;--ink-3:#898781;--hairline:rgba(255,255,255,.10);--grid:#2c2c2a;--inset:rgba(255,255,255,.05);--accent:#3987e5;--base-fill:#898781;--delta-good:#0ca30c;--good:#0ca30c;--warning:#fab219;--critical:#e06c6c;color-scheme:dark}
+:root[data-theme="light"]{--plane:#f9f9f7;--surface:#fcfcfb;--ink:#0b0b0b;--ink-2:#52514e;--ink-3:#6b6a64;--hairline:rgba(11,11,11,.10);--grid:#e1e0d9;--inset:rgba(11,11,11,.04);--accent:#2a78d6;--base-fill:#6b6a64;--delta-good:#006300;--good:#067d06;--warning:#8a6100;--critical:#d03b3b;color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;background:var(--plane);color:var(--ink);
+  font:14px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;
+  -webkit-text-size-adjust:100%}
+.wrap{max-width:880px;margin:0 auto;padding:40px 24px 64px;display:flex;flex-direction:column;gap:20px}
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+header h1{margin:2px 0 0;font-size:24px;font-weight:600;line-height:1.25;text-wrap:balance}
+.meta{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px;color:var(--ink-2);font-size:13px}
+.meta .num{font-variant-numeric:tabular-nums lining-nums}
+.banner{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:8px;
+  border:1px solid var(--hairline);background:var(--surface);font-size:13px}
+.banner .chip-warn{color:var(--warning);font-weight:600}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.tile{background:var(--surface);border:1px solid var(--hairline);border-radius:10px;padding:14px 16px;
+  display:flex;flex-direction:column;gap:4px}
+.tile .label{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+.tile .value{font-size:26px;font-weight:600;font-variant-numeric:tabular-nums lining-nums;line-height:1.1}
+.tile.hero .value{font-family:Georgia,"Times New Roman",serif;font-weight:400;font-size:48px}
+.tile .sub{font-size:12px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.tile .value.delta-pos{color:var(--delta-good)}
+.tile .value.delta-neg{color:var(--critical)}
+.toolbar{display:flex;gap:8px;justify-content:flex-end}
+.toolbar button{font:12px system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink-2);
+  background:var(--surface);border:1px solid var(--hairline);border-radius:6px;padding:4px 10px;cursor:pointer}
+.toolbar button:hover{color:var(--ink)}
+.toolbar button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.case{background:var(--surface);border:1px solid var(--hairline);border-radius:10px;padding:18px 20px;
+  display:flex;flex-direction:column;gap:10px}
+.case-regressed{border-left:3px solid var(--critical)}
+.verdict{margin:6px 0 0;font-size:15px}
+.verdict .delta{font-size:15px}
+.flag{font-size:11px;font-weight:600;color:var(--warning);white-space:nowrap}
+.star{color:var(--warning);font-size:.45em;vertical-align:super;line-height:0;cursor:help}
+.legend summary{cursor:pointer;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2)}
+.legend-list{margin:8px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--ink-2)}
+.case-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.case-head h2{margin:0;font-size:16px;font-weight:600}
+.case-head .spacer{flex:1}
+.case-score{font-size:15px;font-weight:600}
+.mono{font:12px "SF Mono",ui-monospace,Menlo,Consolas,monospace}
+.num{font-variant-numeric:tabular-nums lining-nums}
+.muted{color:var(--ink-3);font-size:12px}
+.meter{display:inline-block;position:relative;width:120px;height:6px;border-radius:4px;background:var(--grid);
+  vertical-align:middle}
+.meter>span{display:block;height:100%;border-radius:4px;max-width:100%}
+.meter .tick{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--ink-3);border-radius:1px}
+.m-accent>span{background:var(--accent)}
+.m-base>span{background:var(--base-fill)}
+.delta{font-size:12px;font-weight:600;font-variant-numeric:tabular-nums}
+.delta-pos{color:var(--delta-good)}
+.delta-neg{color:var(--critical)}
+.delta-zero{color:var(--ink-3)}
+details.section{border-top:1px solid var(--grid);padding-top:10px}
+details.section>summary{cursor:pointer;font-size:12px;font-weight:600;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--ink-2);list-style-position:outside;margin-left:2px}
+details.section>summary:hover{color:var(--ink)}
+details.section[open]>summary{margin-bottom:8px}
+.md{display:flex;flex-direction:column;gap:8px;background:var(--inset);border-radius:8px;
+  padding:12px 14px;overflow-wrap:break-word}
+.md>:first-child{margin-top:0}
+.md h1,.md h2,.md h3,.md h4,.md h5,.md h6{margin:4px 0 0;font-size:1em;font-weight:600;line-height:1.3}
+.md p,.md ul,.md ol,.md blockquote,.md table,.md pre,.md hr{margin:0}
+.md ul,.md ol{display:flex;flex-direction:column;gap:4px;padding-left:20px}
+.md blockquote{border-left:2px solid var(--hairline);padding-left:10px;color:var(--ink-2)}
+.md :not(pre)>code{background:var(--inset);padding:1px 4px;border-radius:4px;
+  font:.92em "SF Mono",ui-monospace,Menlo,Consolas,monospace}
+.md pre{background:var(--inset);border:1px solid var(--hairline);padding:10px 12px;border-radius:6px;
+  overflow-x:auto;font:12px/1.5 "SF Mono",ui-monospace,Menlo,Consolas,monospace}
+.md pre code{background:none;padding:0;font:inherit}
+.md table{width:100%;border-collapse:collapse}
+.md th,.md td{padding:5px 8px;text-align:left;vertical-align:top;border-bottom:1px solid var(--grid)}
+.md th{font-weight:600;color:var(--ink-2)}
+.md a{color:var(--accent);text-decoration:none}
+.md a:hover{text-decoration:underline}
+.grader-def{display:flex;flex-direction:column;gap:6px;padding:8px 0}
+.grader-def+.grader-def{border-top:1px solid var(--grid)}
+.grader-def-head{display:flex;align-items:baseline;gap:8px}
+.grader-name{font:13px "SF Mono",ui-monospace,Menlo,Consolas,monospace;font-weight:600}
+.badge{font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2);
+  border:1px solid var(--hairline);border-radius:999px;padding:1px 8px}
+.config{display:flex;flex-direction:column;gap:2px;background:var(--inset);border-radius:8px;padding:10px 14px}
+.config code{font:12px "SF Mono",ui-monospace,Menlo,Consolas,monospace;overflow-wrap:anywhere}
+.arm{display:flex;flex-direction:column;gap:8px;padding:6px 0}
+.arm+.arm{border-top:1px dashed var(--grid);margin-top:4px;padding-top:12px}
+.arm-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.arm-label{font-size:13px;font-weight:600}
+.run{border:1px solid var(--grid);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.run-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.run-title{font-size:12px;font-weight:600;color:var(--ink-2)}
+.run-error .explanation{color:var(--ink-2)}
+.note{font-size:12px;color:var(--ink-2)}
+.graders{display:flex;flex-direction:column;gap:4px}
+details.grader{border-radius:6px}
+details.grader>summary{cursor:pointer;display:flex;align-items:baseline;gap:8px;padding:3px 4px;
+  border-radius:6px;list-style:none}
+details.grader>summary::-webkit-details-marker{display:none}
+details.grader>summary::before{content:'▸';font-size:10px;color:var(--ink-3);flex:none;
+  transition:transform .12s ease}
+details.grader[open]>summary::before{transform:rotate(90deg)}
+details.grader>summary:hover{background:var(--inset)}
+details.grader>summary:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.grader-body{padding:6px 8px 8px 24px;display:flex;flex-direction:column;gap:6px}
+.chip{font-size:11px;font-weight:600;border-radius:999px;padding:1px 8px;white-space:nowrap}
+.chip-pass{color:var(--good);border:1px solid currentColor}
+.chip-fail{color:var(--critical);border:1px solid currentColor}
+.chip.chip-warn{color:var(--warning);border:1px solid currentColor}
+.explanation{margin:0;font-size:13px;color:var(--ink-2);white-space:pre-wrap;overflow-wrap:break-word}
+.kv{display:flex;gap:8px;font-size:12px;color:var(--ink-3)}
+.votes{font-variant-numeric:tabular-nums;letter-spacing:.1em}
+pre.evidence{margin:0;background:var(--inset);border:1px solid var(--hairline);border-radius:6px;
+  padding:8px 10px;overflow-x:auto;max-height:320px;
+  font:12px/1.5 "SF Mono",ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;overflow-wrap:break-word}
+footer{color:var(--ink-3);font-size:12px;text-align:center;padding-top:8px}
+@media (prefers-reduced-motion:no-preference){
+  details.grader>summary,.toolbar button{transition:background .12s ease,color .12s ease}
+}
+@media (prefers-reduced-motion:reduce){
+  details.grader>summary::before{transition:none}
+}
+@media print{
+  :root,:root[data-theme="dark"],:root[data-theme="light"]{--plane:#f9f9f7;--surface:#fcfcfb;--ink:#0b0b0b;--ink-2:#52514e;--ink-3:#6b6a64;--hairline:rgba(11,11,11,.10);--grid:#e1e0d9;--inset:rgba(11,11,11,.04);--accent:#2a78d6;--base-fill:#6b6a64;--delta-good:#006300;--good:#067d06;--warning:#8a6100;--critical:#d03b3b;color-scheme:light}
+  body{background:#fff}
+  .toolbar{display:none}
+  .case,.run,.grader-def{break-inside:avoid}
+  pre.evidence{max-height:none}
+}
+</style>
+<div class="wrap">
+<header>
+<div class="eyebrow">Plugin eval report</div>
+<h1>drawing-skills v0.1.0</h1>
+<p class="verdict">Plugin effect: <span class="delta delta-neg">↓ -11.1 pts</span> vs baseline — improved 0 · flat 2 · regressed 1 of 3 cases.</p>
+<div class="meta">
+<span class="mono">.</span>
+<span>Claude Code v2.1.286</span>
+<span class="num">2026-10-01 06:05 UTC</span>
+<span class="num">22m 19s</span>
+<span class="num">$7.21</span>
+<span class="num">6 runs</span>
+
+
+<span>model opus</span>
+<span>judge opus</span>
+<span class="num">threshold 0%</span>
+<span>filtered: --tag arch</span>
+</div>
+</header>
+
+<section class="tiles">
+<div class="tile hero"><span class="label">Suite score · with plugin</span><span class="value">66.7%</span><span class="sub">mean of per-case scores</span></div>
+<div class="tile"><span class="label">Ablation Δ</span><span class="value num delta-neg">↓ -11.1</span><span class="sub">score points vs baseline, 3 of 3 cases</span></div>
+<div class="tile"><span class="label">Baseline score</span><span class="value num">77.8%</span><span class="sub">without the plugin</span></div>
+<div class="tile"><span class="label">Cases</span><span class="value num">3</span><span class="sub">3 of 3 ≥ 0% threshold</span></div>
+<div class="tile"><span class="label">Perfect runs</span><span class="value num">0%</span><span class="sub">runs where every grader passed</span></div>
+</section>
+<details class="section legend">
+<summary>How to read this report</summary>
+<ul class="legend-list">
+<li>A run's score is the weighted fraction of its graders that passed; a "perfect" run passed every grader.</li>
+<li>A case's score is the mean of its runs; a case passes when its score is at or above the 0% threshold (the tick on each case bar).</li>
+<li>The suite score is the mean of the per-case scores.</li>
+<li>Judge votes are independent samples of the LLM judge; the majority decides pass or fail.</li>
+<li>"With plugin" and "Baseline" runs are identical except for the plugin being loaded; Δ is the with-plugin score minus the baseline score.</li>
+
+</ul>
+</details>
+<div class="toolbar"><button type="button" data-act="expand">Expand all</button><button type="button" data-act="collapse">Collapse all</button></div>
+<article class="case" id="case-1">
+<div class="case-head">
+<h2>megatron-parallel-groups</h2>
+<span class="muted mono">evals/megatron-parallel-groups</span>
+<span class="spacer"></span>
+
+<span class="delta delta-zero">· 0.0 pts</span>
+<span class="muted">with plugin</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:66.7%"></span><i class="tick" style="left:0.0%"></i></span>
+<span class="num case-score">66.7%</span>
+</div>
+
+<details class="section" open>
+<summary>Results</summary>
+<section class="arm">
+<div class="arm-head">
+<span class="arm-label">With plugin</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:66.7%"></span></span>
+<span class="num">66.7%</span>
+<span class="muted num">0% of runs perfect</span>
+</div>
+<div class="run">
+<div class="run-head">
+<span class="run-title">Run 1</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:66.7%"></span></span>
+<span class="num">66.7%</span>
+<span class="muted num">20 turns · $1.14 · 06:05:57 UTC</span>
+</div>
+
+<div class="graders"><details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">correctness</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: PASS PASS PASS (image)</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✓ ✓ ✓</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">[image shown to the judge: out/parallel-groups.png — sent as image/jpeg, 382.9KB, 2000x1113px; file on disk: image/png, 580.7KB, 2698x1501px]</pre>
+</div>
+</details>
+<details class="grader" open>
+<summary><span class="chip chip-fail">✗ fail</span> <span class="grader-name">readability</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: FAIL FAIL FAIL (image)</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✗ ✗ ✗</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">[image shown to the judge: out/parallel-groups.png — sent as image/jpeg, 382.9KB, 2000x1113px; file on disk: image/png, 580.7KB, 2698x1501px]</pre>
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">render</span>  </summary>
+<div class="grader-body">
+<p class="explanation">out/parallel-groups.png exists as expected</p>
+
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">skill-fired</span>  <span class="badge">plugin-fired indicator</span></summary>
+<div class="grader-body">
+<p class="explanation">Skill called 1x (expected 1..∞)</p>
+
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">skill-misrouted</span>  <span class="badge">plugin-fired indicator</span></summary>
+<div class="grader-body">
+<p class="explanation">Skill called 0x (expected 0..0)</p>
+
+</div>
+</details></div>
+</div>
+</section><section class="arm">
+<div class="arm-head">
+<span class="arm-label">Baseline (no plugin)</span>
+<span class="meter m-base" aria-hidden="true"><span style="width:66.7%"></span></span>
+<span class="num">66.7%</span>
+<span class="muted num">0% of runs perfect</span>
+</div>
+<div class="run">
+<div class="run-head">
+<span class="run-title">Run 1</span>
+<span class="meter m-base" aria-hidden="true"><span style="width:66.7%"></span></span>
+<span class="num">66.7%</span>
+<span class="muted num">15 turns · $0.94 · 06:09:30 UTC</span>
+</div>
+
+<div class="graders"><details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">correctness</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: PASS PASS PASS (image)</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✓ ✓ ✓</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">[image shown to the judge: out/parallel-groups.png — sent as image/jpeg, 468KB, 2000x1257px; file on disk: image/png, 348.5KB, 2800x1760px]</pre>
+</div>
+</details>
+<details class="grader" open>
+<summary><span class="chip chip-fail">✗ fail</span> <span class="grader-name">readability</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: FAIL FAIL FAIL (image)</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✗ ✗ ✗</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">[image shown to the judge: out/parallel-groups.png — sent as image/jpeg, 468KB, 2000x1257px; file on disk: image/png, 348.5KB, 2800x1760px]</pre>
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">render</span>  </summary>
+<div class="grader-body">
+<p class="explanation">out/parallel-groups.png exists as expected</p>
+
+</div>
+</details></div>
+</div>
+</section>
+</details>
+<details class="section" open>
+<summary>Prompt</summary>
+<div class="md"><p>I want an architecture view of how Megatron-Core lays out its process groups. The source, pinned at the commit in <code>PINNED.txt</code>, is in the read-only source directory available to this session. For 16 GPUs on 2 nodes (8 per node) with tensor-parallel size 2, pipeline-parallel size 4 and no context or expert parallelism, draw one diagram that shows every rank, which node it is on, and which tensor-parallel, pipeline-parallel, data-parallel and model-parallel group it belongs to, plus the embedding group. Make clear the rule that assigns ranks to groups. Ground every element in the code. Save the finished diagram as a PNG image at <code>out/parallel-groups.png</code>.</p>
+</div>
+</details>
+<details class="section" open>
+<summary>Graders — what "good" means for this case</summary>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">correctness</span><span class="badge">llm</span></div>
+<div class="md"><p>You are grading a diagram (the attached PNG) that is meant to explain how Megatron-Core partitions 16 GPU ranks into tensor-, pipeline- and data-parallel groups (TP=2, PP=4, DP=2, 2 nodes × 8 GPUs). Judge only what the picture shows. Do not credit anything you would have to infer from code that is not drawn. Exact identifiers are not required when the mechanism is drawn unambiguously.</p>
+<p>Reference facts:</p>
+<ol>
+<li><strong>Rank order and DP size.</strong> Ranks are laid out in the order <code>tp-cp-ep-dp-pp</code> (TP varies fastest), and DP = world / (TP·PP·CP) = 16 / 8 = 2.</li>
+<li><strong>Rank formula.</strong> With CP = EP = 1 a rank decomposes as <code>rank = tp_rank + dp_rank·2 + pp_rank·4</code> (orthogonal groups from <code>generate_masked_orthogonal_rank_groups</code>).</li>
+<li><strong>TP groups.</strong> 8 tensor-parallel groups of adjacent pairs: [0,1], [2,3], …, [14,15].</li>
+<li><strong>DP groups.</strong> 8 data-parallel groups: [0,2], [1,3], [4,6], [5,7], [8,10], [9,11], [12,14], [13,15].</li>
+<li><strong>PP groups.</strong> 4 pipeline-parallel groups with stride 4: [0,4,8,12], [1,5,9,13], [2,6,10,14], [3,7,11,15]; each spans both nodes.</li>
+<li><strong>Node placement.</strong> Ranks 0–7 sit on node 0 and 8–15 on node 1, so every TP group and every DP group stays inside one node while PP groups cross the node boundary.</li>
+<li><strong>Model-parallel groups.</strong> The model-parallel group is all TP×PP ranks that share a DP rank, e.g. [0,1,4,5,8,9,12,13] and [2,3,6,7,10,11,14,15].</li>
+<li><strong>Embedding group.</strong> The embedding group of each pipeline is its first and last stage, e.g. [0,12], [1,13], [2,14], [3,15].</li>
+</ol>
+<p>For each fact, decide: SHOWN (drawn correctly), ABSENT (not drawn), or CONTRADICTED (drawn in a way that conflicts with the fact). Examples of a contradiction: TP groups drawn across nodes; PP groups drawn as adjacent ranks; DP size other than 2.</p>
+<p>PASS if at least 6 of the 8 facts are SHOWN and none is CONTRADICTED.
+FAIL otherwise. Begin your explanation by listing the SHOWN / ABSENT / CONTRADICTED verdict for each fact number.</p>
+</div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">readability</span><span class="badge">llm</span></div>
+<div class="md"><p>You are grading the visual quality of a technical diagram (the attached PNG). Ignore whether its content is technically correct; grade only how readable it is.</p>
+<p>Check each criterion:</p>
+<ol>
+<li>Every label is legible at 100% zoom: no text is truncated, clipped, or too small to read.</li>
+<li>No nodes overlap, and no labels overlap nodes, edges, or each other.</li>
+<li>There is one clear reading direction (top-to-bottom or left-to-right) that a reader can follow from start to end.</li>
+<li>Edges are distinguishable: a reader can trace each edge from its source to its target, and edges that mean different things (e.g. control flow vs. data handed off) are visually different or labeled.</li>
+<li>The visual grammar is consistent: shape and/or colour encode the role of a node (e.g. decision, action, data structure, queue), and the same role always looks the same.</li>
+<li>There are no orphan nodes (unconnected, without an obvious reason) and no purely decorative elements.</li>
+</ol>
+<p>PASS if criteria 1, 2 and 3 all hold and at most one of criteria 4–6 fails.
+FAIL otherwise. Begin your explanation by giving a pass/fail for each criterion number.</p>
+</div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">render</span><span class="badge">file_exists</span></div>
+<div class="config"><div class="kv"><span>path</span><code>&quot;out/parallel-groups.png&quot;</code></div><div class="kv"><span>exists</span><code>true</code></div></div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">skill-fired</span><span class="badge">tool_used</span></div>
+<div class="config"><div class="kv"><span>tool</span><code>&quot;Skill&quot;</code></div><div class="kv"><span>input_match</span><code>&quot;\&quot;skill\&quot;\\s*:\\s*\&quot;(?:[\\w-]+:)?graphviz\&quot;&quot;</code></div></div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">skill-misrouted</span><span class="badge">tool_used</span></div>
+<div class="config"><div class="kv"><span>tool</span><code>&quot;Skill&quot;</code></div><div class="kv"><span>input_match</span><code>&quot;\&quot;skill\&quot;\\s*:\\s*\&quot;(?:[\\w-]+:)?model-architecture\&quot;&quot;</code></div><div class="kv"><span>min</span><code>0</code></div><div class="kv"><span>max</span><code>0</code></div><div class="kv"><span>arm</span><code>&quot;with-only&quot;</code></div></div>
+</div>
+</details>
+</article>
+<article class="case" id="case-2">
+<div class="case-head">
+<h2>verl-resource-placement</h2>
+<span class="muted mono">evals/verl-resource-placement</span>
+<span class="spacer"></span>
+
+<span class="delta delta-zero">· 0.0 pts</span>
+<span class="muted">with plugin</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:66.7%"></span><i class="tick" style="left:0.0%"></i></span>
+<span class="num case-score">66.7%</span>
+</div>
+
+<details class="section" open>
+<summary>Results</summary>
+<section class="arm">
+<div class="arm-head">
+<span class="arm-label">With plugin</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:66.7%"></span></span>
+<span class="num">66.7%</span>
+<span class="muted num">0% of runs perfect</span>
+</div>
+<div class="run">
+<div class="run-head">
+<span class="run-title">Run 1</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:66.7%"></span></span>
+<span class="num">66.7%</span>
+<span class="muted num">27 turns · $1.02 · 06:12:53 UTC</span>
+</div>
+
+<div class="graders"><details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">correctness</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: PASS PASS PASS (image)</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✓ ✓ ✓</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">[image shown to the judge: out/resource-placement.png — sent as image/jpeg, 241.5KB, 2000x1034px; file on disk: image/png, 741.9KB, 4019x2077px]</pre>
+</div>
+</details>
+<details class="grader" open>
+<summary><span class="chip chip-fail">✗ fail</span> <span class="grader-name">readability</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: FAIL FAIL FAIL (image)</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✗ ✗ ✗</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">[image shown to the judge: out/resource-placement.png — sent as image/jpeg, 241.5KB, 2000x1034px; file on disk: image/png, 741.9KB, 4019x2077px]</pre>
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">render</span>  </summary>
+<div class="grader-body">
+<p class="explanation">out/resource-placement.png exists as expected</p>
+
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">skill-fired</span>  <span class="badge">plugin-fired indicator</span></summary>
+<div class="grader-body">
+<p class="explanation">Skill called 1x (expected 1..∞)</p>
+
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">skill-misrouted</span>  <span class="badge">plugin-fired indicator</span></summary>
+<div class="grader-body">
+<p class="explanation">Skill called 0x (expected 0..0)</p>
+
+</div>
+</details></div>
+</div>
+</section><section class="arm">
+<div class="arm-head">
+<span class="arm-label">Baseline (no plugin)</span>
+<span class="meter m-base" aria-hidden="true"><span style="width:66.7%"></span></span>
+<span class="num">66.7%</span>
+<span class="muted num">0% of runs perfect</span>
+</div>
+<div class="run">
+<div class="run-head">
+<span class="run-title">Run 1</span>
+<span class="meter m-base" aria-hidden="true"><span style="width:66.7%"></span></span>
+<span class="num">66.7%</span>
+<span class="muted num">25 turns · $1.05 · 06:15:42 UTC</span>
+</div>
+
+<div class="graders"><details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">correctness</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: PASS PASS PASS (image)</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✓ ✓ ✓</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">[image shown to the judge: out/resource-placement.png — sent as image/jpeg, 247.5KB, 2000x874px; file on disk: image/png, 831.8KB, 4186x1829px]</pre>
+</div>
+</details>
+<details class="grader" open>
+<summary><span class="chip chip-fail">✗ fail</span> <span class="grader-name">readability</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: FAIL FAIL FAIL (image)</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✗ ✗ ✗</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">[image shown to the judge: out/resource-placement.png — sent as image/jpeg, 247.5KB, 2000x874px; file on disk: image/png, 831.8KB, 4186x1829px]</pre>
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">render</span>  </summary>
+<div class="grader-body">
+<p class="explanation">out/resource-placement.png exists as expected</p>
+
+</div>
+</details></div>
+</div>
+</section>
+</details>
+<details class="section" open>
+<summary>Prompt</summary>
+<div class="md"><p>I want an architecture overview of how verl lays out a PPO/GRPO job on a Ray cluster. The trainer source, pinned at the commit in <code>PINNED.txt</code>, is in the read-only source directory available to this session. Draw one architecture diagram showing the driver, the Ray resource pools and what GPUs they cover, which roles (actor, rollout, reference, critic, reward model, teacher) are mapped to which pool, which roles share the same worker processes, and how the rollout servers, the reward loop and the weight-sync component are connected to them. This is about structure and placement, not about the order of the training steps. Ground every element in the code. Save the finished diagram as a PNG image at <code>out/resource-placement.png</code>.</p>
+</div>
+</details>
+<details class="section" open>
+<summary>Graders — what "good" means for this case</summary>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">correctness</span><span class="badge">llm</span></div>
+<div class="md"><p>You are grading a diagram (the attached PNG) that is meant to explain how verl places its roles onto Ray resource pools and GPUs (single-controller PPO). Judge only what the picture shows. Do not credit anything you would have to infer from code that is not drawn. Exact identifiers are not required when the mechanism is drawn unambiguously.</p>
+<p>Reference facts:</p>
+<ol>
+<li><strong>Single controller on the driver.</strong> The driver (<code>TaskRunner</code> → <code>RayPPOTrainer</code>) holds handles to all worker groups and managers and does no GPU work itself.</li>
+<li><strong>Resource pools.</strong> <code>global_pool</code> spans <code>n_gpus_per_node × nnodes</code> GPUs; optional <code>reward_pool</code> and <code>teacher_pool</code> give the reward model and the distillation teacher their own GPUs.</li>
+<li><strong>Pools are Ray placement groups.</strong> Each <code>RayResourcePool</code> is built from Ray placement groups, one per node, with one bundle per GPU (strategy <code>STRICT_PACK</code>).</li>
+<li><strong>Role → pool mapping.</strong> ActorRollout(Ref) and Critic map to <code>global_pool</code>; RewardModel maps to <code>reward_pool</code> if it has its own pool, else <code>global_pool</code>; TeacherModel maps to <code>teacher_pool</code>.</li>
+<li><strong>Colocation: one process per GPU, several roles.</strong> All roles mapped to the same pool are fused by <code>create_colocated_worker_cls</code> into one Ray actor class, spawned once per GPU bundle, and then split into separately named worker groups that share those processes.</li>
+<li><strong>Hybrid engine worker.</strong> <code>ActorRolloutRefWorker</code> combines the actor's training engine (FSDP/Megatron), the rollout adapter and the reference policy in one worker group; the reference gets its own group only in the LoRA case.</li>
+<li><strong>Rollout servers on the actor's GPUs.</strong> The rollout replicas (vLLM / SGLang servers via <code>LLMServerManager</code>) are created on the actor-rollout worker group's resource pool, i.e. the same GPUs as training; <code>AgentLoopManager</code> drives them.</li>
+<li><strong>Reward loop.</strong> A <code>RewardLoopManager</code> runs reward workers that can score samples while rollout streams; with a reward model and its own pool it uses <code>reward_pool</code>.</li>
+<li><strong>Weight-sync component.</strong> <code>CheckpointEngineManager</code> connects the actor worker group to the rollout replicas and is the only path weights take from training to rollout.</li>
+</ol>
+<p>For each fact, decide: SHOWN (drawn correctly), ABSENT (not drawn), or CONTRADICTED (drawn in a way that conflicts with the fact). Examples of a contradiction: the rollout servers drawn on GPUs separate from the actor in the default hybrid setup; the driver drawn as owning GPUs or running training; the critic on its own pool by default.</p>
+<p>PASS if at least 7 of the 9 facts are SHOWN and none is CONTRADICTED.
+FAIL otherwise. Begin your explanation by listing the SHOWN / ABSENT / CONTRADICTED verdict for each fact number.</p>
+</div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">readability</span><span class="badge">llm</span></div>
+<div class="md"><p>You are grading the visual quality of a technical diagram (the attached PNG). Ignore whether its content is technically correct; grade only how readable it is.</p>
+<p>Check each criterion:</p>
+<ol>
+<li>Every label is legible at 100% zoom: no text is truncated, clipped, or too small to read.</li>
+<li>No nodes overlap, and no labels overlap nodes, edges, or each other.</li>
+<li>There is one clear reading direction (top-to-bottom or left-to-right) that a reader can follow from start to end.</li>
+<li>Edges are distinguishable: a reader can trace each edge from its source to its target, and edges that mean different things (e.g. control flow vs. data handed off) are visually different or labeled.</li>
+<li>The visual grammar is consistent: shape and/or colour encode the role of a node (e.g. decision, action, data structure, queue), and the same role always looks the same.</li>
+<li>There are no orphan nodes (unconnected, without an obvious reason) and no purely decorative elements.</li>
+</ol>
+<p>PASS if criteria 1, 2 and 3 all hold and at most one of criteria 4–6 fails.
+FAIL otherwise. Begin your explanation by giving a pass/fail for each criterion number.</p>
+</div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">render</span><span class="badge">file_exists</span></div>
+<div class="config"><div class="kv"><span>path</span><code>&quot;out/resource-placement.png&quot;</code></div><div class="kv"><span>exists</span><code>true</code></div></div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">skill-fired</span><span class="badge">tool_used</span></div>
+<div class="config"><div class="kv"><span>tool</span><code>&quot;Skill&quot;</code></div><div class="kv"><span>input_match</span><code>&quot;\&quot;skill\&quot;\\s*:\\s*\&quot;(?:[\\w-]+:)?graphviz\&quot;&quot;</code></div></div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">skill-misrouted</span><span class="badge">tool_used</span></div>
+<div class="config"><div class="kv"><span>tool</span><code>&quot;Skill&quot;</code></div><div class="kv"><span>input_match</span><code>&quot;\&quot;skill\&quot;\\s*:\\s*\&quot;(?:[\\w-]+:)?model-architecture\&quot;&quot;</code></div><div class="kv"><span>min</span><code>0</code></div><div class="kv"><span>max</span><code>0</code></div><div class="kv"><span>arm</span><code>&quot;with-only&quot;</code></div></div>
+</div>
+</details>
+</article>
+<article class="case case-regressed" id="case-3">
+<div class="case-head">
+<h2>vllm-v1-process-arch</h2>
+<span class="muted mono">evals/vllm-v1-process-arch</span>
+<span class="spacer"></span>
+
+<span class="delta delta-neg">↓ -33.3 pts</span>
+<span class="muted">with plugin</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:66.7%"></span><i class="tick" style="left:0.0%"></i></span>
+<span class="num case-score">66.7%</span>
+</div>
+
+<details class="section" open>
+<summary>Results</summary>
+<section class="arm">
+<div class="arm-head">
+<span class="arm-label">With plugin</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:66.7%"></span></span>
+<span class="num">66.7%</span>
+<span class="muted num">0% of runs perfect</span>
+</div>
+<div class="run">
+<div class="run-head">
+<span class="run-title">Run 1</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:66.7%"></span></span>
+<span class="num">66.7%</span>
+<span class="muted num">22 turns · $1.03 · 06:18:50 UTC</span>
+</div>
+
+<div class="graders"><details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">correctness</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: PASS PASS PASS (image)</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✓ ✓ ✓</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">[image shown to the judge: out/process-arch.png — sent as image/jpeg, 273.2KB, 2000x1430px; file on disk: image/png, 1.1MB, 4519x3232px]</pre>
+</div>
+</details>
+<details class="grader" open>
+<summary><span class="chip chip-fail">✗ fail</span> <span class="grader-name">readability</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: FAIL FAIL FAIL (image)</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✗ ✗ ✗</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">[image shown to the judge: out/process-arch.png — sent as image/jpeg, 273.2KB, 2000x1430px; file on disk: image/png, 1.1MB, 4519x3232px]</pre>
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">render</span>  </summary>
+<div class="grader-body">
+<p class="explanation">out/process-arch.png exists as expected</p>
+
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">skill-fired</span>  <span class="badge">plugin-fired indicator</span></summary>
+<div class="grader-body">
+<p class="explanation">Skill called 1x (expected 1..∞)</p>
+
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">skill-misrouted</span>  <span class="badge">plugin-fired indicator</span></summary>
+<div class="grader-body">
+<p class="explanation">Skill called 0x (expected 0..0)</p>
+
+</div>
+</details></div>
+</div>
+</section><section class="arm">
+<div class="arm-head">
+<span class="arm-label">Baseline (no plugin)</span>
+<span class="meter m-base" aria-hidden="true"><span style="width:100.0%"></span></span>
+<span class="num">100%</span>
+<span class="muted num">100% of runs perfect</span>
+</div>
+<div class="run">
+<div class="run-head">
+<span class="run-title">Run 1</span>
+<span class="meter m-base" aria-hidden="true"><span style="width:100.0%"></span></span>
+<span class="num">100%</span>
+<span class="muted num">39 turns · $2.04 · 06:21:32 UTC</span>
+</div>
+
+<div class="graders"><details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">correctness</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: PASS PASS PASS (image)</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✓ ✓ ✓</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">[image shown to the judge: out/process-arch.png — sent as image/jpeg, 367KB, 2000x990px; file on disk: image/png, 610.6KB, 3960x1960px]</pre>
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">readability</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: PASS PASS PASS (image)</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✓ ✓ ✓</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">[image shown to the judge: out/process-arch.png — sent as image/jpeg, 367KB, 2000x990px; file on disk: image/png, 610.6KB, 3960x1960px]</pre>
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">render</span>  </summary>
+<div class="grader-body">
+<p class="explanation">out/process-arch.png exists as expected</p>
+
+</div>
+</details></div>
+</div>
+</section>
+</details>
+<details class="section" open>
+<summary>Prompt</summary>
+<div class="md"><p>I want an architecture overview of how vLLM V1 is put together when it serves a model on one node with tensor parallelism and the multiprocess executor. The engine source, pinned at the commit in <code>PINNED.txt</code>, is in the read-only source directory available to this session. Draw one architecture diagram showing which OS processes exist, which components live in each process, and how the processes are connected (what transport, what travels over each link). This is about structure, not about the order of steps. Ground every element in the code. Save the finished diagram as a PNG image at <code>out/process-arch.png</code>.</p>
+</div>
+</details>
+<details class="section" open>
+<summary>Graders — what "good" means for this case</summary>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">correctness</span><span class="badge">llm</span></div>
+<div class="md"><p>You are grading a diagram (the attached PNG) that is meant to explain the process and component architecture of vLLM V1 serving (single node, tensor parallel, multiprocess executor). Judge only what the picture shows. Do not credit anything you would have to infer from code that is not drawn. Exact identifiers are not required when the mechanism is drawn unambiguously.</p>
+<p>Reference facts:</p>
+<ol>
+<li><strong>Frontend process holds AsyncLLM.</strong> The serving frontend (the API server's process) holds <code>AsyncLLM</code>, the <code>EngineClient</code> that the HTTP layer calls.</li>
+<li><strong>Pre- and post-processing stay in the frontend.</strong> Inside <code>AsyncLLM</code> sit the <code>InputProcessor</code> (tokenization / multimodal preprocessing) and the <code>OutputProcessor</code> (per-request incremental detokenizer and per-request output queues), so tokenization and detokenization run in the frontend process, not in the engine.</li>
+<li><strong>Engine-core client.</strong> <code>AsyncLLM</code> reaches the engine through an <code>AsyncMPClient</code> (data-parallel variants exist) created by <code>EngineCoreClient.make_async_mp_client</code>.</li>
+<li><strong>ZMQ between frontend and engine core.</strong> The client and the engine-core process are connected by ZMQ: requests go client ROUTER → engine DEALER, outputs come back engine PUSH → client PULL.</li>
+<li><strong>EngineCore is its own process with I/O threads.</strong> <code>EngineCoreProc</code> runs in a separate process: an input thread moves socket messages into an input queue, an output thread moves the output queue onto the socket, and the main thread runs the busy loop.</li>
+<li><strong>EngineCore owns scheduler and executor.</strong> The engine-core process owns the <code>Scheduler</code> (which holds the KV-cache manager), the structured-output manager, and the model executor; each step it schedules, calls the executor, and updates from the model output.</li>
+<li><strong>Multiprocess executor spawns one worker per GPU.</strong> <code>MultiprocExecutor</code> starts one <code>WorkerProc</code> process per local GPU rank.</li>
+<li><strong>Shared-memory message queues to workers.</strong> The executor broadcasts each <code>SchedulerOutput</code> / RPC to all workers over one shared-memory <code>MessageQueue</code> (<code>rpc_broadcast_mq</code>); each worker answers on its own <code>worker_response_mq</code>.</li>
+<li><strong>Worker → GPUModelRunner.</strong> Each worker process holds a GPU <code>Worker</code> whose <code>GPUModelRunner</code> owns that rank's model shard and KV-cache tensors on its GPU.</li>
+</ol>
+<p>For each fact, decide: SHOWN (drawn correctly), ABSENT (not drawn), or CONTRADICTED (drawn in a way that conflicts with the fact). Examples of a contradiction: tokenization or detokenization drawn inside the engine-core or worker processes; the scheduler drawn inside a GPU worker; workers talking to the frontend directly.</p>
+<p>PASS if at least 7 of the 9 facts are SHOWN and none is CONTRADICTED.
+FAIL otherwise. Begin your explanation by listing the SHOWN / ABSENT / CONTRADICTED verdict for each fact number.</p>
+</div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">readability</span><span class="badge">llm</span></div>
+<div class="md"><p>You are grading the visual quality of a technical diagram (the attached PNG). Ignore whether its content is technically correct; grade only how readable it is.</p>
+<p>Check each criterion:</p>
+<ol>
+<li>Every label is legible at 100% zoom: no text is truncated, clipped, or too small to read.</li>
+<li>No nodes overlap, and no labels overlap nodes, edges, or each other.</li>
+<li>There is one clear reading direction (top-to-bottom or left-to-right) that a reader can follow from start to end.</li>
+<li>Edges are distinguishable: a reader can trace each edge from its source to its target, and edges that mean different things (e.g. control flow vs. data handed off) are visually different or labeled.</li>
+<li>The visual grammar is consistent: shape and/or colour encode the role of a node (e.g. decision, action, data structure, queue), and the same role always looks the same.</li>
+<li>There are no orphan nodes (unconnected, without an obvious reason) and no purely decorative elements.</li>
+</ol>
+<p>PASS if criteria 1, 2 and 3 all hold and at most one of criteria 4–6 fails.
+FAIL otherwise. Begin your explanation by giving a pass/fail for each criterion number.</p>
+</div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">render</span><span class="badge">file_exists</span></div>
+<div class="config"><div class="kv"><span>path</span><code>&quot;out/process-arch.png&quot;</code></div><div class="kv"><span>exists</span><code>true</code></div></div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">skill-fired</span><span class="badge">tool_used</span></div>
+<div class="config"><div class="kv"><span>tool</span><code>&quot;Skill&quot;</code></div><div class="kv"><span>input_match</span><code>&quot;\&quot;skill\&quot;\\s*:\\s*\&quot;(?:[\\w-]+:)?graphviz\&quot;&quot;</code></div></div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">skill-misrouted</span><span class="badge">tool_used</span></div>
+<div class="config"><div class="kv"><span>tool</span><code>&quot;Skill&quot;</code></div><div class="kv"><span>input_match</span><code>&quot;\&quot;skill\&quot;\\s*:\\s*\&quot;(?:[\\w-]+:)?model-architecture\&quot;&quot;</code></div><div class="kv"><span>min</span><code>0</code></div><div class="kv"><span>max</span><code>0</code></div><div class="kv"><span>arm</span><code>&quot;with-only&quot;</code></div></div>
+</div>
+</details>
+</article>
+<footer>Generated by <code>claude plugin eval</code> · schema v1 · scores are not comparable across different suites</footer>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  var bar=document.querySelector('.toolbar');
+  if(!bar)return;
+  bar.addEventListener('click',function(e){
+    var b=e.target&&e.target.closest('button');
+    if(!b)return;
+    var open=b.dataset.act==='expand';
+    document.querySelectorAll('details.section, details.grader').forEach(function(d){d.open=open});
+  });
+});
+// Collapsed details vanish from print/PDF; these pages are share artifacts.
+window.addEventListener('beforeprint',function(){
+  document.querySelectorAll('details').forEach(function(d){
+    if(!d.open){d.dataset.printOpened='1';d.open=true}
+  });
+});
+window.addEventListener('afterprint',function(){
+  document.querySelectorAll('details[data-print-opened]').forEach(function(d){
+    d.open=false;delete d.dataset.printOpened;
+  });
+});
+</script>
+</body>
+</html>

@@ -2,6 +2,8 @@
 
 评测对象：本仓库的 `drawing-skills` 插件（`graphviz`、`model-architecture` 两个 skill）。每个 case 跑两组：带插件（带 skill）和不带插件（不带 skill），**每组 1 次**；agent 和评委都是 Opus。prompt 不指定画图工具，只要求输出一张 PNG。分数 = render、correctness、readability 三个评分器的通过比例；skill 是否触发只作指示，不计分。美观和配色由人工另行打分（见 PLAN 第 9 步）。
 
+> ⚠ **这次评测的设计存在问题，分数和 Δ 不能用来判断 skill 的好坏**，见 [LIMITATIONS.md](LIMITATIONS.md)。可以采信的部分是路由、效率（agent 耗时和花费）、定性观察，以及产物本身。
+
 > 每组只有 1 个样本，Δ 和耗时差都是单次观测，不是稳定结论。
 
 **读结果前先看题型。** graphviz skill 是为**架构图**设计的（SKILL.md：“topology-first graphs”，并明确“Not for UML sequence / activity”）。第 1、2 轮的 G1–G4 问的是单步算法、训练步骤顺序、跨线程请求生命周期，属于流程图 / 时序图，**在 graphviz skill 的设计范围之外**；M1、M2 在 model-architecture skill 的范围内。第 3 轮的 A1–A3 是只问组成与连接的架构题，用来测 graphviz skill 的主场。
@@ -118,7 +120,7 @@ agent 花费合计 $20.29，评委花费合计 $3.00，总计 $23.29。
 
 **局限：** 每个 case 每组只跑了 1 次；G1 跑过三次，带 skill 组的 readability 结果就翻转过一次，看趋势比看单个数字更有意义。评委和看图评分都是模型给出的；人工美观打分（PLAN 第 9 步）还没做。总花费：冒烟 $3.18 + G1 正式 $2.12 + 第 2 轮 $13.95 + 第 3 轮 $7.21 = **$26.46**（含评委）。
 
-## skill 强化方案
+## skill 强化方案（未实施）
 
 见 [SKILL-IMPROVEMENTS.md](SKILL-IMPROVEMENTS.md)。
 
@@ -127,7 +129,7 @@ agent 花费合计 $20.29，评委花费合计 $3.00，总计 $23.29。
 **题型：** 流程（单步算法）  
 **代码库：** https://github.com/vllm-project/vllm @ `4c2d277643`（main）  
 **复制进来的源码：** `vllm/v1/core/sched/scheduler.py`, `vllm/v1/core/sched/output.py`, `vllm/v1/core/sched/request_queue.py`, `vllm/v1/core/kv_cache_manager.py`, `vllm/v1/request.py`  
-**答案要点：** [evals/vllm-v1-schedule/answer-key.md](evals/vllm-v1-schedule/answer-key.md)（9 条，通过线 7/9）
+**答案要点：** [evals/vllm-v1-schedule/answer-key.md](../../evals/vllm-v1-schedule/answer-key.md)（9 条，通过线 7/9）
 
 **Prompt：**
 
@@ -178,11 +180,11 @@ agent 花费合计 $20.29，评委花费合计 $3.00，总计 $23.29。
 
 **带 skill**
 
-![vllm-v1-schedule 带 skill](evals/vllm-v1-schedule/artifacts/with-1/schedule-step.png)
+![vllm-v1-schedule 带 skill](cases/vllm-v1-schedule/artifacts/with-1/schedule-step.png)
 
 **不带 skill**
 
-![vllm-v1-schedule 不带 skill](evals/vllm-v1-schedule/artifacts/without-1/schedule-step.png)
+![vllm-v1-schedule 不带 skill](cases/vllm-v1-schedule/artifacts/without-1/schedule-step.png)
 
 ### 观察
 
@@ -200,7 +202,7 @@ agent 花费合计 $20.29，评委花费合计 $3.00，总计 $23.29。
 **题型：** 流程（训练步骤顺序）  
 **代码库：** https://github.com/volcengine/verl @ `fbb4b3a8bf`（default branch）  
 **复制进来的源码：** `verl/trainer/ppo/ray_trainer.py`, `verl/trainer/ppo/core_algos.py`, `verl/checkpoint_engine/base.py`, `verl/workers/engine_workers.py`  
-**答案要点：** [evals/verl-ppo-step/answer-key.md](evals/verl-ppo-step/answer-key.md)（9 条，通过线 7/9）
+**答案要点：** [evals/verl-ppo-step/answer-key.md](../../evals/verl-ppo-step/answer-key.md)（9 条，通过线 7/9）
 
 **Prompt：**
 
@@ -250,11 +252,11 @@ agent 花费合计 $20.29，评委花费合计 $3.00，总计 $23.29。
 
 **带 skill**
 
-![verl-ppo-step 带 skill](evals/verl-ppo-step/artifacts/with-1/ppo-step.png)
+![verl-ppo-step 带 skill](cases/verl-ppo-step/artifacts/with-1/ppo-step.png)
 
 **不带 skill**
 
-![verl-ppo-step 不带 skill](evals/verl-ppo-step/artifacts/without-1/ppo-step.png)
+![verl-ppo-step 不带 skill](cases/verl-ppo-step/artifacts/without-1/ppo-step.png)
 
 ### 观察
 
@@ -272,7 +274,7 @@ agent 花费合计 $20.29，评委花费合计 $3.00，总计 $23.29。
 **题型：** 混合（线程拓扑 + 背压/同步）  
 **代码库：** https://github.com/FFmpeg/FFmpeg @ `a344f0976c`（default branch）  
 **复制进来的源码：** `fftools/ffmpeg_sched.h`, `fftools/ffmpeg_sched.c`, `fftools/thread_queue.c`, `fftools/ffmpeg_demux.c`, `fftools/ffmpeg_dec.c`, `fftools/ffmpeg_filter.c`, `fftools/ffmpeg_enc.c`, `fftools/ffmpeg_mux.c`  
-**答案要点：** [evals/ffmpeg-transcode-threads/answer-key.md](evals/ffmpeg-transcode-threads/answer-key.md)（8 条，通过线 6/8）
+**答案要点：** [evals/ffmpeg-transcode-threads/answer-key.md](../../evals/ffmpeg-transcode-threads/answer-key.md)（8 条，通过线 6/8）
 
 **Prompt：**
 
@@ -323,11 +325,11 @@ agent 花费合计 $20.29，评委花费合计 $3.00，总计 $23.29。
 
 **带 skill**
 
-![ffmpeg-transcode-threads 带 skill](evals/ffmpeg-transcode-threads/artifacts/with-1/transcode-threads.png)
+![ffmpeg-transcode-threads 带 skill](cases/ffmpeg-transcode-threads/artifacts/with-1/transcode-threads.png)
 
 **不带 skill**
 
-![ffmpeg-transcode-threads 不带 skill](evals/ffmpeg-transcode-threads/artifacts/without-1/transcode-threads.png)
+![ffmpeg-transcode-threads 不带 skill](cases/ffmpeg-transcode-threads/artifacts/without-1/transcode-threads.png)
 
 ### 观察
 
@@ -346,7 +348,7 @@ agent 花费合计 $20.29，评委花费合计 $3.00，总计 $23.29。
 **题型：** 时序（跨线程请求生命周期）  
 **代码库：** https://github.com/redis/redis @ `498ecd0d6d`（8.10.2）  
 **复制进来的源码：** `src/ae.c`, `src/ae.h`, `src/networking.c`, `src/iothread.c`, `src/server.c`  
-**答案要点：** [evals/redis-request-path/answer-key.md](evals/redis-request-path/answer-key.md)（9 条，通过线 7/9）
+**答案要点：** [evals/redis-request-path/answer-key.md](../../evals/redis-request-path/answer-key.md)（9 条，通过线 7/9）
 
 **Prompt：**
 
@@ -397,11 +399,11 @@ agent 花费合计 $20.29，评委花费合计 $3.00，总计 $23.29。
 
 **带 skill**
 
-![redis-request-path 带 skill](evals/redis-request-path/artifacts/with-1/request-path.png)
+![redis-request-path 带 skill](cases/redis-request-path/artifacts/with-1/request-path.png)
 
 **不带 skill**
 
-![redis-request-path 不带 skill](evals/redis-request-path/artifacts/without-1/request-path.png)
+![redis-request-path 不带 skill](cases/redis-request-path/artifacts/without-1/request-path.png)
 
 ### 观察
 
@@ -418,7 +420,7 @@ agent 花费合计 $20.29，评委花费合计 $3.00，总计 $23.29。
 **题型：** 模型内部（张量形状 + 通信）  
 **代码库：** https://github.com/NVIDIA/Megatron-LM @ `e998be072d`（default branch）  
 **复制进来的源码：** `megatron/core/tensor_parallel/layers.py`, `megatron/core/tensor_parallel/mappings.py`, `megatron/core/transformer/mlp.py`  
-**答案要点：** [evals/megatron-tp-sp-mlp/answer-key.md](evals/megatron-tp-sp-mlp/answer-key.md)（8 条，通过线 6/8）
+**答案要点：** [evals/megatron-tp-sp-mlp/answer-key.md](../../evals/megatron-tp-sp-mlp/answer-key.md)（8 条，通过线 6/8）
 
 **Prompt：**
 
@@ -467,11 +469,11 @@ agent 花费合计 $20.29，评委花费合计 $3.00，总计 $23.29。
 
 **带 skill**
 
-![megatron-tp-sp-mlp 带 skill](evals/megatron-tp-sp-mlp/artifacts/with-1/tp-sp-mlp.png)
+![megatron-tp-sp-mlp 带 skill](cases/megatron-tp-sp-mlp/artifacts/with-1/tp-sp-mlp.png)
 
 **不带 skill**
 
-![megatron-tp-sp-mlp 不带 skill](evals/megatron-tp-sp-mlp/artifacts/without-1/tp-sp-mlp.png)
+![megatron-tp-sp-mlp 不带 skill](cases/megatron-tp-sp-mlp/artifacts/without-1/tp-sp-mlp.png)
 
 ### 观察
 
@@ -489,7 +491,7 @@ agent 花费合计 $20.29，评委花费合计 $3.00，总计 $23.29。
 **题型：** 模型内部（逐 token 元数据）  
 **代码库：** https://github.com/vllm-project/vllm @ `4c2d277643`（default branch）  
 **复制进来的源码：** `vllm/v1/worker/gpu_model_runner.py`, `vllm/v1/worker/block_table.py`, `vllm/v1/attention/backends/flash_attn.py`  
-**答案要点：** [evals/vllm-v1-mixed-batch-attn/answer-key.md](evals/vllm-v1-mixed-batch-attn/answer-key.md)（9 条，通过线 7/9）
+**答案要点：** [evals/vllm-v1-mixed-batch-attn/answer-key.md](../../evals/vllm-v1-mixed-batch-attn/answer-key.md)（9 条，通过线 7/9）
 
 **Prompt：**
 
@@ -539,11 +541,11 @@ agent 花费合计 $20.29，评委花费合计 $3.00，总计 $23.29。
 
 **带 skill**
 
-![vllm-v1-mixed-batch-attn 带 skill](evals/vllm-v1-mixed-batch-attn/artifacts/with-1/mixed-batch-attn.png)
+![vllm-v1-mixed-batch-attn 带 skill](cases/vllm-v1-mixed-batch-attn/artifacts/with-1/mixed-batch-attn.png)
 
 **不带 skill**
 
-![vllm-v1-mixed-batch-attn 不带 skill](evals/vllm-v1-mixed-batch-attn/artifacts/without-1/mixed-batch-attn.png)
+![vllm-v1-mixed-batch-attn 不带 skill](cases/vllm-v1-mixed-batch-attn/artifacts/without-1/mixed-batch-attn.png)
 
 ### 观察
 
@@ -560,7 +562,7 @@ agent 花费合计 $20.29，评委花费合计 $3.00，总计 $23.29。
 **题型：** 架构（进程与组件）  
 **代码库：** https://github.com/vllm-project/vllm @ `4c2d277643`（main）  
 **复制进来的源码：** `vllm/v1/engine/async_llm.py`, `vllm/v1/engine/core_client.py`, `vllm/v1/engine/core.py`, `vllm/v1/engine/input_processor.py`, `vllm/v1/engine/output_processor.py`, `vllm/v1/executor/multiproc_executor.py`, `vllm/v1/worker/gpu_worker.py`  
-**答案要点：** [evals/vllm-v1-process-arch/answer-key.md](evals/vllm-v1-process-arch/answer-key.md)（9 条，通过线 7/9）
+**答案要点：** [evals/vllm-v1-process-arch/answer-key.md](../../evals/vllm-v1-process-arch/answer-key.md)（9 条，通过线 7/9）
 
 **Prompt：**
 
@@ -610,11 +612,11 @@ agent 花费合计 $20.29，评委花费合计 $3.00，总计 $23.29。
 
 **带 skill**
 
-![vllm-v1-process-arch 带 skill](evals/vllm-v1-process-arch/artifacts/with-1/process-arch.png)
+![vllm-v1-process-arch 带 skill](cases/vllm-v1-process-arch/artifacts/with-1/process-arch.png)
 
 **不带 skill**
 
-![vllm-v1-process-arch 不带 skill](evals/vllm-v1-process-arch/artifacts/without-1/process-arch.png)
+![vllm-v1-process-arch 不带 skill](cases/vllm-v1-process-arch/artifacts/without-1/process-arch.png)
 
 ### 观察
 
@@ -629,7 +631,7 @@ agent 花费合计 $20.29，评委花费合计 $3.00，总计 $23.29。
 **题型：** 架构（资源池与放置）  
 **代码库：** https://github.com/volcengine/verl @ `fbb4b3a8bf`（main）  
 **复制进来的源码：** `verl/trainer/main_ppo_v0.py`, `verl/trainer/ppo/ray_trainer.py`, `verl/single_controller/ray/base.py`, `verl/checkpoint_engine/base.py`  
-**答案要点：** [evals/verl-resource-placement/answer-key.md](evals/verl-resource-placement/answer-key.md)（9 条，通过线 7/9）
+**答案要点：** [evals/verl-resource-placement/answer-key.md](../../evals/verl-resource-placement/answer-key.md)（9 条，通过线 7/9）
 
 **Prompt：**
 
@@ -680,11 +682,11 @@ agent 花费合计 $20.29，评委花费合计 $3.00，总计 $23.29。
 
 **带 skill**
 
-![verl-resource-placement 带 skill](evals/verl-resource-placement/artifacts/with-1/resource-placement.png)
+![verl-resource-placement 带 skill](cases/verl-resource-placement/artifacts/with-1/resource-placement.png)
 
 **不带 skill**
 
-![verl-resource-placement 不带 skill](evals/verl-resource-placement/artifacts/without-1/resource-placement.png)
+![verl-resource-placement 不带 skill](cases/verl-resource-placement/artifacts/without-1/resource-placement.png)
 
 ### 观察
 
@@ -699,7 +701,7 @@ agent 花费合计 $20.29，评委花费合计 $3.00，总计 $23.29。
 **题型：** 架构（rank 与并行组拓扑）  
 **代码库：** https://github.com/NVIDIA/Megatron-LM @ `e998be072d`（main）  
 **复制进来的源码：** `megatron/core/parallel_state.py`  
-**答案要点：** [evals/megatron-parallel-groups/answer-key.md](evals/megatron-parallel-groups/answer-key.md)（8 条，通过线 6/8）
+**答案要点：** [evals/megatron-parallel-groups/answer-key.md](../../evals/megatron-parallel-groups/answer-key.md)（8 条，通过线 6/8）
 
 **Prompt：**
 
@@ -750,11 +752,11 @@ agent 花费合计 $20.29，评委花费合计 $3.00，总计 $23.29。
 
 **带 skill**
 
-![megatron-parallel-groups 带 skill](evals/megatron-parallel-groups/artifacts/with-1/parallel-groups.png)
+![megatron-parallel-groups 带 skill](cases/megatron-parallel-groups/artifacts/with-1/parallel-groups.png)
 
 **不带 skill**
 
-![megatron-parallel-groups 不带 skill](evals/megatron-parallel-groups/artifacts/without-1/parallel-groups.png)
+![megatron-parallel-groups 不带 skill](cases/megatron-parallel-groups/artifacts/without-1/parallel-groups.png)
 
 ### 观察
 

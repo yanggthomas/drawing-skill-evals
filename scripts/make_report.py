@@ -3,10 +3,11 @@
 Per case it records: the question, the pinned source, scores and every grader's
 verdict per arm, agent-only time / cost / turns (judge cost separately), the
 drawing route, skill routing, leak check, the final images of both arms, and the
-hand-written observations in <case dir>/notes.md if present.
+hand-written observations in <run dir>/cases/<name>/notes.md if present.
 """
 
 import colorsys
+import os
 import itertools
 import json
 import re
@@ -16,12 +17,14 @@ from pathlib import Path
 from PIL import Image
 
 # Results files to include, in report order (one entry per `claude plugin eval --json` run).
+# One archived run: results/, cases/<name>/ (artifacts + reviews + notes), notes.md, REPORT.md.
+RUN_DIR = Path("runs/2026-10-01-skill-v0.1.0")
 RESULTS_FILES = [
-    Path("evals/vllm-v1-schedule/results.json"),  # round 1: G1
-    Path("evals/results.json"),                   # round 2: G2 G3 G4 M1 M2
-    Path("evals/results-arch.json"),              # round 3: A1 A2 A3 (architecture)
+    RUN_DIR / "results" / "round1-g1.json",    # round 1: G1
+    RUN_DIR / "results" / "round2.json",       # round 2: G2 G3 G4 M1 M2
+    RUN_DIR / "results" / "round3-arch.json",  # round 3: A1 A2 A3 (architecture)
 ]
-REPORT = Path("REPORT.md")
+REPORT = RUN_DIR / "REPORT.md"
 CASE_IDS = {
     "vllm-v1-schedule": "G1",
     "verl-ppo-step": "G2",
@@ -78,6 +81,16 @@ def verdict(g):
     return mark
 
 
+def run_case(case_dir):
+    """Where this run keeps a case's outputs (case definitions stay in evals/<name>/)."""
+    return RUN_DIR / "cases" / Path(case_dir).name
+
+
+def rel(path):
+    """Link target relative to the report's directory."""
+    return os.path.relpath(path, RUN_DIR)
+
+
 def prompt_body(case_dir):
     text = (case_dir / "prompt.md").read_text()
     return text.split("---", 2)[2].strip()
@@ -110,7 +123,7 @@ def load_cases():
         results = json.loads(rf.read_text())
         for case in results["cases"]:
             case_dir = Path(case["dir"])
-            runs_file = case_dir / "artifacts" / "runs.json"
+            runs_file = run_case(case_dir) / "artifacts" / "runs.json"
             facts = json.loads(runs_file.read_text()) if runs_file.exists() else []
             arms = {}
             for arm, arm_runs in case["arms"].items():
@@ -125,7 +138,7 @@ def load_cases():
 
 def final_route(case_dir, arm, fact):
     """The tool that produced the final PNG, read from the kept source files; probes don't count."""
-    d = case_dir / "artifacts" / f"{arm}-1"
+    d = run_case(case_dir) / "artifacts" / f"{arm}-1"
     names = [p.name for p in d.iterdir()] if d.is_dir() else []
     if any(n.endswith(".tex") for n in names):
         return "TikZ"
@@ -154,7 +167,7 @@ def final_route(case_dir, arm, fact):
 
 
 def image_for(case_dir, arm):
-    d = case_dir / "artifacts" / f"{arm}-1"
+    d = run_case(case_dir) / "artifacts" / f"{arm}-1"
     pngs = sorted(d.glob("*.png")) if d.is_dir() else []
     return pngs[0] if pngs else None
 
@@ -236,7 +249,7 @@ def case_section(c):
     out = [f"## {cid} · `{c['name']}`", "", f"**题型：** {CASE_KIND.get(c['name'], '–')}  "]
     out += [f"**代码库：** {repo} @ `{commit[:10]}`（{ref}）  ",
             f"**复制进来的源码：** {', '.join(f'`{f}`' for f in files)}  ",
-            f"**答案要点：** [{d}/answer-key.md]({d}/answer-key.md)（{len(titles)} 条，通过线 {pass_rule(d)}）", ""]
+            f"**答案要点：** [{d}/answer-key.md]({rel(d / 'answer-key.md')})（{len(titles)} 条，通过线 {pass_rule(d)}）", ""]
     out += ["**Prompt：**", "", "> " + prompt_body(d), ""]
     out += ["**答案要点标题：** " + " · ".join(f"{i}. {t}" for i, t in enumerate(titles, 1)), ""]
     out += ["### 评分", "", grader_table(c), "", "### 运行数据（agent 部分不含评委）", "", run_table(c), ""]
@@ -245,8 +258,8 @@ def case_section(c):
     for arm in ("with", "without"):
         img = image_for(d, arm)
         out += [f"**{ARM_LABEL[arm]}**", ""]
-        out += [f"![{c['name']} {ARM_LABEL[arm]}]({img})" if img else "_没有生成 PNG_", ""]
-    notes = d / "notes.md"
+        out += [f"![{c['name']} {ARM_LABEL[arm]}]({rel(img)})" if img else "_没有生成 PNG_", ""]
+    notes = run_case(d) / "notes.md"
     if notes.exists():
         out += ["### 观察", "", notes.read_text().strip(), ""]
     return "\n".join(out)
@@ -286,7 +299,7 @@ def clip01(x):
 
 
 def load_review(case_dir):
-    f = case_dir / "review.json"
+    f = run_case(case_dir) / "review.json"
     return json.loads(f.read_text()) if f.exists() else {}
 
 
@@ -348,7 +361,7 @@ def consistency_section(cases):
 
 
 def load_content_review(case_dir):
-    f = case_dir / "content-review.json"
+    f = run_case(case_dir) / "content-review.json"
     return json.loads(f.read_text()) if f.exists() else None
 
 
@@ -417,6 +430,8 @@ def main():
         "每个 case 跑两组：带插件（带 skill）和不带插件（不带 skill），**每组 1 次**；agent 和评委都是 Opus。"
         "prompt 不指定画图工具，只要求输出一张 PNG。分数 = render、correctness、readability 三个评分器的通过比例；"
         "skill 是否触发只作指示，不计分。美观和配色由人工另行打分（见 PLAN 第 9 步）。", "",
+        "> ⚠ **这次评测的设计存在问题，分数和 Δ 不能用来判断 skill 的好坏**，见 [LIMITATIONS.md](LIMITATIONS.md)。"
+        "可以采信的部分是路由、效率（agent 耗时和花费）、定性观察，以及产物本身。", "",
         "> 每组只有 1 个样本，Δ 和耗时差都是单次观测，不是稳定结论。", "",
         "**读结果前先看题型。** graphviz skill 是为**架构图**设计的（SKILL.md：“topology-first graphs”，并明确“Not for UML sequence / activity”）。"
         "第 1、2 轮的 G1–G4 问的是单步算法、训练步骤顺序、跨线程请求生命周期，属于流程图 / 时序图，**在 graphviz skill 的设计范围之外**；"
@@ -431,18 +446,18 @@ def main():
     rt = review_table(cases)
     if rt:
         head += [rt, ""]
-    overall = Path("evals/notes.md")
+    overall = RUN_DIR / "notes.md"
     if overall.exists():
         head += ["## 总体观察", "", overall.read_text().strip(), ""]
     pending = [n for n in CASE_ORDER if n not in {c["name"] for c in cases} and Path("evals", n, "prompt.md").exists()]
     if pending:
         head += ["## 待跑的 case", "",
                  "以下 case 已写好（源码、答案要点、评分器齐全），还没有运行结果：", ""]
-        head += [f"- {CASE_IDS[n]} `{n}`：{CASE_KIND[n]}（[答案要点](evals/{n}/answer-key.md)）" for n in pending]
+        head += [f"- {CASE_IDS[n]} `{n}`：{CASE_KIND[n]}（[答案要点]({rel(Path('evals', n, 'answer-key.md'))})）" for n in pending]
         head += [""]
-    improvements = Path("SKILL-IMPROVEMENTS.md")
+    improvements = RUN_DIR / "SKILL-IMPROVEMENTS.md"
     if improvements.exists():
-        head += ["## skill 强化方案", "", f"见 [{improvements}]({improvements})。", ""]
+        head += ["## skill 强化方案（未实施）", "", f"见 [{improvements.name}]({rel(improvements)})。", ""]
     body = [case_section(c) for c in cases]
     REPORT.write_text("\n".join(head) + "\n" + "\n\n".join(body) + "\n")
     print(f"wrote {REPORT} with {len(cases)} cases")

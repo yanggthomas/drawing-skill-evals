@@ -1,0 +1,1012 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Eval report — drawing-skills v0.1.0</title>
+</head>
+<body>
+<style>
+:root{--plane:#f9f9f7;--surface:#fcfcfb;--ink:#0b0b0b;--ink-2:#52514e;--ink-3:#6b6a64;--hairline:rgba(11,11,11,.10);--grid:#e1e0d9;--inset:rgba(11,11,11,.04);--accent:#2a78d6;--base-fill:#6b6a64;--delta-good:#006300;--good:#067d06;--warning:#8a6100;--critical:#d03b3b;
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){:root{--plane:#0d0d0d;--surface:#1a1a19;--ink:#ffffff;--ink-2:#c3c2b7;--ink-3:#898781;--hairline:rgba(255,255,255,.10);--grid:#2c2c2a;--inset:rgba(255,255,255,.05);--accent:#3987e5;--base-fill:#898781;--delta-good:#0ca30c;--good:#0ca30c;--warning:#fab219;--critical:#e06c6c;color-scheme:dark}}
+:root[data-theme="dark"]{--plane:#0d0d0d;--surface:#1a1a19;--ink:#ffffff;--ink-2:#c3c2b7;--ink-3:#898781;--hairline:rgba(255,255,255,.10);--grid:#2c2c2a;--inset:rgba(255,255,255,.05);--accent:#3987e5;--base-fill:#898781;--delta-good:#0ca30c;--good:#0ca30c;--warning:#fab219;--critical:#e06c6c;color-scheme:dark}
+:root[data-theme="light"]{--plane:#f9f9f7;--surface:#fcfcfb;--ink:#0b0b0b;--ink-2:#52514e;--ink-3:#6b6a64;--hairline:rgba(11,11,11,.10);--grid:#e1e0d9;--inset:rgba(11,11,11,.04);--accent:#2a78d6;--base-fill:#6b6a64;--delta-good:#006300;--good:#067d06;--warning:#8a6100;--critical:#d03b3b;color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;background:var(--plane);color:var(--ink);
+  font:14px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;
+  -webkit-text-size-adjust:100%}
+.wrap{max-width:880px;margin:0 auto;padding:40px 24px 64px;display:flex;flex-direction:column;gap:20px}
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+header h1{margin:2px 0 0;font-size:24px;font-weight:600;line-height:1.25;text-wrap:balance}
+.meta{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px;color:var(--ink-2);font-size:13px}
+.meta .num{font-variant-numeric:tabular-nums lining-nums}
+.banner{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:8px;
+  border:1px solid var(--hairline);background:var(--surface);font-size:13px}
+.banner .chip-warn{color:var(--warning);font-weight:600}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.tile{background:var(--surface);border:1px solid var(--hairline);border-radius:10px;padding:14px 16px;
+  display:flex;flex-direction:column;gap:4px}
+.tile .label{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+.tile .value{font-size:26px;font-weight:600;font-variant-numeric:tabular-nums lining-nums;line-height:1.1}
+.tile.hero .value{font-family:Georgia,"Times New Roman",serif;font-weight:400;font-size:48px}
+.tile .sub{font-size:12px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.tile .value.delta-pos{color:var(--delta-good)}
+.tile .value.delta-neg{color:var(--critical)}
+.toolbar{display:flex;gap:8px;justify-content:flex-end}
+.toolbar button{font:12px system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink-2);
+  background:var(--surface);border:1px solid var(--hairline);border-radius:6px;padding:4px 10px;cursor:pointer}
+.toolbar button:hover{color:var(--ink)}
+.toolbar button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.case{background:var(--surface);border:1px solid var(--hairline);border-radius:10px;padding:18px 20px;
+  display:flex;flex-direction:column;gap:10px}
+.case-regressed{border-left:3px solid var(--critical)}
+.verdict{margin:6px 0 0;font-size:15px}
+.verdict .delta{font-size:15px}
+.flag{font-size:11px;font-weight:600;color:var(--warning);white-space:nowrap}
+.star{color:var(--warning);font-size:.45em;vertical-align:super;line-height:0;cursor:help}
+.legend summary{cursor:pointer;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2)}
+.legend-list{margin:8px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--ink-2)}
+.case-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.case-head h2{margin:0;font-size:16px;font-weight:600}
+.case-head .spacer{flex:1}
+.case-score{font-size:15px;font-weight:600}
+.mono{font:12px "SF Mono",ui-monospace,Menlo,Consolas,monospace}
+.num{font-variant-numeric:tabular-nums lining-nums}
+.muted{color:var(--ink-3);font-size:12px}
+.meter{display:inline-block;position:relative;width:120px;height:6px;border-radius:4px;background:var(--grid);
+  vertical-align:middle}
+.meter>span{display:block;height:100%;border-radius:4px;max-width:100%}
+.meter .tick{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--ink-3);border-radius:1px}
+.m-accent>span{background:var(--accent)}
+.m-base>span{background:var(--base-fill)}
+.delta{font-size:12px;font-weight:600;font-variant-numeric:tabular-nums}
+.delta-pos{color:var(--delta-good)}
+.delta-neg{color:var(--critical)}
+.delta-zero{color:var(--ink-3)}
+details.section{border-top:1px solid var(--grid);padding-top:10px}
+details.section>summary{cursor:pointer;font-size:12px;font-weight:600;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--ink-2);list-style-position:outside;margin-left:2px}
+details.section>summary:hover{color:var(--ink)}
+details.section[open]>summary{margin-bottom:8px}
+.md{display:flex;flex-direction:column;gap:8px;background:var(--inset);border-radius:8px;
+  padding:12px 14px;overflow-wrap:break-word}
+.md>:first-child{margin-top:0}
+.md h1,.md h2,.md h3,.md h4,.md h5,.md h6{margin:4px 0 0;font-size:1em;font-weight:600;line-height:1.3}
+.md p,.md ul,.md ol,.md blockquote,.md table,.md pre,.md hr{margin:0}
+.md ul,.md ol{display:flex;flex-direction:column;gap:4px;padding-left:20px}
+.md blockquote{border-left:2px solid var(--hairline);padding-left:10px;color:var(--ink-2)}
+.md :not(pre)>code{background:var(--inset);padding:1px 4px;border-radius:4px;
+  font:.92em "SF Mono",ui-monospace,Menlo,Consolas,monospace}
+.md pre{background:var(--inset);border:1px solid var(--hairline);padding:10px 12px;border-radius:6px;
+  overflow-x:auto;font:12px/1.5 "SF Mono",ui-monospace,Menlo,Consolas,monospace}
+.md pre code{background:none;padding:0;font:inherit}
+.md table{width:100%;border-collapse:collapse}
+.md th,.md td{padding:5px 8px;text-align:left;vertical-align:top;border-bottom:1px solid var(--grid)}
+.md th{font-weight:600;color:var(--ink-2)}
+.md a{color:var(--accent);text-decoration:none}
+.md a:hover{text-decoration:underline}
+.grader-def{display:flex;flex-direction:column;gap:6px;padding:8px 0}
+.grader-def+.grader-def{border-top:1px solid var(--grid)}
+.grader-def-head{display:flex;align-items:baseline;gap:8px}
+.grader-name{font:13px "SF Mono",ui-monospace,Menlo,Consolas,monospace;font-weight:600}
+.badge{font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2);
+  border:1px solid var(--hairline);border-radius:999px;padding:1px 8px}
+.config{display:flex;flex-direction:column;gap:2px;background:var(--inset);border-radius:8px;padding:10px 14px}
+.config code{font:12px "SF Mono",ui-monospace,Menlo,Consolas,monospace;overflow-wrap:anywhere}
+.arm{display:flex;flex-direction:column;gap:8px;padding:6px 0}
+.arm+.arm{border-top:1px dashed var(--grid);margin-top:4px;padding-top:12px}
+.arm-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.arm-label{font-size:13px;font-weight:600}
+.run{border:1px solid var(--grid);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.run-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.run-title{font-size:12px;font-weight:600;color:var(--ink-2)}
+.run-error .explanation{color:var(--ink-2)}
+.note{font-size:12px;color:var(--ink-2)}
+.graders{display:flex;flex-direction:column;gap:4px}
+details.grader{border-radius:6px}
+details.grader>summary{cursor:pointer;display:flex;align-items:baseline;gap:8px;padding:3px 4px;
+  border-radius:6px;list-style:none}
+details.grader>summary::-webkit-details-marker{display:none}
+details.grader>summary::before{content:'▸';font-size:10px;color:var(--ink-3);flex:none;
+  transition:transform .12s ease}
+details.grader[open]>summary::before{transform:rotate(90deg)}
+details.grader>summary:hover{background:var(--inset)}
+details.grader>summary:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.grader-body{padding:6px 8px 8px 24px;display:flex;flex-direction:column;gap:6px}
+.chip{font-size:11px;font-weight:600;border-radius:999px;padding:1px 8px;white-space:nowrap}
+.chip-pass{color:var(--good);border:1px solid currentColor}
+.chip-fail{color:var(--critical);border:1px solid currentColor}
+.chip.chip-warn{color:var(--warning);border:1px solid currentColor}
+.explanation{margin:0;font-size:13px;color:var(--ink-2);white-space:pre-wrap;overflow-wrap:break-word}
+.kv{display:flex;gap:8px;font-size:12px;color:var(--ink-3)}
+.votes{font-variant-numeric:tabular-nums;letter-spacing:.1em}
+pre.evidence{margin:0;background:var(--inset);border:1px solid var(--hairline);border-radius:6px;
+  padding:8px 10px;overflow-x:auto;max-height:320px;
+  font:12px/1.5 "SF Mono",ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;overflow-wrap:break-word}
+footer{color:var(--ink-3);font-size:12px;text-align:center;padding-top:8px}
+@media (prefers-reduced-motion:no-preference){
+  details.grader>summary,.toolbar button{transition:background .12s ease,color .12s ease}
+}
+@media (prefers-reduced-motion:reduce){
+  details.grader>summary::before{transition:none}
+}
+@media print{
+  :root,:root[data-theme="dark"],:root[data-theme="light"]{--plane:#f9f9f7;--surface:#fcfcfb;--ink:#0b0b0b;--ink-2:#52514e;--ink-3:#6b6a64;--hairline:rgba(11,11,11,.10);--grid:#e1e0d9;--inset:rgba(11,11,11,.04);--accent:#2a78d6;--base-fill:#6b6a64;--delta-good:#006300;--good:#067d06;--warning:#8a6100;--critical:#d03b3b;color-scheme:light}
+  body{background:#fff}
+  .toolbar{display:none}
+  .case,.run,.grader-def{break-inside:avoid}
+  pre.evidence{max-height:none}
+}
+</style>
+<div class="wrap">
+<header>
+<div class="eyebrow">Plugin eval report</div>
+<h1>drawing-skills v0.1.0</h1>
+<p class="verdict">Plugin effect: <span class="delta delta-neg">↓ -13.3 pts</span> vs baseline — improved 0 · flat 3 · regressed 2 of 5 cases.</p>
+<div class="meta">
+<span class="mono">.</span>
+<span>Claude Code v2.1.286</span>
+<span class="num">2026-10-01 04:58 UTC</span>
+<span class="num">43m 10s</span>
+<span class="num">$13.95</span>
+<span class="num">10 runs</span>
+
+
+<span>model opus</span>
+<span>judge opus</span>
+<span class="num">threshold 0%</span>
+<span>filtered: --tag round2</span>
+</div>
+</header>
+
+<section class="tiles">
+<div class="tile hero"><span class="label">Suite score · with plugin</span><span class="value">80%</span><span class="sub">mean of per-case scores</span></div>
+<div class="tile"><span class="label">Ablation Δ</span><span class="value num delta-neg">↓ -13.3</span><span class="sub">score points vs baseline, 5 of 5 cases</span></div>
+<div class="tile"><span class="label">Baseline score</span><span class="value num">93.3%</span><span class="sub">without the plugin</span></div>
+<div class="tile"><span class="label">Cases</span><span class="value num">5</span><span class="sub">5 of 5 ≥ 0% threshold</span></div>
+<div class="tile"><span class="label">Perfect runs</span><span class="value num">40%</span><span class="sub">runs where every grader passed</span></div>
+</section>
+<details class="section legend">
+<summary>How to read this report</summary>
+<ul class="legend-list">
+<li>A run's score is the weighted fraction of its graders that passed; a "perfect" run passed every grader.</li>
+<li>A case's score is the mean of its runs; a case passes when its score is at or above the 0% threshold (the tick on each case bar).</li>
+<li>The suite score is the mean of the per-case scores.</li>
+<li>Judge votes are independent samples of the LLM judge; the majority decides pass or fail.</li>
+<li>"With plugin" and "Baseline" runs are identical except for the plugin being loaded; Δ is the with-plugin score minus the baseline score.</li>
+
+</ul>
+</details>
+<div class="toolbar"><button type="button" data-act="expand">Expand all</button><button type="button" data-act="collapse">Collapse all</button></div>
+<article class="case case-regressed" id="case-1">
+<div class="case-head">
+<h2>ffmpeg-transcode-threads</h2>
+<span class="muted mono">evals/ffmpeg-transcode-threads</span>
+<span class="spacer"></span>
+
+<span class="delta delta-neg">↓ -33.3 pts</span>
+<span class="muted">with plugin</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:66.7%"></span><i class="tick" style="left:0.0%"></i></span>
+<span class="num case-score">66.7%</span>
+</div>
+
+<details class="section" open>
+<summary>Results</summary>
+<section class="arm">
+<div class="arm-head">
+<span class="arm-label">With plugin</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:66.7%"></span></span>
+<span class="num">66.7%</span>
+<span class="muted num">0% of runs perfect</span>
+</div>
+<div class="run">
+<div class="run-head">
+<span class="run-title">Run 1</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:66.7%"></span></span>
+<span class="num">66.7%</span>
+<span class="muted num">27 turns · $1.56 · 04:58:57 UTC</span>
+</div>
+
+<div class="graders"><details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">correctness</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: PASS PASS PASS (image)</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✓ ✓ ✓</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">[image shown to the judge: out/transcode-threads.png — sent as image/jpeg, 410.3KB, 2000x1897px; file on disk: image/png, 680.3KB, 2659x2522px]</pre>
+</div>
+</details>
+<details class="grader" open>
+<summary><span class="chip chip-fail">✗ fail</span> <span class="grader-name">readability</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: FAIL FAIL FAIL (image)</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✗ ✗ ✗</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">[image shown to the judge: out/transcode-threads.png — sent as image/jpeg, 410.3KB, 2000x1897px; file on disk: image/png, 680.3KB, 2659x2522px]</pre>
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">render</span>  </summary>
+<div class="grader-body">
+<p class="explanation">out/transcode-threads.png exists as expected</p>
+
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">skill-fired</span>  <span class="badge">plugin-fired indicator</span></summary>
+<div class="grader-body">
+<p class="explanation">Skill called 1x (expected 1..∞)</p>
+
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">skill-misrouted</span>  <span class="badge">plugin-fired indicator</span></summary>
+<div class="grader-body">
+<p class="explanation">Skill called 0x (expected 0..0)</p>
+
+</div>
+</details></div>
+</div>
+</section><section class="arm">
+<div class="arm-head">
+<span class="arm-label">Baseline (no plugin)</span>
+<span class="meter m-base" aria-hidden="true"><span style="width:100.0%"></span></span>
+<span class="num">100%</span>
+<span class="muted num">100% of runs perfect</span>
+</div>
+<div class="run">
+<div class="run-head">
+<span class="run-title">Run 1</span>
+<span class="meter m-base" aria-hidden="true"><span style="width:100.0%"></span></span>
+<span class="num">100%</span>
+<span class="muted num">36 turns · $1.84 · 05:02:10 UTC</span>
+</div>
+
+<div class="graders"><details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">correctness</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: PASS PASS PASS (image)</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✓ ✓ ✓</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">[image shown to the judge: out/transcode-threads.png — sent as image/jpeg, 365.5KB, 2000x804px; file on disk: image/png, 892.2KB, 3335x1340px]</pre>
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">readability</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: PASS PASS PASS (image)</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✓ ✓ ✓</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">[image shown to the judge: out/transcode-threads.png — sent as image/jpeg, 365.5KB, 2000x804px; file on disk: image/png, 892.2KB, 3335x1340px]</pre>
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">render</span>  </summary>
+<div class="grader-body">
+<p class="explanation">out/transcode-threads.png exists as expected</p>
+
+</div>
+</details></div>
+</div>
+</section>
+</details>
+<details class="section" open>
+<summary>Prompt</summary>
+<div class="md"><p>I'm trying to understand how the ffmpeg command-line tool runs a transcode with threads. The fftools source, pinned at the commit in <code>PINNED.txt</code>, is in the read-only source directory available to this session. Draw one diagram that explains the threaded transcoding pipeline: which threads exist, what queues sit between them, how packets and frames flow from demuxer to muxer (including stream copy), how backpressure works, and how the scheduler keeps the outputs in sync. Ground every element in the code. Save the finished diagram as a PNG image at <code>out/transcode-threads.png</code>.</p>
+</div>
+</details>
+<details class="section" open>
+<summary>Graders — what "good" means for this case</summary>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">correctness</span><span class="badge">llm</span></div>
+<div class="md"><p>You are grading a diagram (the attached PNG) that is meant to explain the threaded transcoding pipeline in <code>fftools</code> (FFmpeg master). Judge only what the picture shows. Do not credit anything you would have to infer from code that is not drawn. Exact identifiers are not required when the mechanism is drawn unambiguously.</p>
+<p>Reference facts:</p>
+<ol>
+<li><strong>Scheduler in the middle.</strong> Demuxers, decoders, filtergraphs, encoders and muxers never talk to each other directly. Every send and receive goes through the <code>Scheduler</code>, which is the only object that knows the whole graph (a DAG, checked at start).</li>
+<li><strong>One thread per component.</strong> Each demuxer, decoder, filtergraph, encoder and muxer runs in its own thread: <code>input_thread</code>, <code>decoder_thread</code>, <code>filter_thread</code>, <code>encoder_thread</code>, <code>muxer_thread</code>. <code>sch_start</code> creates them muxers first and demuxers last.</li>
+<li><strong>Queues sit at the consumer's input.</strong> Queues: each decoder has a packet queue, each filtergraph a frame queue (one stream per input plus a control stream), each encoder a frame queue, each muxer a packet queue with one stream per output stream. The demuxer has no input queue.</li>
+<li><strong>Data path.</strong> Packets go demux → decoder → frames → filtergraph → encoder → packets → muxer. For stream copy, demuxed packets go straight to the muxer. Subtitle frames skip filtering and go decoder → encoder.</li>
+<li><strong>Thread loop.</strong> Each worker thread loops: receive from its own input queue (<code>sch_*_receive</code>), process, then send downstream (<code>sch_*_send</code>, which pushes into the next thread's queue).</li>
+<li><strong>Bounded queues = backpressure.</strong> Queues are tiny (2 entries by default for packets and for frames), and <code>tq_send</code> blocks while the destination is full. A slow consumer therefore stalls its producers.</li>
+<li><strong>Sync by muxer DTS.</strong> Each packet that reaches a muxer stream updates that stream's <code>last_dts</code> and calls <code>schedule_update_locked</code>. That function finds the trailing output DTS and unchokes only the sources (demuxers / source filtergraphs) feeding streams that are less than <code>SCHEDULE_TOLERANCE</code> (100 ms) ahead of it. At least one source always stays unchoked.</li>
+<li><strong>Choking a demuxer.</strong> A choked demuxer blocks on a condition variable in <code>waiter_wait</code> at the start of <code>sch_demux_send</code>. Choking it also chokes the queues it feeds (<code>tq_choke</code>), so downstream threads don't drain them.</li>
+</ol>
+<p>For each fact, decide: SHOWN (drawn correctly), ABSENT (not drawn), or CONTRADICTED (drawn in a way that conflicts with the fact). Examples of a contradiction: components call each other directly instead of through the scheduler; demuxers have an input queue; a full queue drops data instead of blocking.</p>
+<p>PASS if at least 6 of the 8 facts are SHOWN and none is CONTRADICTED.
+FAIL otherwise. Begin your explanation by listing the SHOWN / ABSENT / CONTRADICTED verdict for each fact number.</p>
+</div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">readability</span><span class="badge">llm</span></div>
+<div class="md"><p>You are grading the visual quality of a technical diagram (the attached PNG). Ignore whether its content is technically correct; grade only how readable it is.</p>
+<p>Check each criterion:</p>
+<ol>
+<li>Every label is legible at 100% zoom: no text is truncated, clipped, or too small to read.</li>
+<li>No nodes overlap, and no labels overlap nodes, edges, or each other.</li>
+<li>There is one clear reading direction (top-to-bottom or left-to-right) that a reader can follow from start to end.</li>
+<li>Edges are distinguishable: a reader can trace each edge from its source to its target, and edges that mean different things (e.g. control flow vs. data handed off) are visually different or labeled.</li>
+<li>The visual grammar is consistent: shape and/or colour encode the role of a node (e.g. decision, action, data structure, queue), and the same role always looks the same.</li>
+<li>There are no orphan nodes (unconnected, without an obvious reason) and no purely decorative elements.</li>
+</ol>
+<p>PASS if criteria 1, 2 and 3 all hold and at most one of criteria 4–6 fails.
+FAIL otherwise. Begin your explanation by giving a pass/fail for each criterion number.</p>
+</div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">render</span><span class="badge">file_exists</span></div>
+<div class="config"><div class="kv"><span>path</span><code>&quot;out/transcode-threads.png&quot;</code></div><div class="kv"><span>exists</span><code>true</code></div></div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">skill-fired</span><span class="badge">tool_used</span></div>
+<div class="config"><div class="kv"><span>tool</span><code>&quot;Skill&quot;</code></div><div class="kv"><span>input_match</span><code>&quot;\&quot;skill\&quot;\\s*:\\s*\&quot;(?:[\\w-]+:)?graphviz\&quot;&quot;</code></div></div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">skill-misrouted</span><span class="badge">tool_used</span></div>
+<div class="config"><div class="kv"><span>tool</span><code>&quot;Skill&quot;</code></div><div class="kv"><span>input_match</span><code>&quot;\&quot;skill\&quot;\\s*:\\s*\&quot;(?:[\\w-]+:)?model-architecture\&quot;&quot;</code></div><div class="kv"><span>min</span><code>0</code></div><div class="kv"><span>max</span><code>0</code></div><div class="kv"><span>arm</span><code>&quot;with-only&quot;</code></div></div>
+</div>
+</details>
+</article>
+<article class="case" id="case-2">
+<div class="case-head">
+<h2>megatron-tp-sp-mlp</h2>
+<span class="muted mono">evals/megatron-tp-sp-mlp</span>
+<span class="spacer"></span>
+
+<span class="delta delta-zero">· 0.0 pts</span>
+<span class="muted">with plugin</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:100.0%"></span><i class="tick" style="left:0.0%"></i></span>
+<span class="num case-score">100%</span>
+</div>
+
+<details class="section" open>
+<summary>Results</summary>
+<section class="arm">
+<div class="arm-head">
+<span class="arm-label">With plugin</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:100.0%"></span></span>
+<span class="num">100%</span>
+<span class="muted num">100% of runs perfect</span>
+</div>
+<div class="run">
+<div class="run-head">
+<span class="run-title">Run 1</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:100.0%"></span></span>
+<span class="num">100%</span>
+<span class="muted num">27 turns · $1.19 · 05:10:43 UTC</span>
+</div>
+
+<div class="graders"><details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">correctness</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: PASS PASS PASS (image)</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✓ ✓ ✓</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">[image shown to the judge: out/tp-sp-mlp.png — sent as image/jpeg, 263.6KB, 2000x896px; file on disk: image/png, 398.7KB, 2648x1186px]</pre>
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">readability</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: PASS PASS PASS (image)</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✓ ✓ ✓</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">[image shown to the judge: out/tp-sp-mlp.png — sent as image/jpeg, 263.6KB, 2000x896px; file on disk: image/png, 398.7KB, 2648x1186px]</pre>
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">render</span>  </summary>
+<div class="grader-body">
+<p class="explanation">out/tp-sp-mlp.png exists as expected</p>
+
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">skill-fired</span>  <span class="badge">plugin-fired indicator</span></summary>
+<div class="grader-body">
+<p class="explanation">Skill called 1x (expected 1..∞)</p>
+
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">skill-misrouted</span>  <span class="badge">plugin-fired indicator</span></summary>
+<div class="grader-body">
+<p class="explanation">Skill called 0x (expected 0..0)</p>
+
+</div>
+</details></div>
+</div>
+</section><section class="arm">
+<div class="arm-head">
+<span class="arm-label">Baseline (no plugin)</span>
+<span class="meter m-base" aria-hidden="true"><span style="width:100.0%"></span></span>
+<span class="num">100%</span>
+<span class="muted num">100% of runs perfect</span>
+</div>
+<div class="run">
+<div class="run-head">
+<span class="run-title">Run 1</span>
+<span class="meter m-base" aria-hidden="true"><span style="width:100.0%"></span></span>
+<span class="num">100%</span>
+<span class="muted num">18 turns · $0.84 · 05:14:28 UTC</span>
+</div>
+
+<div class="graders"><details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">correctness</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: PASS PASS PASS (image)</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✓ ✓ ✓</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">[image shown to the judge: out/tp-sp-mlp.png — sent as image/jpeg, 475.9KB, 2000x1385px; file on disk: image/png, 626.5KB, 2252x1560px]</pre>
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">readability</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: PASS FAIL PASS (image)</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✓ ✗ ✓</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">[image shown to the judge: out/tp-sp-mlp.png — sent as image/jpeg, 475.9KB, 2000x1385px; file on disk: image/png, 626.5KB, 2252x1560px]</pre>
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">render</span>  </summary>
+<div class="grader-body">
+<p class="explanation">out/tp-sp-mlp.png exists as expected</p>
+
+</div>
+</details></div>
+</div>
+</section>
+</details>
+<details class="section" open>
+<summary>Prompt</summary>
+<div class="md"><p>I'm trying to understand tensor parallelism with sequence parallelism in Megatron-Core. The source, pinned at the commit in <code>PINNED.txt</code>, is in the read-only source directory available to this session. Draw one diagram of a single transformer MLP block (fc1 → activation → fc2) on one of p tensor-parallel ranks with sequence parallelism enabled. Show the per-rank tensor and weight shapes in terms of s, b, h, the FFN hidden size and p, and where all-gather and reduce-scatter happen, in both the forward and the backward pass. Ground every element in the code. Save the finished diagram as a PNG image at <code>out/tp-sp-mlp.png</code>.</p>
+</div>
+</details>
+<details class="section" open>
+<summary>Graders — what "good" means for this case</summary>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">correctness</span><span class="badge">llm</span></div>
+<div class="md"><p>You are grading a diagram (the attached PNG) that is meant to explain a tensor-parallel + sequence-parallel MLP block in Megatron-Core. Judge only what the picture shows. Do not credit anything you would have to infer from code that is not drawn. Exact identifiers are not required when the mechanism is drawn unambiguously.</p>
+<p>Reference facts:</p>
+<ol>
+<li><strong>Sequence-sharded input.</strong> With sequence parallelism, the MLP input on each rank is sequence-sharded: <code>[s/p, b, h]</code>. The full <code>[s, b, h]</code> exists only after an all-gather along the first (sequence) dimension.</li>
+<li><strong>fc1 is column-parallel.</strong> <code>linear_fc1</code> is a <code>ColumnParallelLinear</code> whose weight is split along its output dimension: each rank holds <code>F/p</code> output columns (<code>F</code> doubled for gated units such as SwiGLU). It is built with <code>gather_output=False</code>.</li>
+<li><strong>Forward all-gather before fc1.</strong> In the forward pass, fc1 all-gathers the sequence-sharded input to <code>[s, b, h]</code> and then runs the GEMM, giving <code>[s, b, F/p]</code> per rank. With sequence parallelism no copy-to-TP region is used.</li>
+<li><strong>Local activation.</strong> The activation (e.g. GeLU/SwiGLU) runs locally on <code>[s, b, F/p]</code> with no communication.</li>
+<li><strong>fc2 is row-parallel.</strong> <code>linear_fc2</code> is a <code>RowParallelLinear</code> with <code>input_is_parallel=True</code>: its weight is split along the input dimension (<code>F/p</code> per rank), and each rank produces a partial <code>[s, b, h]</code>.</li>
+<li><strong>Forward reduce-scatter after fc2.</strong> fc2's partial outputs are reduce-scattered along the sequence dimension: summed across ranks and re-sharded to <code>[s/p, b, h]</code>. Without sequence parallelism this would be an all-reduce instead.</li>
+<li><strong>Backward of fc2's reduce-scatter.</strong> The backward of that reduce-scatter is an all-gather of the output gradient along the sequence dimension, back to <code>[s, b, h]</code>.</li>
+<li><strong>Backward of fc1.</strong> In fc1's backward, the saved sequence-sharded input is all-gathered again (asynchronously) to compute the weight gradient. The input gradient <code>grad_output @ W</code> is reduce-scattered along the sequence dimension back to <code>[s/p, b, h]</code>.</li>
+</ol>
+<p>For each fact, decide: SHOWN (drawn correctly), ABSENT (not drawn), or CONTRADICTED (drawn in a way that conflicts with the fact). Examples of a contradiction: the full [s, b, h] activation is kept between blocks; fc1 is row-parallel or fc2 column-parallel; an all-reduce is used in the forward pass with sequence parallelism.</p>
+<p>PASS if at least 6 of the 8 facts are SHOWN and none is CONTRADICTED.
+FAIL otherwise. Begin your explanation by listing the SHOWN / ABSENT / CONTRADICTED verdict for each fact number.</p>
+</div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">readability</span><span class="badge">llm</span></div>
+<div class="md"><p>You are grading the visual quality of a technical diagram (the attached PNG). Ignore whether its content is technically correct; grade only how readable it is.</p>
+<p>Check each criterion:</p>
+<ol>
+<li>Every label is legible at 100% zoom: no text is truncated, clipped, or too small to read.</li>
+<li>No nodes overlap, and no labels overlap nodes, edges, or each other.</li>
+<li>There is one clear reading direction (top-to-bottom or left-to-right) that a reader can follow from start to end.</li>
+<li>Edges are distinguishable: a reader can trace each edge from its source to its target, and edges that mean different things (e.g. control flow vs. data handed off) are visually different or labeled.</li>
+<li>The visual grammar is consistent: shape and/or colour encode the role of a node (e.g. decision, action, data structure, queue), and the same role always looks the same.</li>
+<li>There are no orphan nodes (unconnected, without an obvious reason) and no purely decorative elements.</li>
+</ol>
+<p>PASS if criteria 1, 2 and 3 all hold and at most one of criteria 4–6 fails.
+FAIL otherwise. Begin your explanation by giving a pass/fail for each criterion number.</p>
+</div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">render</span><span class="badge">file_exists</span></div>
+<div class="config"><div class="kv"><span>path</span><code>&quot;out/tp-sp-mlp.png&quot;</code></div><div class="kv"><span>exists</span><code>true</code></div></div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">skill-fired</span><span class="badge">tool_used</span></div>
+<div class="config"><div class="kv"><span>tool</span><code>&quot;Skill&quot;</code></div><div class="kv"><span>input_match</span><code>&quot;\&quot;skill\&quot;\\s*:\\s*\&quot;(?:[\\w-]+:)?model-architecture\&quot;&quot;</code></div></div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">skill-misrouted</span><span class="badge">tool_used</span></div>
+<div class="config"><div class="kv"><span>tool</span><code>&quot;Skill&quot;</code></div><div class="kv"><span>input_match</span><code>&quot;\&quot;skill\&quot;\\s*:\\s*\&quot;(?:[\\w-]+:)?graphviz\&quot;&quot;</code></div><div class="kv"><span>min</span><code>0</code></div><div class="kv"><span>max</span><code>0</code></div><div class="kv"><span>arm</span><code>&quot;with-only&quot;</code></div></div>
+</div>
+</details>
+</article>
+<article class="case" id="case-3">
+<div class="case-head">
+<h2>redis-request-path</h2>
+<span class="muted mono">evals/redis-request-path</span>
+<span class="spacer"></span>
+
+<span class="delta delta-zero">· 0.0 pts</span>
+<span class="muted">with plugin</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:66.7%"></span><i class="tick" style="left:0.0%"></i></span>
+<span class="num case-score">66.7%</span>
+</div>
+
+<details class="section" open>
+<summary>Results</summary>
+<section class="arm">
+<div class="arm-head">
+<span class="arm-label">With plugin</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:66.7%"></span></span>
+<span class="num">66.7%</span>
+<span class="muted num">0% of runs perfect</span>
+</div>
+<div class="run">
+<div class="run-head">
+<span class="run-title">Run 1</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:66.7%"></span></span>
+<span class="num">66.7%</span>
+<span class="muted num">18 turns · $1.08 · 05:17:09 UTC</span>
+</div>
+
+<div class="graders"><details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">correctness</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: PASS PASS PASS (image)</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✓ ✓ ✓</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">[image shown to the judge: out/request-path.png — sent as image/jpeg, 248.4KB, 2000x977px; file on disk: image/png, 807.4KB, 4001x1955px]</pre>
+</div>
+</details>
+<details class="grader" open>
+<summary><span class="chip chip-fail">✗ fail</span> <span class="grader-name">readability</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: PASS FAIL FAIL (image)</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✓ ✗ ✗</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">[image shown to the judge: out/request-path.png — sent as image/jpeg, 248.4KB, 2000x977px; file on disk: image/png, 807.4KB, 4001x1955px]</pre>
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">render</span>  </summary>
+<div class="grader-body">
+<p class="explanation">out/request-path.png exists as expected</p>
+
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">skill-fired</span>  <span class="badge">plugin-fired indicator</span></summary>
+<div class="grader-body">
+<p class="explanation">Skill called 1x (expected 1..∞)</p>
+
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">skill-misrouted</span>  <span class="badge">plugin-fired indicator</span></summary>
+<div class="grader-body">
+<p class="explanation">Skill called 0x (expected 0..0)</p>
+
+</div>
+</details></div>
+</div>
+</section><section class="arm">
+<div class="arm-head">
+<span class="arm-label">Baseline (no plugin)</span>
+<span class="meter m-base" aria-hidden="true"><span style="width:66.7%"></span></span>
+<span class="num">66.7%</span>
+<span class="muted num">0% of runs perfect</span>
+</div>
+<div class="run">
+<div class="run-head">
+<span class="run-title">Run 1</span>
+<span class="meter m-base" aria-hidden="true"><span style="width:66.7%"></span></span>
+<span class="num">66.7%</span>
+<span class="muted num">17 turns · $1.17 · 05:19:59 UTC</span>
+</div>
+
+<div class="graders"><details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">correctness</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: PASS PASS PASS (image)</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✓ ✓ ✓</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">[image shown to the judge: out/request-path.png — sent as image/jpeg, 427.4KB, 1774x2000px; file on disk: image/png, 702.9KB, 2444x2755px]</pre>
+</div>
+</details>
+<details class="grader" open>
+<summary><span class="chip chip-fail">✗ fail</span> <span class="grader-name">readability</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: FAIL FAIL FAIL (image)</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✗ ✗ ✗</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">[image shown to the judge: out/request-path.png — sent as image/jpeg, 427.4KB, 1774x2000px; file on disk: image/png, 702.9KB, 2444x2755px]</pre>
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">render</span>  </summary>
+<div class="grader-body">
+<p class="explanation">out/request-path.png exists as expected</p>
+
+</div>
+</details></div>
+</div>
+</section>
+</details>
+<details class="section" open>
+<summary>Prompt</summary>
+<div class="md"><p>I'm trying to understand how Redis 8 handles a client request when I/O threads are enabled (<code>io-threads</code> greater than 1). The Redis source, pinned at the tag and commit in <code>PINNED.txt</code>, is in the read-only source directory available to this session. Draw one diagram that explains the life of one request across the main thread and an I/O thread: which thread accepts the connection, which reads and parses the query, which executes the command, which writes the reply, and how the client is handed between threads. Ground every element in the code. Save the finished diagram as a PNG image at <code>out/request-path.png</code>.</p>
+</div>
+</details>
+<details class="section" open>
+<summary>Graders — what "good" means for this case</summary>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">correctness</span><span class="badge">llm</span></div>
+<div class="md"><p>You are grading a diagram (the attached PNG) that is meant to explain the life of one client request across the main thread and an I/O thread (Redis 8, <code>io-threads</code> &gt; 1). Judge only what the picture shows. Do not credit anything you would have to infer from code that is not drawn. Exact identifiers are not required when the mechanism is drawn unambiguously.</p>
+<p>Reference facts:</p>
+<ol>
+<li><strong>Accept and assign on the main thread.</strong> The main thread accepts the connection and creates the client. <code>assignClientToIOThread</code> then picks the I/O thread with the fewest clients, unbinds the connection from the main event loop, and queues the client for that thread.</li>
+<li><strong>Hand-off to the I/O thread.</strong> In the main thread's <code>beforeSleep</code>, <code>sendPendingClientsToIOThreads</code> moves each thread's queued clients into that thread's <code>pending_clients</code> list under a mutex and triggers the thread's event notifier.</li>
+<li><strong>I/O thread binds the client.</strong> The I/O thread wakes in <code>handleClientsFromMainThread</code> → <code>processClientsFromMainThread</code>. It links the client into its own list, enables read/write, and binds the connection to its own event loop with <code>readQueryFromClient</code> as the read handler.</li>
+<li><strong>Read and parse in the I/O thread.</strong> On a readable event the I/O thread runs <code>readQueryFromClient</code>, which reads the socket into the query buffer, and <code>processInputBuffer</code>, which parses complete commands.</li>
+<li><strong>The I/O thread never executes commands.</strong> When a full command is parsed on an I/O thread, it sets <code>CLIENT_IO_PENDING_COMMAND</code> and calls <code>enqueuePendingClientsToMainThread</code>, which disables the client's read/write and moves it to the thread's to-main list.</li>
+<li><strong>Batched hand-back.</strong> The I/O thread passes its to-main list to the main thread under a mutex. It does this when 16 clients are pending (<code>IO_THREAD_MAX_PENDING_CLIENTS</code>) or before it sleeps, and it notifies the main thread only if the main thread is not already running.</li>
+<li><strong>Execute on the main thread.</strong> The main thread takes the clients in <code>handleClientsFromIOThread</code> or in <code>beforeSleep</code> (<code>processClientsOfAllIOThreads</code>). <code>processClientsFromIOThread</code> marks each client as running on the main thread, frees it if it was asked to close, and runs <code>processPendingCommandAndInputBuffer</code> → <code>processCommandAndResetClient</code> to execute the command. The reply goes into the client's output buffer.</li>
+<li><strong>Return trip and write in the I/O thread.</strong> After execution the client is queued back to its I/O thread, unless it must stay on the main thread (pubsub, monitor, blocked, tracking, ...). Back on the I/O thread, <code>processClientsFromMainThread</code> writes the pending reply with <code>writeToClient</code> and installs <code>sendReplyToClient</code> as the write handler if the reply wasn't fully flushed.</li>
+<li><strong>Main thread owns client lifetime.</strong> I/O threads never free clients: freeing happens on the main thread. Clients kept on the main thread are written by <code>handleClientsWithPendingWrites</code> in <code>beforeSleep</code>, which hands eligible ones back to I/O threads.</li>
+</ol>
+<p>For each fact, decide: SHOWN (drawn correctly), ABSENT (not drawn), or CONTRADICTED (drawn in a way that conflicts with the fact). Examples of a contradiction: the I/O thread executes the command; the main thread reads from the socket for an I/O-thread client; I/O threads free clients.</p>
+<p>PASS if at least 7 of the 9 facts are SHOWN and none is CONTRADICTED.
+FAIL otherwise. Begin your explanation by listing the SHOWN / ABSENT / CONTRADICTED verdict for each fact number.</p>
+</div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">readability</span><span class="badge">llm</span></div>
+<div class="md"><p>You are grading the visual quality of a technical diagram (the attached PNG). Ignore whether its content is technically correct; grade only how readable it is.</p>
+<p>Check each criterion:</p>
+<ol>
+<li>Every label is legible at 100% zoom: no text is truncated, clipped, or too small to read.</li>
+<li>No nodes overlap, and no labels overlap nodes, edges, or each other.</li>
+<li>There is one clear reading direction (top-to-bottom or left-to-right) that a reader can follow from start to end.</li>
+<li>Edges are distinguishable: a reader can trace each edge from its source to its target, and edges that mean different things (e.g. control flow vs. data handed off) are visually different or labeled.</li>
+<li>The visual grammar is consistent: shape and/or colour encode the role of a node (e.g. decision, action, data structure, queue), and the same role always looks the same.</li>
+<li>There are no orphan nodes (unconnected, without an obvious reason) and no purely decorative elements.</li>
+</ol>
+<p>PASS if criteria 1, 2 and 3 all hold and at most one of criteria 4–6 fails.
+FAIL otherwise. Begin your explanation by giving a pass/fail for each criterion number.</p>
+</div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">render</span><span class="badge">file_exists</span></div>
+<div class="config"><div class="kv"><span>path</span><code>&quot;out/request-path.png&quot;</code></div><div class="kv"><span>exists</span><code>true</code></div></div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">skill-fired</span><span class="badge">tool_used</span></div>
+<div class="config"><div class="kv"><span>tool</span><code>&quot;Skill&quot;</code></div><div class="kv"><span>input_match</span><code>&quot;\&quot;skill\&quot;\\s*:\\s*\&quot;(?:[\\w-]+:)?graphviz\&quot;&quot;</code></div></div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">skill-misrouted</span><span class="badge">tool_used</span></div>
+<div class="config"><div class="kv"><span>tool</span><code>&quot;Skill&quot;</code></div><div class="kv"><span>input_match</span><code>&quot;\&quot;skill\&quot;\\s*:\\s*\&quot;(?:[\\w-]+:)?model-architecture\&quot;&quot;</code></div><div class="kv"><span>min</span><code>0</code></div><div class="kv"><span>max</span><code>0</code></div><div class="kv"><span>arm</span><code>&quot;with-only&quot;</code></div></div>
+</div>
+</details>
+</article>
+<article class="case" id="case-4">
+<div class="case-head">
+<h2>verl-ppo-step</h2>
+<span class="muted mono">evals/verl-ppo-step</span>
+<span class="spacer"></span>
+
+<span class="delta delta-zero">· 0.0 pts</span>
+<span class="muted">with plugin</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:100.0%"></span><i class="tick" style="left:0.0%"></i></span>
+<span class="num case-score">100%</span>
+</div>
+
+<details class="section" open>
+<summary>Results</summary>
+<section class="arm">
+<div class="arm-head">
+<span class="arm-label">With plugin</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:100.0%"></span></span>
+<span class="num">100%</span>
+<span class="muted num">100% of runs perfect</span>
+</div>
+<div class="run">
+<div class="run-head">
+<span class="run-title">Run 1</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:100.0%"></span></span>
+<span class="num">100%</span>
+<span class="muted num">30 turns · $1.25 · 05:23:06 UTC</span>
+</div>
+
+<div class="graders"><details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">correctness</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: PASS PASS PASS (image)</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✓ ✓ ✓</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">[image shown to the judge: out/ppo-step.png — sent as image/jpeg, 330.5KB, 2000x1443px; file on disk: image/png, 831.8KB, 3817x2754px]</pre>
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">readability</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: PASS FAIL PASS (image)</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✓ ✗ ✓</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">[image shown to the judge: out/ppo-step.png — sent as image/jpeg, 330.5KB, 2000x1443px; file on disk: image/png, 831.8KB, 3817x2754px]</pre>
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">render</span>  </summary>
+<div class="grader-body">
+<p class="explanation">out/ppo-step.png exists as expected</p>
+
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">skill-fired</span>  <span class="badge">plugin-fired indicator</span></summary>
+<div class="grader-body">
+<p class="explanation">Skill called 1x (expected 1..∞)</p>
+
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">skill-misrouted</span>  <span class="badge">plugin-fired indicator</span></summary>
+<div class="grader-body">
+<p class="explanation">Skill called 0x (expected 0..0)</p>
+
+</div>
+</details></div>
+</div>
+</section><section class="arm">
+<div class="arm-head">
+<span class="arm-label">Baseline (no plugin)</span>
+<span class="meter m-base" aria-hidden="true"><span style="width:100.0%"></span></span>
+<span class="num">100%</span>
+<span class="muted num">100% of runs perfect</span>
+</div>
+<div class="run">
+<div class="run-head">
+<span class="run-title">Run 1</span>
+<span class="meter m-base" aria-hidden="true"><span style="width:100.0%"></span></span>
+<span class="num">100%</span>
+<span class="muted num">23 turns · $1.40 · 05:26:21 UTC</span>
+</div>
+
+<div class="graders"><details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">correctness</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: PASS PASS PASS (image)</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✓ ✓ ✓</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">[image shown to the judge: out/ppo-step.png — sent as image/jpeg, 468.3KB, 1914x2000px; file on disk: image/png, 452.4KB, 2620x2738px]</pre>
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">readability</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: PASS PASS PASS (image)</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✓ ✓ ✓</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">[image shown to the judge: out/ppo-step.png — sent as image/jpeg, 468.3KB, 1914x2000px; file on disk: image/png, 452.4KB, 2620x2738px]</pre>
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">render</span>  </summary>
+<div class="grader-body">
+<p class="explanation">out/ppo-step.png exists as expected</p>
+
+</div>
+</details></div>
+</div>
+</section>
+</details>
+<details class="section" open>
+<summary>Prompt</summary>
+<div class="md"><p>I'm trying to understand how verl runs one PPO/GRPO training step with its single-controller design. The trainer source, pinned at the commit in <code>PINNED.txt</code>, is in the read-only source directory available to this session. Draw one diagram that explains what one step of the training loop does: the order of rollout, reward, old and reference log-probs, values, advantage, critic and actor updates; which work runs on the driver and which on Ray worker groups; what accumulates in the batch along the way; and where the weights move between the trainer and the rollout engine. Ground every element in the code. Save the finished diagram as a PNG image at <code>out/ppo-step.png</code>.</p>
+</div>
+</details>
+<details class="section" open>
+<summary>Graders — what "good" means for this case</summary>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">correctness</span><span class="badge">llm</span></div>
+<div class="md"><p>You are grading a diagram (the attached PNG) that is meant to explain one PPO/GRPO training step in verl's single controller (<code>RayPPOTrainer.fit</code>). Judge only what the picture shows. Do not credit anything you would have to infer from code that is not drawn. Exact identifiers are not required when the mechanism is drawn unambiguously.</p>
+<p>Reference facts:</p>
+<ol>
+<li><strong>Single controller, one step per batch.</strong> <code>fit()</code> runs on the driver and loops over epochs and dataloader batches; each batch becomes one step. Each prompt is repeated <code>rollout.n</code> times before generation, so a prompt gets n responses.</li>
+<li><strong>Rollout, then the rollout engine sleeps.</strong> The driver calls <code>async_rollout_manager.generate_sequences(...)</code>, which generates on the rollout replicas (LLM servers). Right after, <code>checkpoint_manager.sleep_replicas()</code> frees the replicas' weights and KV-cache memory so training can use the GPUs.</li>
+<li><strong>Batch accumulation.</strong> The prompts (repeated n times) are unioned with the generated responses into one <code>DataProto</code> batch. Every later stage adds fields to that same batch with <code>batch.union(...)</code>: rewards, <code>old_log_probs</code>, <code>ref_log_prob</code>, values, advantages.</li>
+<li><strong>Reward.</strong> Token-level scores come from the reward loop (streamed during rollout) or a reward-model pass, and are extracted into <code>token_level_scores</code>.</li>
+<li><strong>Old log-probs by the actor worker group.</strong> Unless bypass mode reuses <code>rollout_log_probs</code>, the actor worker group recomputes <code>old_log_probs</code> (and entropy) for the generated tokens via <code>actor_rollout_wg.compute_log_prob</code>.</li>
+<li><strong>Optional reference and critic passes.</strong> If a reference policy is used, the ref worker group computes <code>ref_log_prob</code>. If a critic is used, the critic worker group computes <code>values</code>.</li>
+<li><strong>Advantage on the driver.</strong> On the driver: an optional KL penalty is folded into the reward (<code>token_level_rewards</code>), then <code>compute_advantage</code> runs. The estimator is GAE for PPO with a critic, or group-normalized outcome advantage over each prompt's n responses for GRPO.</li>
+<li><strong>Updates on worker groups.</strong> The critic is updated first if present. The actor is then updated with the PPO loss, except during critic warm-up steps.</li>
+<li><strong>Weight sync trainer → rollout.</strong> After the actor update, <code>checkpoint_manager.update_weights</code> moves the new weights to the rollout engine. With colocated (naive) sync, each actor worker resumes the rollout's weight memory and pushes its per-tensor parameters into the rollout in the same process (<code>get_per_tensor_param</code>). With other backends (NCCL/NIXL), it aborts in-flight requests, frees the KV cache, sends the weights over a process group, then resumes.</li>
+</ol>
+<p>For each fact, decide: SHOWN (drawn correctly), ABSENT (not drawn), or CONTRADICTED (drawn in a way that conflicts with the fact). Examples of a contradiction: the actor is updated before rewards or advantages exist; the advantage is computed on the rollout replicas; the weights are synced to the rollout before the actor update.</p>
+<p>PASS if at least 7 of the 9 facts are SHOWN and none is CONTRADICTED.
+FAIL otherwise. Begin your explanation by listing the SHOWN / ABSENT / CONTRADICTED verdict for each fact number.</p>
+</div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">readability</span><span class="badge">llm</span></div>
+<div class="md"><p>You are grading the visual quality of a technical diagram (the attached PNG). Ignore whether its content is technically correct; grade only how readable it is.</p>
+<p>Check each criterion:</p>
+<ol>
+<li>Every label is legible at 100% zoom: no text is truncated, clipped, or too small to read.</li>
+<li>No nodes overlap, and no labels overlap nodes, edges, or each other.</li>
+<li>There is one clear reading direction (top-to-bottom or left-to-right) that a reader can follow from start to end.</li>
+<li>Edges are distinguishable: a reader can trace each edge from its source to its target, and edges that mean different things (e.g. control flow vs. data handed off) are visually different or labeled.</li>
+<li>The visual grammar is consistent: shape and/or colour encode the role of a node (e.g. decision, action, data structure, queue), and the same role always looks the same.</li>
+<li>There are no orphan nodes (unconnected, without an obvious reason) and no purely decorative elements.</li>
+</ol>
+<p>PASS if criteria 1, 2 and 3 all hold and at most one of criteria 4–6 fails.
+FAIL otherwise. Begin your explanation by giving a pass/fail for each criterion number.</p>
+</div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">render</span><span class="badge">file_exists</span></div>
+<div class="config"><div class="kv"><span>path</span><code>&quot;out/ppo-step.png&quot;</code></div><div class="kv"><span>exists</span><code>true</code></div></div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">skill-fired</span><span class="badge">tool_used</span></div>
+<div class="config"><div class="kv"><span>tool</span><code>&quot;Skill&quot;</code></div><div class="kv"><span>input_match</span><code>&quot;\&quot;skill\&quot;\\s*:\\s*\&quot;(?:[\\w-]+:)?graphviz\&quot;&quot;</code></div></div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">skill-misrouted</span><span class="badge">tool_used</span></div>
+<div class="config"><div class="kv"><span>tool</span><code>&quot;Skill&quot;</code></div><div class="kv"><span>input_match</span><code>&quot;\&quot;skill\&quot;\\s*:\\s*\&quot;(?:[\\w-]+:)?model-architecture\&quot;&quot;</code></div><div class="kv"><span>min</span><code>0</code></div><div class="kv"><span>max</span><code>0</code></div><div class="kv"><span>arm</span><code>&quot;with-only&quot;</code></div></div>
+</div>
+</details>
+</article>
+<article class="case case-regressed" id="case-5">
+<div class="case-head">
+<h2>vllm-v1-mixed-batch-attn</h2>
+<span class="muted mono">evals/vllm-v1-mixed-batch-attn</span>
+<span class="spacer"></span>
+
+<span class="delta delta-neg">↓ -33.3 pts</span>
+<span class="muted">with plugin</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:66.7%"></span><i class="tick" style="left:0.0%"></i></span>
+<span class="num case-score">66.7%</span>
+</div>
+
+<details class="section" open>
+<summary>Results</summary>
+<section class="arm">
+<div class="arm-head">
+<span class="arm-label">With plugin</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:66.7%"></span></span>
+<span class="num">66.7%</span>
+<span class="muted num">0% of runs perfect</span>
+</div>
+<div class="run">
+<div class="run-head">
+<span class="run-title">Run 1</span>
+<span class="meter m-accent" aria-hidden="true"><span style="width:66.7%"></span></span>
+<span class="num">66.7%</span>
+<span class="muted num">32 turns · $1.86 · 05:30:30 UTC</span>
+</div>
+
+<div class="graders"><details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">correctness</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: PASS PASS PASS (image)</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✓ ✓ ✓</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">[image shown to the judge: out/mixed-batch-attn.png — sent as image/jpeg, 476.9KB, 2000x1438px; file on disk: image/png, 794.9KB, 3218x2313px]</pre>
+</div>
+</details>
+<details class="grader" open>
+<summary><span class="chip chip-fail">✗ fail</span> <span class="grader-name">readability</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: FAIL FAIL FAIL (image)</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✗ ✗ ✗</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">[image shown to the judge: out/mixed-batch-attn.png — sent as image/jpeg, 476.9KB, 2000x1438px; file on disk: image/png, 794.9KB, 3218x2313px]</pre>
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">render</span>  </summary>
+<div class="grader-body">
+<p class="explanation">out/mixed-batch-attn.png exists as expected</p>
+
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">skill-fired</span>  <span class="badge">plugin-fired indicator</span></summary>
+<div class="grader-body">
+<p class="explanation">Skill called 1x (expected 1..∞)</p>
+
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">skill-misrouted</span>  <span class="badge">plugin-fired indicator</span></summary>
+<div class="grader-body">
+<p class="explanation">Skill called 0x (expected 0..0)</p>
+
+</div>
+</details></div>
+</div>
+</section><section class="arm">
+<div class="arm-head">
+<span class="arm-label">Baseline (no plugin)</span>
+<span class="meter m-base" aria-hidden="true"><span style="width:100.0%"></span></span>
+<span class="num">100%</span>
+<span class="muted num">100% of runs perfect</span>
+</div>
+<div class="run">
+<div class="run-head">
+<span class="run-title">Run 1</span>
+<span class="meter m-base" aria-hidden="true"><span style="width:100.0%"></span></span>
+<span class="num">100%</span>
+<span class="muted num">25 turns · $1.76 · 05:36:46 UTC</span>
+</div>
+
+<div class="graders"><details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">correctness</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: PASS PASS PASS (image)</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✓ ✓ ✓</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">[image shown to the judge: out/mixed-batch-attn.png — sent as image/jpeg, 474.6KB, 2000x1791px; file on disk: image/png, 733.8KB, 3640x3260px]</pre>
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">readability</span>  </summary>
+<div class="grader-body">
+<p class="explanation">judge votes: PASS PASS PASS (image)</p>
+<div class="kv"><span>Judge votes</span><span class="votes">✓ ✓ ✓</span></div><div class="kv"><span>Evidence (what the judge was shown; for an image, a description of what was sent)</span></div><pre class="evidence">[image shown to the judge: out/mixed-batch-attn.png — sent as image/jpeg, 474.6KB, 2000x1791px; file on disk: image/png, 733.8KB, 3640x3260px]</pre>
+</div>
+</details>
+<details class="grader">
+<summary><span class="chip chip-pass">✓ pass</span> <span class="grader-name">render</span>  </summary>
+<div class="grader-body">
+<p class="explanation">out/mixed-batch-attn.png exists as expected</p>
+
+</div>
+</details></div>
+</div>
+</section>
+</details>
+<details class="section" open>
+<summary>Prompt</summary>
+<div class="md"><p>I'm trying to understand how vLLM V1's GPU model runner turns one mixed batch, where some requests prefill a chunk and others decode one token, into attention inputs. The source, pinned at the commit in <code>PINNED.txt</code>, is in the read-only source directory available to this session. Draw one diagram that uses a small concrete example batch to show how the scheduled tokens are flattened; how <code>query_start_loc</code>, <code>seq_lens</code>, <code>block_table</code> and <code>slot_mapping</code> are built; and how the FlashAttention backend uses them to write the new K/V into the paged KV cache and read it back. Ground every element in the code. Save the finished diagram as a PNG image at <code>out/mixed-batch-attn.png</code>.</p>
+</div>
+</details>
+<details class="section" open>
+<summary>Graders — what "good" means for this case</summary>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">correctness</span><span class="badge">llm</span></div>
+<div class="md"><p>You are grading a diagram (the attached PNG) that is meant to explain how vLLM V1 flattens a mixed prefill + decode batch into attention metadata. Judge only what the picture shows. Do not credit anything you would have to infer from code that is not drawn. Exact identifiers are not required when the mechanism is drawn unambiguously.</p>
+<p>Reference facts:</p>
+<ol>
+<li><strong>One flat token array.</strong> The scheduled tokens of all requests, prefill chunks and decode tokens alike, are concatenated into one 1-D token array. <code>req_indices</code> maps each flat token back to its request (<code>np.repeat</code>, e.g. <code>[2,5,3]</code> → <code>[0,0,1,1,1,1,1,2,2,2]</code>).</li>
+<li><strong>Per-request offsets.</strong> <code>cu_num_tokens = cumsum(num_scheduled_tokens)</code>, and <code>query_pos</code> is each token's index within its request's slice.</li>
+<li><strong>Positions continue from computed tokens.</strong> <code>positions = num_computed_tokens[req] + query_pos</code>. A prefill chunk's positions continue from what earlier steps already computed, and a decode token's position equals its request's computed length.</li>
+<li><strong>Input ids gathered.</strong> Input ids are gathered from the per-request token table with <code>token_indices = positions + req_idx * max_model_len</code>.</li>
+<li><strong>query_start_loc.</strong> <code>query_start_loc = [0, cu_num_tokens...]</code>, of length num_reqs+1 (padded to stay non-decreasing), marks where each request's queries start in the flat array. Logits are taken at each request's last token, <code>query_start_loc[1:] - 1</code>.</li>
+<li><strong>seq_lens.</strong> <code>seq_lens = num_computed_tokens + num_scheduled_tokens</code> per request: the full context length including this step's new tokens.</li>
+<li><strong>block_table.</strong> <code>block_table</code> holds one row of physical KV block ids per request. Each step it is extended with the <code>new_block_ids</code> from the <code>SchedulerOutput</code>, or replaced when a request resumes from preemption.</li>
+<li><strong>slot_mapping.</strong> Each token's KV-cache slot is <code>block_table[req][pos // block_size] * block_size + pos % block_size</code>, computed on the GPU per flat token.</li>
+<li><strong>Write then read in one kernel call.</strong> The attention backend first scatters the new K/V into the paged cache at <code>slot_mapping</code> (<code>reshape_and_cache_flash</code>). It then runs one varlen attention call with <code>cu_seqlens_q = query_start_loc</code>, <code>seqused_k = seq_lens</code> and <code>block_table</code>, so prefill chunks and decode tokens are processed together in one kernel.</li>
+</ol>
+<p>For each fact, decide: SHOWN (drawn correctly), ABSENT (not drawn), or CONTRADICTED (drawn in a way that conflicts with the fact). Examples of a contradiction: prefill and decode tokens run as separate batches or kernels; slot_mapping is per request rather than per token; seq_lens counts only the new tokens.</p>
+<p>PASS if at least 7 of the 9 facts are SHOWN and none is CONTRADICTED.
+FAIL otherwise. Begin your explanation by listing the SHOWN / ABSENT / CONTRADICTED verdict for each fact number.</p>
+</div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">readability</span><span class="badge">llm</span></div>
+<div class="md"><p>You are grading the visual quality of a technical diagram (the attached PNG). Ignore whether its content is technically correct; grade only how readable it is.</p>
+<p>Check each criterion:</p>
+<ol>
+<li>Every label is legible at 100% zoom: no text is truncated, clipped, or too small to read.</li>
+<li>No nodes overlap, and no labels overlap nodes, edges, or each other.</li>
+<li>There is one clear reading direction (top-to-bottom or left-to-right) that a reader can follow from start to end.</li>
+<li>Edges are distinguishable: a reader can trace each edge from its source to its target, and edges that mean different things (e.g. control flow vs. data handed off) are visually different or labeled.</li>
+<li>The visual grammar is consistent: shape and/or colour encode the role of a node (e.g. decision, action, data structure, queue), and the same role always looks the same.</li>
+<li>There are no orphan nodes (unconnected, without an obvious reason) and no purely decorative elements.</li>
+</ol>
+<p>PASS if criteria 1, 2 and 3 all hold and at most one of criteria 4–6 fails.
+FAIL otherwise. Begin your explanation by giving a pass/fail for each criterion number.</p>
+</div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">render</span><span class="badge">file_exists</span></div>
+<div class="config"><div class="kv"><span>path</span><code>&quot;out/mixed-batch-attn.png&quot;</code></div><div class="kv"><span>exists</span><code>true</code></div></div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">skill-fired</span><span class="badge">tool_used</span></div>
+<div class="config"><div class="kv"><span>tool</span><code>&quot;Skill&quot;</code></div><div class="kv"><span>input_match</span><code>&quot;\&quot;skill\&quot;\\s*:\\s*\&quot;(?:[\\w-]+:)?model-architecture\&quot;&quot;</code></div></div>
+</div>
+<div class="grader-def">
+<div class="grader-def-head"><span class="grader-name">skill-misrouted</span><span class="badge">tool_used</span></div>
+<div class="config"><div class="kv"><span>tool</span><code>&quot;Skill&quot;</code></div><div class="kv"><span>input_match</span><code>&quot;\&quot;skill\&quot;\\s*:\\s*\&quot;(?:[\\w-]+:)?graphviz\&quot;&quot;</code></div><div class="kv"><span>min</span><code>0</code></div><div class="kv"><span>max</span><code>0</code></div><div class="kv"><span>arm</span><code>&quot;with-only&quot;</code></div></div>
+</div>
+</details>
+</article>
+<footer>Generated by <code>claude plugin eval</code> · schema v1 · scores are not comparable across different suites</footer>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  var bar=document.querySelector('.toolbar');
+  if(!bar)return;
+  bar.addEventListener('click',function(e){
+    var b=e.target&&e.target.closest('button');
+    if(!b)return;
+    var open=b.dataset.act==='expand';
+    document.querySelectorAll('details.section, details.grader').forEach(function(d){d.open=open});
+  });
+});
+// Collapsed details vanish from print/PDF; these pages are share artifacts.
+window.addEventListener('beforeprint',function(){
+  document.querySelectorAll('details').forEach(function(d){
+    if(!d.open){d.dataset.printOpened='1';d.open=true}
+  });
+});
+window.addEventListener('afterprint',function(){
+  document.querySelectorAll('details[data-print-opened]').forEach(function(d){
+    d.open=false;delete d.dataset.printOpened;
+  });
+});
+</script>
+</body>
+</html>

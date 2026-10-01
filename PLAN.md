@@ -1,5 +1,7 @@
 # Drawing-skill A/B eval — plan
 
+> **Status (2026-10-01):** G1, G2–G4, M1–M2 and A1–A3 were run against drawing-skills 0.1.0 (one run per arm) and archived in [`runs/2026-10-01-skill-v0.1.0/`](runs/2026-10-01-skill-v0.1.0/README.md). That run's design does not measure the skill's claimed value (see its [LIMITATIONS.md](runs/2026-10-01-skill-v0.1.0/LIMITATIONS.md)); treat its scores as invalid for judging the skill. Case definitions stay in `evals/`; run outputs go under `runs/<date>-skill-v<version>/`.
+
 This file is the task spec for the cloud session. Execute it step by step and obey every **STOP** gate: at a gate, report and wait for the user; do not continue on your own and do not invent workarounds.
 
 ## 1. Goal
@@ -128,7 +130,7 @@ Work on branch `g1-vllm-schedule`. Commit after each step.
      --trust-plugin --keep-temp --max-cost-usd 25 --threshold 0 \
      --json evals/results.json --publish-report
    ```
-8. **Collect.** Run `python3 scripts/collect.py` (set `RESULTS_JSON` to the run's `--json` file): it copies each run's `out/` into `evals/vllm-v1-schedule/artifacts/{with,without}-<n>/` and writes `artifacts/runs.json` (route taken, programs run, leaks). Commit `results.json` and `artifacts/`, push the branch, then delete the kept temp dirs.
+8. **Collect.** Run `python3 scripts/collect.py` (set `RUN_DIR` and `RESULTS_JSON` at the top): it copies each run's `out/` into `<RUN_DIR>/cases/<case>/artifacts/{with,without}-<n>/` and writes `artifacts/runs.json` (route taken, programs run, leaks). Commit `results.json` and `artifacts/`, push the branch, then delete the kept temp dirs.
 9. **Human aesthetics rating.** Aesthetics (palette, contrast, polish) is not an automated grader; the user rates it by hand. Present the PNGs from `artifacts/` blind: shuffled, with arm labels hidden, and reveal the arm mapping only after the ratings are recorded.
 10. **Report.** Give: suite score per arm and Δ; per-grader pass rates per arm; whether the skill fired in each with-arm run; which drawing route each run took; any leak flagged by `collect.py`; the judges' main reasons for failures; **agent-only** wall time, cost and turns per arm (mean / median / sd, from each trace's `result` record via `artifacts/summary.json`, judge calls excluded), with judge cost listed separately; total cost estimate; the published report URL. Then **STOP**.
 
