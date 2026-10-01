@@ -1,0 +1,6 @@
+- **画图路线**：两组最后都用 Graphviz。不带 skill 的组先检查过 matplotlib 和 Pillow 是否可用，最后选了 `dot`。
+- **内容**：两组都完整（correctness 3:0）：每个组件一个线程、队列在消费者入口、2 槽有界队列 = 背压、按 muxer DTS 暂停/放行 demuxer、stream copy 直通 muxer。两组还都额外画了 pre-mux 队列和 sync queue。
+- **版式**：
+  - 带 skill：竖排流水线，Scheduler 放在右侧中部，choke/unchoke 红虚线、stream copy 橙色粗曲线、DTS 上报虚线从右侧大幅绕回，交叉多，右半边空白也多。评委 readability 0:3。
+  - 不带 skill：横排 demux → dec → filter → enc → mux，每个线程是"标题 + 队列 + 收发"的 record 卡片，下方一个大框讲同步算法，一个框讲背压。阅读方向清楚，评委 3:0。
+- **效率**：带 skill 164 秒 / $1.39 / 27 轮；不带 skill **442 秒** / $1.65 / 36 轮，是本轮最慢的一次，主要在反复调整版式。

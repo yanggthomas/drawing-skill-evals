@@ -101,6 +101,30 @@ def load_cases():
     return sorted(cases, key=lambda c: CASE_IDS.get(c["name"], "Z"))
 
 
+def final_route(case_dir, arm, fact):
+    """The tool that produced the final PNG, read from the kept source files; probes don't count."""
+    d = case_dir / "artifacts" / f"{arm}-1"
+    names = [p.name for p in d.iterdir()] if d.is_dir() else []
+    if any(n.endswith(".tex") for n in names):
+        return "TikZ"
+    if any(n.endswith(".dot") for n in names):
+        return "Graphviz"
+    if any(n.endswith(".mmd") for n in names):
+        return "Mermaid"
+    for n in names:
+        if n.endswith(".py"):
+            src = (d / n).read_text(errors="ignore")
+            if re.search(r"^\s*(from|import) matplotlib", src, re.M):
+                return "matplotlib"
+            if re.search(r"^\s*from PIL", src, re.M):
+                return "Pillow (逐个画形状)"
+            return "Python"
+    # Source kept outside out/: fall back to the routes seen in the trace, minus mere probes.
+    routes = [r for r in fact.get("routes") or [] if r not in ("matplotlib", "pillow")]
+    return {"graphviz": "Graphviz", "mermaid": "Mermaid", "tikz/latex": "TikZ", "svg": "SVG"}.get(
+        routes[0], routes[0]) if routes else "–"
+
+
 def image_for(case_dir, arm):
     d = case_dir / "artifacts" / f"{arm}-1"
     pngs = sorted(d.glob("*.png")) if d.is_dir() else []
@@ -109,7 +133,7 @@ def image_for(case_dir, arm):
 
 def summary_table(cases):
     lines = [
-        "| Case | 得分 带 / 不带 | Δ | agent 耗时 带 / 不带 (s) | agent 花费 带 / 不带 ($) | 轮数 带 / 不带 | skill 路由 | 不带 skill 的画图路线 |",
+        "| Case | 得分 带 / 不带 | Δ | agent 耗时 带 / 不带 (s) | agent 花费 带 / 不带 ($) | 轮数 带 / 不带 | skill 路由 | 画图路线 带 / 不带 |",
         "|---|---|---|---|---|---|---|---|",
     ]
     tot = {"with": [0.0, 0.0, 0.0], "without": [0.0, 0.0, 0.0]}  # seconds, agent $, judge $
@@ -130,7 +154,7 @@ def summary_table(cases):
             f"{fmt(fw.get('agent_seconds'), 0)} / {fmt(fo.get('agent_seconds'), 0)} | "
             f"{fmt(fw.get('agent_cost_usd'))} / {fmt(fo.get('agent_cost_usd'))} | "
             f"{fmt(fw.get('agent_turns'))} / {fmt(fo.get('agent_turns'))} | {routing} | "
-            f"{', '.join(fo.get('routes') or []) or '–'} |")
+            f"{final_route(c['dir'], 'with', fw)} / {final_route(c['dir'], 'without', fo)} |")
     n = len(cases)
     mean_w = sum(c["arms"]["with"]["run"]["score"] for c in cases) / n
     mean_o = sum(c["arms"]["without"]["run"]["score"] for c in cases) / n
@@ -163,11 +187,16 @@ def run_table(c):
             ("评委花费 ($)", lambda a: fmt(a["fact"].get("judge_cost_usd"), 3)),
             ("轮数", lambda a: fmt(a["fact"].get("agent_turns"))),
             ("调用的 skill", lambda a: ", ".join(a["fact"].get("skills") or []) or "无"),
-            ("画图路线（含只探测过的工具）", lambda a: ", ".join(a["fact"].get("routes") or []) or "–"),
+            ("最终画图路线", None),
+            ("碰过的绘图工具（含只探测过的）", lambda a: ", ".join(a["fact"].get("routes") or []) or "–"),
             ("越界读文件", lambda a: str(len(a["fact"].get("leaks") or [])) if a["fact"] else "–"),
             ("错误", lambda a: a["run"].get("error") or "无")]
     for label, f in rows:
-        lines.append(f"| {label} | {f(c['arms']['with'])} | {f(c['arms']['without'])} |")
+        if f is None:  # final route needs the case dir
+            cells = [final_route(c["dir"], arm, c["arms"][arm]["fact"]) for arm in ("with", "without")]
+        else:
+            cells = [f(c["arms"][arm]) for arm in ("with", "without")]
+        lines.append(f"| {label} | {cells[0]} | {cells[1]} |")
     return "\n".join(lines)
 
 
@@ -239,7 +268,7 @@ def consistency_section(cases):
         "", "指标定义：",
         "- **质量一致性** = 1 − 2·σ(得分)。得分在 0–1 之间，σ 最大 0.5，所以 1 = 各 case 得分完全一样，0 = 最分散。",
         "- **耗时 / 花费可预测性** = 1 − CV，CV = σ / 均值（agent 部分，不含评委），截到 0–1。",
-        "- **风格一致性** = 各图色相直方图（只计有颜色的像素（含浅色填充），忽略白灰黑）两两交集的均值。1 = 配色分布完全相同。",
+        "- **风格一致性** = 各图色相直方图两两交集的均值；只统计有颜色的像素，含浅色填充，忽略白、灰、黑。1 = 配色分布完全相同。",
         "- **看图评分一致性** = 1 − σ(看图均分)/2。看图分是 1–5 分，σ 最大 2，所以范围 0–1。",
         "- σ 用总体标准差。", "",
         "| 类别 | 组 | n | 得分 均值 [范围] | 质量一致性 | correctness 通过率 | readability 通过率 "

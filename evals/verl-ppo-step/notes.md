@@ -1,0 +1,7 @@
+- **画图路线**：带 skill 用 graphviz skill 模板（Graphviz）；不带 skill **自己写了 358 行 Pillow（`ImageDraw`）脚本**，逐个画矩形和箭头，做成"步骤行 × 角色列"的泳道表格。
+- **两张图内容都完整**，correctness 两组 3 票全过：rollout → sleep → reward → old/ref log-prob → values → driver 上算 advantage → critic/actor 更新 → `update_weights` 同步权重，都画到了，也都区分了 driver 和 Ray worker group。
+- **版式差异大**：
+  - 带 skill：driver 一列竖排 + 左侧 worker 分区，RPC 边从右往左横穿，加上 sleep/wake 和 gen_output 两条绕全图的长虚线，交叉较多；advantage 用了一个很大的六边形。
+  - 不带 skill：12 个步骤一行一个，列依次是 driver / actor_rollout_wg / rollout replicas / 其他 worker group / batch 字段，最右列逐步标出 batch 新增了哪些 key。这是本轮最清楚的一张图之一。
+- **评委**：两组 readability 都通过（带 skill 2:1，不带 skill 3:0）。
+- **效率**：带 skill 150 秒 / $1.07 / 30 轮，不带 skill 223 秒 / $1.23 / 23 轮。不带 skill 轮数更少但更慢，时间主要花在生成长脚本上。

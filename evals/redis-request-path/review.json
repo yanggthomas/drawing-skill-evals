@@ -1,0 +1,12 @@
+{
+  "with": {
+    "content": 5,
+    "layout": 3,
+    "color": 4
+  },
+  "without": {
+    "content": 5,
+    "layout": 4,
+    "color": 3
+  }
+}

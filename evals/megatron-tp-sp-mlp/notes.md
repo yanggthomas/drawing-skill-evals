@@ -1,0 +1,7 @@
+- **画图路线**：带 skill 正确路由到 **model-architecture** skill，用 **TikZ**（174 行 `.tex`，XeLaTeX 编译）；不带 skill 用 Graphviz 画成两栏流程图。这是 skill 对路线影响最明显的 case。
+- **内容**：两组都完整（correctness 3:0），每个 rank 上的形状、前向 all-gather/reduce-scatter、反向 all-gather/reduce-scatter 和为 wgrad 重新 all-gather 都画到了。
+- **版式**：
+  - 带 skill：论文风格的横向数据流，前向和反向上下镜像，SP 区和 TP 区用底色分开，通信节点用倒角框（青 = all-gather，橙 = reduce-scatter），单独一条 wgrad 泳道。本轮最"专业"的一张。
+  - 不带 skill：左前向、右反向两个框，按通信类型配色并附图例，信息同样完整，但更像文字卡片串。
+- **评委**：两组 readability 都通过（带 skill 3:0，不带 skill 2:1）。
+- **效率**：带 skill 187 秒 / $1.05 / 27 轮，不带 skill **121 秒 / $0.67** / 18 轮。TikZ 路线写得更多、编译更慢，所以这次带 skill 反而更慢更贵。

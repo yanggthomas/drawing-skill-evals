@@ -1,0 +1,55 @@
+[
+  {
+    "arm": "with",
+    "run": 1,
+    "score": 0.6666666666666666,
+    "error": null,
+    "judge_cost_usd": 0.189,
+    "skills": [
+      "drawing-skills:model-architecture"
+    ],
+    "routes": [
+      "tikz/latex"
+    ],
+    "written": [
+      "/tmp/claude-eval-uEOyyJ/home/cwd/out/mixed-batch-attn.tex"
+    ],
+    "leaks": [],
+    "agent_seconds": 329.2,
+    "agent_api_seconds": 316.8,
+    "agent_cost_usd": 1.6737,
+    "agent_turns": 32,
+    "artifacts": [
+      "mixed-batch-attn.pdf",
+      "mixed-batch-attn.png",
+      "mixed-batch-attn.tex",
+      "trace.jsonl.gz"
+    ]
+  },
+  {
+    "arm": "without",
+    "run": 1,
+    "score": 1,
+    "error": null,
+    "judge_cost_usd": 0.191,
+    "skills": [],
+    "routes": [
+      "matplotlib",
+      "pillow",
+      "svg"
+    ],
+    "written": [
+      "/tmp/claude-eval-7zyiuP/home/cwd/out/draw_mixed_batch.py"
+    ],
+    "leaks": [],
+    "agent_seconds": 284.3,
+    "agent_api_seconds": 277.0,
+    "agent_cost_usd": 1.5698,
+    "agent_turns": 25,
+    "artifacts": [
+      "draw_mixed_batch.py",
+      "mixed-batch-attn.png",
+      "trace.jsonl.gz"
+    ]
+  }
+]

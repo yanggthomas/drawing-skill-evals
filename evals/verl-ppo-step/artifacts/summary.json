@@ -1,0 +1,92 @@
+{
+  "with": {
+    "n": 1,
+    "score": {
+      "mean": 1,
+      "median": 1,
+      "sd": null,
+      "min": 1,
+      "max": 1
+    },
+    "agent_seconds": {
+      "mean": 149.8,
+      "median": 149.8,
+      "sd": null,
+      "min": 149.8,
+      "max": 149.8
+    },
+    "agent_api_seconds": {
+      "mean": 145.5,
+      "median": 145.5,
+      "sd": null,
+      "min": 145.5,
+      "max": 145.5
+    },
+    "agent_cost_usd": {
+      "mean": 1.067,
+      "median": 1.067,
+      "sd": null,
+      "min": 1.0666,
+      "max": 1.0666
+    },
+    "agent_turns": {
+      "mean": 30,
+      "median": 30,
+      "sd": null,
+      "min": 30,
+      "max": 30
+    },
+    "judge_cost_usd": {
+      "mean": 0.182,
+      "median": 0.182,
+      "sd": null,
+      "min": 0.1824,
+      "max": 0.1824
+    }
+  },
+  "without": {
+    "n": 1,
+    "score": {
+      "mean": 1,
+      "median": 1,
+      "sd": null,
+      "min": 1,
+      "max": 1
+    },
+    "agent_seconds": {
+      "mean": 222.5,
+      "median": 222.5,
+      "sd": null,
+      "min": 222.5,
+      "max": 222.5
+    },
+    "agent_api_seconds": {
+      "mean": 218.1,
+      "median": 218.1,
+      "sd": null,
+      "min": 218.1,
+      "max": 218.1
+    },
+    "agent_cost_usd": {
+      "mean": 1.232,
+      "median": 1.232,
+      "sd": null,
+      "min": 1.2319,
+      "max": 1.2319
+    },
+    "agent_turns": {
+      "mean": 23,
+      "median": 23,
+      "sd": null,
+      "min": 23,
+      "max": 23
+    },
+    "judge_cost_usd": {
+      "mean": 0.166,
+      "median": 0.166,
+      "sd": null,
+      "min": 0.166,
+      "max": 0.166
+    }
+  }
+}

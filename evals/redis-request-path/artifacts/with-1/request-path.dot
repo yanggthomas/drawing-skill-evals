@@ -1,0 +1,110 @@
+// Life of one client request in Redis 8.10.2 (498ecd0d) with io-threads > 1.
+// Every label cites file:line in the pinned source.
+// Render: dot -Tpng request-path.dot -o request-path.png
+
+digraph request_path {
+
+  graph [
+    rankdir    = TB
+    bgcolor    = "white"
+    fontname   = "Helvetica"
+    pad        = "0.4"
+    nodesep    = 0.5
+    ranksep    = 0.45
+    splines    = spline
+    compound   = true
+    newrank    = true
+    labelloc   = t
+    fontsize   = 20
+    label      = <<b>Redis 8.10.2 (498ecd0d) — life of one request with io-threads &gt; 1</b><br/><font point-size="12">c-&gt;tid = owning I/O thread · c-&gt;running_tid = thread allowed to touch the client right now (0 = main)</font><br/> >
+  ]
+
+  edge [color="#555555", fontname="Helvetica", fontsize=10]
+
+  node [
+    shape=box, style="rounded,filled", fillcolor="#E1BEE7", color="#6A1B9A",
+    fontname="Helvetica", fontsize=11, margin="0.18,0.08"
+  ]
+
+  // ───────────────────────── MAIN THREAD ─────────────────────────
+  subgraph cluster_main {
+    label = <<b>MAIN THREAD</b>  — event loop server.el (aeMain, server.c:8410; beforeSleep, server.c:3216)>
+    fontsize = 14
+    style = "rounded,filled"; fillcolor = "#FFF8F0"; color = "#E76F51"; penwidth = 2
+
+    main_loop [shape=hexagon, fillcolor="#F4A261", color="#E76F51",
+      label=<<b>server.el</b><br/>owns listening sockets>]
+
+    m1 [label=<<b>① ACCEPT</b><br/>listener fd registered on server.el (server.c:2839, 3309)<br/>→ acceptCommonHandler (networking.c:1666)<br/>→ createClient: read handler = readQueryFromClient,<br/>   tid = running_tid = 0 (networking.c:133, 141-142)<br/>→ connAccept(conn, clientAcceptHandler) (networking.c:1732)>]
+
+    m2 [label=<<b>② ASSIGN TO I/O THREAD</b><br/>clientAcceptHandler → assignClientToIOThread (networking.c:1663)<br/>• pick I/O thread with fewest clients → c-&gt;tid (iothread.c:337-349)<br/>• connUnbindEventLoop; clear READ/WRITE_ENABLED (iothread.c:357-358)<br/>• enqueuePendingClienstToIOThreads: running_tid = tid (iothread.c:189)>]
+
+    m3 [label=<<b>beforeSleep → sendPendingClientsToIOThreads</b><br/>(server.c:2111; iothread.c:503)<br/>lock t-&gt;pending_clients_mutex, listJoin, triggerEventNotifier (iothread.c:509-515)>]
+
+    m6 [label=<<b>⑥ RECEIVE FROM I/O THREAD</b><br/>handleClientsFromIOThread (notifier fd, iothread.c:720)<br/>or beforeSleep → processClientsOfAllIOThreads (server.c:2079)<br/>→ processClientsFromIOThread (iothread.c:603):<br/>• lock + listJoin → mainThreadProcessingClients (iothread.c:605-607)<br/>• prefetchIOThreadCommands (batch key prefetch, iothread.c:623)<br/>• <b>c-&gt;running_tid = 0</b> (iothread.c:640)>]
+
+    m7 [fillcolor="#F4D35E", color="#D68A1A", penwidth=2,
+      label=<<b>⑦ EXECUTE THE COMMAND  (main thread only)</b><br/>CLIENT_IO_PENDING_COMMAND set → processPendingCommandAndInputBuffer (iothread.c:664-670)<br/>→ processCommandAndResetClient (networking.c:3555)<br/>→ processCommand (server.c:4467) → call() (server.c:4844)<br/>Reply is appended to c-&gt;buf/c-&gt;reply; since running_tid == 0, _prepareClientToWrite<br/>queues the client on server.clients_pending_write (networking.c:339) — no socket write yet>]
+
+    m8 [label=<<b>⑧ HAND BACK</b> (iothread.c:680-712)<br/>isClientMustHandledByMainThread(c)? (iothread.c:685) → no<br/>• unlink from server.clients_pending_write (iothread.c:696-699)<br/>• <b>c-&gt;running_tid = c-&gt;tid</b> (iothread.c:700)<br/>• push to mainThreadPendingClientsToIOThreads[tid] (iothread.c:701)<br/>• sendPendingClientsToIOThreadIfNeeded: lock, listJoin into t-&gt;pending_clients,<br/>  notify only if I/O thread not running (iothread.c:567-591, 705, 712)>]
+
+    keep [shape=ellipse, style="filled,dashed", fillcolor="#F5F5F5", color="#AAAAAA", fontcolor="#555555",
+      label=<<b>exception: keepClientInMainThread</b> (iothread.c:221, 686)<br/>pubsub / monitor / blocked / tracking / Lua debug / CLOSE_ASAP …<br/>(iothread.c:292-330): rebind to server.el, tid = 0;<br/>main thread then reads and writes this client itself<br/>(writeToClient via handleClientsWithPendingWrites, networking.c:2958)>]
+  }
+
+  // ───────────────────── HAND-OFF QUEUES (shared) ─────────────────────
+  q_to_io [shape=cylinder, fillcolor="#FFF2B2", color="#B8860B",
+    label=<<b>main → I/O hand-off</b><br/>mainThreadPendingClientsToIOThreads[tid] (main-private)<br/>⇒ IOThreads[tid].pending_clients (mutex)<br/>+ pending_clients_notifier (iothread.c:23, 1025)>]
+
+  q_to_main [shape=cylinder, fillcolor="#FFF2B2", color="#B8860B",
+    label=<<b>I/O → main hand-off</b><br/>t-&gt;pending_clients_to_main_thread (I/O-private)<br/>⇒ mainThreadPendingClients[tid] (mutex)<br/>+ mainThreadPendingClientsNotifiers[tid] (iothread.c:25-27, 1051)>]
+
+  // ───────────────────────── I/O THREAD ─────────────────────────
+  subgraph cluster_io {
+    label = <<b>I/O THREAD  t (id = c-&gt;tid)</b>  — event loop t-&gt;el (IOThreadMain → aeMain, iothread.c:975-986)>
+    fontsize = 14
+    style = "rounded,filled"; fillcolor = "#F0F7FC"; color = "#2E86AB"; penwidth = 2
+
+    io_loop [shape=hexagon, fillcolor="#E8F4FD", color="#2E86AB",
+      label=<<b>t-&gt;el</b><br/>owns client sockets it was given>]
+
+    i3 [label=<<b>③ ADOPT CLIENT</b><br/>handleClientsFromMainThread (notifier, iothread.c:757)<br/>or IOThreadBeforeSleep (iothread.c:861) → processClientsFromMainThread (iothread.c:776)<br/>• link into t-&gt;clients (iothread.c:796)<br/>• set READ_ENABLED | WRITE_ENABLED (iothread.c:809)<br/>• first time: connRebindEventLoop(t-&gt;el) + read handler readQueryFromClient (iothread.c:813-816)>]
+
+    i4 [label=<<b>④ READ</b><br/>socket readable on t-&gt;el → readQueryFromClient (networking.c:3893)<br/>READ_ENABLED checked (networking.c:3904)<br/>clientConnRead → c-&gt;querybuf (networking.c:3989)>]
+
+    i5 [label=<<b>⑤ PARSE</b>  processInputBuffer (networking.c:3690, called at 4045)<br/>processMultibulkBuffer / processInlineBuffer → c-&gt;pending_cmds (networking.c:3751-3775)<br/>full command ready, but running_tid ≠ 0 so it may not execute:<br/>io_flags |= CLIENT_IO_PENDING_COMMAND; enqueuePendingClientsToMainThread (networking.c:3843-3846)>]
+
+    i5b [label=<<b>enqueuePendingClientsToMainThread</b> (iothread.c:115)<br/>clear READ/WRITE_ENABLED (iothread.c:133)<br/>move t-&gt;clients → t-&gt;pending_clients_to_main_thread (iothread.c:135-136)<br/>IOThreadBeforeSleep → sendPendingClientsToMainThreadIfNeeded (iothread.c:881, 31):<br/>lock, listJoin, notify only if main not running (iothread.c:36-48)>]
+
+    i9 [fillcolor="#F4D35E", color="#D68A1A", penwidth=2,
+      label=<<b>⑨ WRITE THE REPLY</b>  processClientsFromMainThread again (iothread.c:776)<br/>re-enable READ/WRITE, clear PENDING_COMMAND (iothread.c:809-810)<br/>clientHasPendingReplies → writeToClient(c, 0) (iothread.c:828-829)<br/>socket full? connSetWriteHandler(sendReplyToClient) on t-&gt;el (iothread.c:831)<br/>→ later writeToClient(c, 1) (networking.c:2949-2952)>]
+  }
+
+  // Layout helpers: put main on the left, I/O on the right
+  { rank=same; main_loop; io_loop; }
+  { rank=same; m2; q_to_io; }
+  { rank=same; m3; i3; }
+  { rank=same; i5b; q_to_main; }
+  { rank=same; m8; i9; }
+  main_loop -> io_loop [style=invis]
+
+  // ───────────────────────── Flow ─────────────────────────
+  main_loop -> m1  [label=" new TCP connection"]
+  m1 -> m2
+  m2 -> q_to_io   [color="#E76F51", penwidth=2.2, label=<<b> client handed to I/O thread</b>>]
+  m2 -> m3        [style=dashed, label=" same loop iteration"]
+  m3 -> q_to_io   [color="#E76F51", style=dashed, label=" flush + wake"]
+  q_to_io -> i3   [color="#B8860B", penwidth=2.2]
+  io_loop -> i4   [style=dotted, arrowhead=none]
+  i3 -> i4        [label=" client bytes arrive"]
+  i4 -> i5
+  i5 -> i5b
+  i5b -> q_to_main [color="#2E86AB", penwidth=2.2, label=<<b> client handed to main</b>>]
+  q_to_main -> m6  [color="#B8860B", penwidth=2.2]
+  m6 -> m7
+  m7 -> m8
+  m7 -> keep       [style=dashed, color="#AAAAAA", label=" must stay on main"]
+  m8 -> q_to_io    [color="#E76F51", penwidth=2.2, label=<<b> client + reply handed back</b>>]
+  q_to_io -> i9    [color="#B8860B", penwidth=2.2]
+  i9 -> i4         [style=dashed, color="#2E86AB", constraint=false, label=" client stays on t->el;\l next request repeats ④–⑨\l"]
+}

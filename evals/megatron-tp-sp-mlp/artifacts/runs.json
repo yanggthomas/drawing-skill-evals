@@ -1,0 +1,59 @@
+[
+  {
+    "arm": "with",
+    "run": 1,
+    "score": 1,
+    "error": null,
+    "judge_cost_usd": 0.1344,
+    "skills": [
+      "drawing-skills:model-architecture"
+    ],
+    "routes": [
+      "tikz/latex"
+    ],
+    "written": [
+      "/tmp/claude-eval-3SvGek/home/cwd/out/tp-sp-mlp.tex"
+    ],
+    "leaks": [],
+    "agent_seconds": 187.3,
+    "agent_api_seconds": 178.8,
+    "agent_cost_usd": 1.0527,
+    "agent_turns": 27,
+    "artifacts": [
+      "tp-sp-mlp.aux",
+      "tp-sp-mlp.fdb_latexmk",
+      "tp-sp-mlp.fls",
+      "tp-sp-mlp.log",
+      "tp-sp-mlp.pdf",
+      "tp-sp-mlp.png",
+      "tp-sp-mlp.tex",
+      "tp-sp-mlp.xdv",
+      "trace.jsonl.gz"
+    ]
+  },
+  {
+    "arm": "without",
+    "run": 1,
+    "score": 1,
+    "error": null,
+    "judge_cost_usd": 0.1661,
+    "skills": [],
+    "routes": [
+      "matplotlib",
+      "graphviz"
+    ],
+    "written": [
+      "/tmp/claude-eval-40PwFS/home/cwd/out/tp-sp-mlp.dot"
+    ],
+    "leaks": [],
+    "agent_seconds": 120.8,
+    "agent_api_seconds": 118.2,
+    "agent_cost_usd": 0.6693,
+    "agent_turns": 18,
+    "artifacts": [
+      "tp-sp-mlp.dot",
+      "tp-sp-mlp.png",
+      "trace.jsonl.gz"
+    ]
+  }
+]

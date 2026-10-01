@@ -1,0 +1,146 @@
+// ffmpeg fftools threaded transcode pipeline @ a344f0976c5d
+// Hand-placed layout. Render:
+//   neato -n2 -Tpng -Gdpi=110 transcode-threads.dot -o transcode-threads.png
+// Positions are in points (72/in), origin bottom-left.
+digraph transcode_threads {
+  graph [fontname="Helvetica", splines=true, sep="+2", esep="+1", outputorder=edgesfirst, bgcolor="white", pad=0.25,
+         label=<<FONT POINT-SIZE="24"><B>ffmpeg CLI: threaded transcode pipeline</B></FONT>   <FONT POINT-SIZE="14">fftools @ a344f0976c5d</FONT><BR/><FONT POINT-SIZE="13">Each component is its own pthread (task_start → task_wrapper, ffmpeg_sched.c:404/2716). Components never call each other: they call sch_*_send / sch_*_receive, and the Scheduler routes data (ffmpeg_sched.h:81-85).</FONT>>,
+         labelloc=t];
+  node  [fontname="Helvetica", fontsize=11, shape=plain];
+  edge  [fontname="Helvetica", fontsize=10, arrowsize=0.8];
+
+  // ════════════════════════ THREADS (one table each) ════════════════════════
+  demux [pos="150,700", label=<
+   <TABLE BORDER="2" COLOR="#3d6fc9" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5" BGCOLOR="#e8f0fe" STYLE="rounded">
+    <TR><TD BGCOLOR="#3d6fc9"><FONT COLOR="white" POINT-SIZE="13"><B>DEMUXER thread</B>  "dmx%d:fmt"</FONT></TD></TR>
+    <TR><TD><I>input_thread()</I>  ffmpeg_demux.c:843</TD></TR>
+    <TR><TD BORDER="1" COLOR="#3d6fc9" BGCOLOR="white" ALIGN="LEFT">av_read_frame() → demux bsf<BR ALIGN="LEFT"/>do_send() :593</TD></TR>
+    <TR><TD PORT="send" BORDER="2" COLOR="#b8860b" BGCOLOR="#fff4d6" ALIGN="LEFT"><B>sch_demux_send()</B>  sched.c:2179<BR ALIGN="LEFT"/>① <B>waiter_wait(&amp;d-&gt;waiter)</B><BR ALIGN="LEFT"/>    sleeps here while CHOKED<BR ALIGN="LEFT"/>② per dst: av_packet_ref + send<BR ALIGN="LEFT"/>    (demux_send_for_stream :2103)</TD></TR>
+   </TABLE>>];
+
+  dec [pos="498,700", label=<
+   <TABLE BORDER="2" COLOR="#3c9a5f" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5" BGCOLOR="#e6f4ea" STYLE="rounded">
+    <TR><TD BGCOLOR="#3c9a5f"><FONT COLOR="white" POINT-SIZE="13"><B>DECODER thread</B>  "dec%d:codec"</FONT></TD></TR>
+    <TR><TD><I>decoder_thread()</I>  ffmpeg_dec.c:909</TD></TR>
+    <TR><TD PORT="q" BORDER="3" COLOR="#2b5fb4" BGCOLOR="white" ALIGN="LEFT"><B>dec-&gt;queue</B>  ThreadQueue of PACKETS<BR ALIGN="LEFT"/>1 stream × 2 slots (sched.h:257)</TD></TR>
+    <TR><TD PORT="run" BORDER="1" COLOR="#3c9a5f" BGCOLOR="white" ALIGN="LEFT">sch_dec_receive() :2307 → tq_receive<BR ALIGN="LEFT"/>packet_decode()  (libavcodec)<BR ALIGN="LEFT"/><B>sch_dec_send()</B> :2389<BR ALIGN="LEFT"/>   per dst: av_frame_ref + send</TD></TR>
+   </TABLE>>];
+
+  fg [pos="874,700", label=<
+   <TABLE BORDER="2" COLOR="#d98c2b" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5" BGCOLOR="#fef3e6" STYLE="rounded">
+    <TR><TD BGCOLOR="#d98c2b"><FONT COLOR="white" POINT-SIZE="13"><B>FILTERGRAPH thread</B>  "vf#0:0" / "fc%d"</FONT></TD></TR>
+    <TR><TD><I>filter_thread()</I>  ffmpeg_filter.c:3443</TD></TR>
+    <TR><TD PORT="q" BORDER="3" COLOR="#2e8b57" BGCOLOR="white" ALIGN="LEFT"><B>fg-&gt;queue</B>  ThreadQueue of FRAMES<BR ALIGN="LEFT"/>(nb_inputs + 1) streams × 2 slots<BR ALIGN="LEFT"/>last stream = control (filter commands)</TD></TR>
+    <TR><TD PORT="run" BORDER="1" COLOR="#d98c2b" BGCOLOR="white" ALIGN="LEFT"><B>sch_filter_receive(&amp;in_idx)</B> :2551<BR ALIGN="LEFT"/>  in_idx = input it wants → fg-&gt;best_input<BR ALIGN="LEFT"/>  in_idx == nb_inputs (no input needed,<BR ALIGN="LEFT"/>  lavfi sources): drain without blocking,<BR ALIGN="LEFT"/>  then <B>waiter_wait(&amp;fg-&gt;waiter)</B><BR ALIGN="LEFT"/>lavfi graph → read_frames()<BR ALIGN="LEFT"/>(an fg output may feed another fg input)<BR ALIGN="LEFT"/><B>sch_filter_send()</B> :2629</TD></TR>
+   </TABLE>>];
+
+  sq [pos="1246,700", label=<
+   <TABLE BORDER="2" COLOR="#8a5cc4" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5" BGCOLOR="#f7f0ff" STYLE="dashed">
+    <TR><TD><FONT POINT-SIZE="13" COLOR="#6a3ca4"><B>pre-encoder sync queue</B></FONT><BR/>SchSyncQueue  (optional)</TD></TR>
+    <TR><TD ALIGN="LEFT"><B>NO thread of its own</B>: it runs in<BR ALIGN="LEFT"/>the SENDER's thread, under sq-&gt;lock<BR ALIGN="LEFT"/>send_to_enc_sq() :1877<BR ALIGN="LEFT"/>sq_send / sq_receive: aligns the<BR ALIGN="LEFT"/>streams of one output by timestamp,<BR ALIGN="LEFT"/>-shortest, max_frames; rechunks audio<BR ALIGN="LEFT"/>to the encoder's frame_size<BR ALIGN="LEFT"/>(open_cb on 1st frame, enc_open :1832)</TD></TR>
+   </TABLE>>];
+
+  enc [pos="1609,700", label=<
+   <TABLE BORDER="2" COLOR="#c94a64" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5" BGCOLOR="#fde8ec" STYLE="rounded">
+    <TR><TD BGCOLOR="#c94a64"><FONT COLOR="white" POINT-SIZE="13"><B>ENCODER thread</B>  "enc%d:%d:codec"</FONT></TD></TR>
+    <TR><TD><I>encoder_thread()</I>  ffmpeg_enc.c:1009</TD></TR>
+    <TR><TD PORT="q" BORDER="3" COLOR="#2e8b57" BGCOLOR="white" ALIGN="LEFT"><B>enc-&gt;queue</B>  ThreadQueue of FRAMES<BR ALIGN="LEFT"/>1 stream × 2 slots (sched.h:262)</TD></TR>
+    <TR><TD PORT="run" BORDER="1" COLOR="#c94a64" BGCOLOR="white" ALIGN="LEFT">sch_enc_receive() :2458 → tq_receive<BR ALIGN="LEFT"/>frame_encode()  (libavcodec)<BR ALIGN="LEFT"/><B>sch_enc_send()</B> :2502<BR ALIGN="LEFT"/>   per dst: av_packet_ref + send</TD></TR>
+   </TABLE>>];
+
+  mux [pos="2016,700", label=<
+   <TABLE BORDER="2" COLOR="#555555" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5" BGCOLOR="#eeeeee" STYLE="rounded">
+    <TR><TD BGCOLOR="#555555"><FONT COLOR="white" POINT-SIZE="13"><B>MUXER thread</B>  "mux%d:fmt"</FONT></TD></TR>
+    <TR><TD><I>muxer_thread()</I>  ffmpeg_mux.c:403</TD></TR>
+    <TR><TD PORT="pre" BORDER="1" STYLE="dashed" COLOR="#555555" BGCOLOR="white" ALIGN="LEFT"><B>send_to_mux()</B> :2009 (in the sender's thread)<BR ALIGN="LEFT"/>if !mux_started → <B>pre_mux_queue</B> (AVFifo per stream),<BR ALIGN="LEFT"/>doubles up to max_packets after data_threshold,<BR ALIGN="LEFT"/>then "Too many packets buffered" (:1973)<BR ALIGN="LEFT"/>mux_task_start :1135 flushes it in DTS order</TD></TR>
+    <TR><TD PORT="q" BORDER="3" COLOR="#2b5fb4" BGCOLOR="white" ALIGN="LEFT"><B>mux-&gt;queue</B>  ThreadQueue of PACKETS<BR ALIGN="LEFT"/>nb_streams × thread_queue_size (default 2)</TD></TR>
+    <TR><TD PORT="run" BORDER="1" COLOR="#555555" BGCOLOR="white" ALIGN="LEFT">sch_mux_receive() :2223 (packet from any stream)<BR ALIGN="LEFT"/>mux_packet_filter → av_interleaved_write_frame<BR ALIGN="LEFT"/>sch_mux_receive_finish() on per-stream EOF<BR ALIGN="LEFT"/>sub2video heartbeat pkts → dec-&gt;queue (:2254)</TD></TR>
+   </TABLE>>];
+
+  main [pos="1080,905", label=<
+   <TABLE BORDER="1" COLOR="#888888" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#f4f4f4" STYLE="rounded,dashed">
+    <TR><TD COLSPAN="3"><B>MAIN thread</B>  (ffmpeg.c, not vendored; only its sch_* calls shown)</TD></TR>
+    <TR><TD ALIGN="LEFT"><B>sch_start()</B> :1741<BR ALIGN="LEFT"/>starts enc → fg → dec → demux threads;<BR ALIGN="LEFT"/>muxer threads start later in mux_init :1199,<BR ALIGN="LEFT"/>after every stream calls sch_mux_stream_ready()<BR ALIGN="LEFT"/>(header / SDP must be written first)</TD>
+        <TD ALIGN="LEFT"><B>sch_wait()</B> :1807<BR ALIGN="LEFT"/>timed wait on finish_cond until<BR ALIGN="LEFT"/>all muxers are done or task_failed;<BR ALIGN="LEFT"/>reads sch-&gt;last_dts for progress</TD>
+        <TD ALIGN="LEFT"><B>sch_stop()</B> :2770<BR ALIGN="LEFT"/>terminate = 1; choke every waiter,<BR ALIGN="LEFT"/>unfreeze demux queues to drain;<BR ALIGN="LEFT"/>pthread_join every task</TD></TR>
+   </TABLE>>];
+
+  // ════════════════════════ SCHEDULER ════════════════════════
+  sched [pos="820,250", label=<
+   <TABLE BORDER="3" COLOR="#c0392b" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#fff4d6" STYLE="rounded">
+    <TR><TD BGCOLOR="#c0392b" ALIGN="LEFT"><FONT COLOR="white" POINT-SIZE="14"><B>How outputs stay in sync: schedule_update_locked()</B>  ffmpeg_sched.c:1422  (under sch-&gt;schedule_lock)</FONT></TD></TR>
+    <TR><TD ALIGN="LEFT"><I>Runs on:</I> every timestamped packet in send_to_mux (:2058), a stream or fg input finishing, fg best_input changing, a task exiting, sch_start.<BR ALIGN="LEFT"/>
+<B>1.</B>  send_to_mux sets  <B>ms-&gt;last_dts = dts + duration</B>  (AV_TIME_BASE_Q) for that output stream.<BR ALIGN="LEFT"/>
+<B>2.</B>  <B>trailing_dts()</B> :438 = MIN last_dts over every unfinished stream of EVERY muxer.   progressing_dts() → sch-&gt;last_dts (progress).<BR ALIGN="LEFT"/>
+<B>3.</B>  Reset: every demuxer and filtergraph waiter → choked_next = 1.<BR ALIGN="LEFT"/>
+<B>4.</B>  For each output stream with  last_dts − trailing &lt; <B>SCHEDULE_TOLERANCE = 100 ms</B> (:45):  <B>unchoke_for_stream(ms-&gt;src)</B> :1351<BR ALIGN="LEFT"/>
+       walks UPSTREAM  enc → filter out → fg-&gt;inputs[best_input].src → dec → <B>demuxer</B>  (or stops at a source-only filtergraph) and unchokes it;<BR ALIGN="LEFT"/>
+       unchoke_downstream() :1316 also unchokes the filtergraphs below that demuxer, so it can't stall on a full queue.<BR ALIGN="LEFT"/>
+<B>5.</B>  Also unchoke sources of closed fg inputs (so they see the EOF). If nothing got unchoked, UNCHOKE_ONCE the first live demuxer / filtergraph.<BR ALIGN="LEFT"/>
+<B>6.</B>  Apply only the changes: <B>waiter_set()</B> :339 (cond_signal); for demuxers also <B>choke_demux()</B> :1392 → <B>tq_choke()</B> on that demuxer's<BR ALIGN="LEFT"/>
+       dec / enc / single-input fg queues, so their readers see EAGAIN and sit idle.<BR ALIGN="LEFT"/>
+<B>Effect:</B>  outputs that are ahead stop being fed <I>at the source</I>, and the source of the stream furthest behind always runs. All outputs of all muxers<BR ALIGN="LEFT"/>
+stay within about 100 ms DTS of each other. The muxer is never choked (:1333).</TD></TR>
+   </TABLE>>];
+
+  // ════════════════════════ BACKPRESSURE ════════════════════════
+  bp [pos="1870,250", label=<
+   <TABLE BORDER="2" COLOR="#555555" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#fafafa">
+    <TR><TD BGCOLOR="#555555" ALIGN="LEFT"><FONT COLOR="white" POINT-SIZE="14"><B>Backpressure: ThreadQueue</B>  thread_queue.c</FONT></TD></TR>
+    <TR><TD ALIGN="LEFT">
+• <B>tq_send()</B> :148 blocks on cond_write[stream] while<BR ALIGN="LEFT"/>
+   stream_count ≥ queue_size (can_write :143). With 2 slots, a slow<BR ALIGN="LEFT"/>
+   muxer stalls its encoder, which stalls filter, decoder, demuxer.<BR ALIGN="LEFT"/>
+• <B>tq_receive()</B> :234 blocks on cond_read while empty OR choked<BR ALIGN="LEFT"/>
+   (receive_locked :193). A read from a full stream signals its writer.<BR ALIGN="LEFT"/>
+• EOF downstream: tq_send_finish → reader gets AVERROR_EOF.<BR ALIGN="LEFT"/>
+• EOF upstream: tq_receive_finish → the next tq_send returns<BR ALIGN="LEFT"/>
+   AVERROR_EOF → sender sets dst_finished. When all dsts of a<BR ALIGN="LEFT"/>
+   demuxed stream are done, sch_demux_send returns EOF.<BR ALIGN="LEFT"/>
+• Frame queues are capped at 2 (assert, queue_alloc :385): the<BR ALIGN="LEFT"/>
+   decoders' fixed frame pools are sized for it.</TD></TR>
+    <TR><TD ALIGN="LEFT"><B>Legend</B>   <FONT COLOR="#2b5fb4"><B>━━ AVPacket</B></FONT>    <FONT COLOR="#2e8b57"><B>━━ AVFrame</B></FONT><BR ALIGN="LEFT"/>
+<FONT COLOR="#c0392b"><B>- - scheduler control</B></FONT>    <FONT COLOR="#8a5cc4"><B>- - side channel</B></FONT><BR ALIGN="LEFT"/>
+thick-bordered cell = ThreadQueue (blocking, bounded)</TD></TR>
+   </TABLE>>];
+
+  // ════════════════════════ DATA FLOW ════════════════════════
+  demux:send:e -> dec:q:w  [color="#2b5fb4", penwidth=2.5];
+  dec:run:e    -> fg:q:w   [color="#2e8b57", penwidth=2.5];
+  fg:run:e     -> sq:w     [color="#2e8b57", penwidth=2.5];
+  sq:e         -> enc:q:w  [color="#2e8b57", penwidth=2.5];
+  enc:run:e    -> mux:pre:w [color="#2b5fb4", penwidth=2.5];
+
+  // stream copy (demux → mux directly, below the pipeline)
+  copy_l [shape=point, width=0, pos="150,500"];
+  copy_r [shape=point, width=0, pos="1800,500"];
+  demux:send:s -> copy_l [color="#2b5fb4", penwidth=3, arrowhead=none];
+  copy_l -> copy_r [color="#2b5fb4", penwidth=3, arrowhead=none];
+  copy_r -> mux:pre:w [color="#2b5fb4", penwidth=3];
+
+  // less common routes
+  dec:run:n -> sq:n [color="#2e8b57", style=dashed, label=<<FONT COLOR="#2e8b57">subtitle AVFrame: decoder → encoder (no filtergraph)</FONT>>];
+  enc:run:s -> dec:q:s [color="#2b5fb4", style=dashed];
+
+  // side channels
+  dec:q:n -> demux:send:n [color="#8a5cc4", style=dashed, penwidth=1.5];
+
+  l1 [pos="321,742", label=<<TABLE BORDER="0" CELLPADDING="2" BGCOLOR="white"><TR><TD><FONT COLOR="#2b5fb4"><B>AVPacket</B><BR/>tq_send :2087</FONT></TD></TR></TABLE>>];
+  l2 [pos="675,742", label=<<TABLE BORDER="0" CELLPADDING="2" BGCOLOR="white"><TR><TD><FONT COLOR="#2e8b57"><B>AVFrame</B><BR/>send_to_filter<BR/>:2340</FONT></TD></TR></TABLE>>];
+  l3 [pos="1073,742", label=<<TABLE BORDER="0" CELLPADDING="2" BGCOLOR="white"><TR><TD><FONT COLOR="#2e8b57"><B>filtered<BR/>AVFrame</B><BR/>send_to_enc<BR/>:1953</FONT></TD></TR></TABLE>>];
+  l4 [pos="1419,742", label=<<TABLE BORDER="0" CELLPADDING="2" BGCOLOR="white"><TR><TD><FONT COLOR="#2e8b57">send_to_enc_<BR/>thread :1858<BR/>(direct if no<BR/>sync queue)</FONT></TD></TR></TABLE>>];
+  l5 [pos="1799,742", label=<<TABLE BORDER="0" CELLPADDING="2" BGCOLOR="white"><TR><TD><FONT COLOR="#2b5fb4"><B>AVPacket</B><BR/>send_to_mux<BR/>:2009</FONT></TD></TR></TABLE>>];
+  l6 [pos="980,512", label=<<TABLE BORDER="0" CELLPADDING="2" BGCOLOR="white"><TR><TD><FONT COLOR="#2b5fb4"><FONT POINT-SIZE="12"><B>STREAM COPY (-c copy): AVPacket → send_to_mux() :2009, skipping decoder / filter / encoder</B></FONT><BR/>DEMUX_SEND_STREAMCOPY_EOF turns the packet into EOF only for mux destinations (:2077)</FONT></TD></TR></TABLE>>];
+  l7 [pos="1050,568", label=<<TABLE BORDER="0" CELLPADDING="2" BGCOLOR="white"><TR><TD><FONT COLOR="#2b5fb4">encoder → decoder loopback (-dec): tq_send(dec-&gt;queue) :2485</FONT></TD></TR></TABLE>>];
+  l8 [pos="330,805", label=<<TABLE BORDER="0" CELLPADDING="2" BGCOLOR="white"><TR><TD><FONT COLOR="#8a5cc4">flush packet (stream_index = −1, -stream_loop) → demux_flush :2135;<BR/>the demuxer then blocks on dec-&gt;queue_end_ts (AVThreadMessageQueue)<BR/>for the decoder's post-flush end timestamp (:2316)</FONT></TD></TR></TABLE>>];
+
+  // ════════════════════════ SCHEDULER CONTROL ════════════════════════
+  mux:pre:s -> sched:ne [color="#c0392b", style=dashed, penwidth=2,
+     label=<<FONT COLOR="#c0392b"><B>last_dts / source_finished</B></FONT>>];
+  sched:w -> demux:send:s [color="#c0392b", style=dashed, penwidth=2.2,
+     label=<<FONT COLOR="#c0392b"><B>waiter_set(demux)</B></FONT>>];
+  sched:nw -> dec:run:s [color="#c0392b", style=dashed, penwidth=1.6];
+  sched:n -> fg:run:s [color="#c0392b", style=dashed, penwidth=1.6, dir=both];
+  l9 [pos="560,430", label=<<TABLE BORDER="0" CELLPADDING="2" BGCOLOR="white"><TR><TD><FONT COLOR="#c0392b">tq_choke() on dec / enc /<BR/>1-input fg queues</FONT></TD></TR></TABLE>>];
+  l10 [pos="905,455", label=<<TABLE BORDER="0" CELLPADDING="2" BGCOLOR="white"><TR><TD><FONT COLOR="#c0392b">best_input ↑<BR/>waiter_set(fg) ↓</FONT></TD></TR></TABLE>>];
+}

@@ -1,0 +1,55 @@
+[
+  {
+    "arm": "with",
+    "run": 1,
+    "score": 0.6666666666666666,
+    "error": null,
+    "judge_cost_usd": 0.1782,
+    "skills": [
+      "drawing-skills:graphviz"
+    ],
+    "routes": [
+      "graphviz"
+    ],
+    "written": [
+      "/tmp/claude-eval-MchKOR/home/cwd/out/transcode-threads.dot"
+    ],
+    "leaks": [],
+    "agent_seconds": 164.2,
+    "agent_api_seconds": 159.5,
+    "agent_cost_usd": 1.3862,
+    "agent_turns": 27,
+    "artifacts": [
+      "trace.jsonl.gz",
+      "transcode-threads.dot",
+      "transcode-threads.png"
+    ]
+  },
+  {
+    "arm": "without",
+    "run": 1,
+    "score": 1,
+    "error": null,
+    "judge_cost_usd": 0.1883,
+    "skills": [],
+    "routes": [
+      "matplotlib",
+      "graphviz",
+      "pillow"
+    ],
+    "written": [
+      "/tmp/claude-eval-YLurdi/home/cwd/out/transcode-threads.dot",
+      "/tmp/claude-eval-YLurdi/home/cwd/out/transcode-threads.dot"
+    ],
+    "leaks": [],
+    "agent_seconds": 442.4,
+    "agent_api_seconds": 435.6,
+    "agent_cost_usd": 1.6517,
+    "agent_turns": 36,
+    "artifacts": [
+      "trace.jsonl.gz",
+      "transcode-threads.dot",
+      "transcode-threads.png"
+    ]
+  }
+]

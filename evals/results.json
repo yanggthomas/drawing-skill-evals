@@ -1,0 +1,1015 @@
+{
+  "schemaVersion": 1,
+  "claudeVersion": "2.1.286",
+  "startedAt": "2026-10-01T04:58:56.956Z",
+  "durationSeconds": 2590,
+  "costUsd": 13.9526732,
+  "partial": false,
+  "suite": {
+    "root": "/home/user/drawing-skill-evals",
+    "ablation": "with-without",
+    "modelOverride": "opus",
+    "judgeModel": "opus",
+    "tagFilters": [
+      "round2"
+    ],
+    "threshold": 0,
+    "concurrency": 1,
+    "plugins": [
+      {
+        "name": "drawing-skills",
+        "version": "0.1.0",
+        "path": "/home/user/drawing-skill-evals"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "name": "ffmpeg-transcode-threads",
+      "dir": "evals/ffmpeg-transcode-threads",
+      "source": "mixed",
+      "promptMarkdown": "I'm trying to understand how the ffmpeg command-line tool runs a transcode with threads. The fftools source, pinned at the commit in `PINNED.txt`, is in the read-only source directory available to this session. Draw one diagram that explains the threaded transcoding pipeline: which threads exist, what queues sit between them, how packets and frames flow from demuxer to muxer (including stream copy), how backpressure works, and how the scheduler keeps the outputs in sync. Ground every element in the code. Save the finished diagram as a PNG image at `out/transcode-threads.png`.",
+      "runsPerCase": 1,
+      "timeoutSeconds": 1800,
+      "maxTurns": 60,
+      "graders": [
+        {
+          "name": "correctness",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "You are grading a diagram (the attached PNG) that is meant to explain the threaded transcoding pipeline in `fftools` (FFmpeg master). Judge only what the picture shows. Do not credit anything you would have to infer from code that is not drawn. Exact identifiers are not required when the mechanism is drawn unambiguously.\n\nReference facts:\n\n1. **Scheduler in the middle.** Demuxers, decoders, filtergraphs, encoders and muxers never talk to each other directly. Every send and receive goes through the `Scheduler`, which is the only object that knows the whole graph (a DAG, checked at start).\n2. **One thread per component.** Each demuxer, decoder, filtergraph, encoder and muxer runs in its own thread: `input_thread`, `decoder_thread`, `filter_thread`, `encoder_thread`, `muxer_thread`. `sch_start` creates them muxers first and demuxers last.\n3. **Queues sit at the consumer's input.** Queues: each decoder has a packet queue, each filtergraph a frame queue (one stream per input plus a control stream), each encoder a frame queue, each muxer a packet queue with one stream per output stream. The demuxer has no input queue.\n4. **Data path.** Packets go demux → decoder → frames → filtergraph → encoder → packets → muxer. For stream copy, demuxed packets go straight to the muxer. Subtitle frames skip filtering and go decoder → encoder.\n5. **Thread loop.** Each worker thread loops: receive from its own input queue (`sch_*_receive`), process, then send downstream (`sch_*_send`, which pushes into the next thread's queue).\n6. **Bounded queues = backpressure.** Queues are tiny (2 entries by default for packets and for frames), and `tq_send` blocks while the destination is full. A slow consumer therefore stalls its producers.\n7. **Sync by muxer DTS.** Each packet that reaches a muxer stream updates that stream's `last_dts` and calls `schedule_update_locked`. That function finds the trailing output DTS and unchokes only the sources (demuxers / source filtergraphs) feeding streams that are less than `SCHEDULE_TOLERANCE` (100 ms) ahead of it. At least one source always stays unchoked.\n8. **Choking a demuxer.** A choked demuxer blocks on a condition variable in `waiter_wait` at the start of `sch_demux_send`. Choking it also chokes the queues it feeds (`tq_choke`), so downstream threads don't drain them.\n\nFor each fact, decide: SHOWN (drawn correctly), ABSENT (not drawn), or CONTRADICTED (drawn in a way that conflicts with the fact). Examples of a contradiction: components call each other directly instead of through the scheduler; demuxers have an input queue; a full queue drops data instead of blocking.\n\nPASS if at least 6 of the 8 facts are SHOWN and none is CONTRADICTED.\nFAIL otherwise. Begin your explanation by listing the SHOWN / ABSENT / CONTRADICTED verdict for each fact number.",
+          "config": {
+            "criteria": "You are grading a diagram (the attached PNG) that is meant to explain the threaded transcoding pipeline in `fftools` (FFmpeg master). Judge only what the picture shows. Do not credit anything you would have to infer from code that is not drawn. Exact identifiers are not required when the mechanism is drawn unambiguously.\n\nReference facts:\n\n1. **Scheduler in the middle.** Demuxers, decoders, filtergraphs, encoders and muxers never talk to each other directly. Every send and receive goes through the `Scheduler`, which is the only object that knows the whole graph (a DAG, checked at start).\n2. **One thread per component.** Each demuxer, decoder, filtergraph, encoder and muxer runs in its own thread: `input_thread`, `decoder_thread`, `filter_thread`, `encoder_thread`, `muxer_thread`. `sch_start` creates them muxers first and demuxers last.\n3. **Queues sit at the consumer's input.** Queues: each decoder has a packet queue, each filtergraph a frame queue (one stream per input plus a control stream), each encoder a frame queue, each muxer a packet queue with one stream per output stream. The demuxer has no input queue.\n4. **Data path.** Packets go demux → decoder → frames → filtergraph → encoder → packets → muxer. For stream copy, demuxed packets go straight to the muxer. Subtitle frames skip filtering and go decoder → encoder.\n5. **Thread loop.** Each worker thread loops: receive from its own input queue (`sch_*_receive`), process, then send downstream (`sch_*_send`, which pushes into the next thread's queue).\n6. **Bounded queues = backpressure.** Queues are tiny (2 entries by default for packets and for frames), and `tq_send` blocks while the destination is full. A slow consumer therefore stalls its producers.\n7. **Sync by muxer DTS.** Each packet that reaches a muxer stream updates that stream's `last_dts` and calls `schedule_update_locked`. That function finds the trailing output DTS and unchokes only the sources (demuxers / source filtergraphs) feeding streams that are less than `SCHEDULE_TOLERANCE` (100 ms) ahead of it. At least one source always stays unchoked.\n8. **Choking a demuxer.** A choked demuxer blocks on a condition variable in `waiter_wait` at the start of `sch_demux_send`. Choking it also chokes the queues it feeds (`tq_choke`), so downstream threads don't drain them.\n\nFor each fact, decide: SHOWN (drawn correctly), ABSENT (not drawn), or CONTRADICTED (drawn in a way that conflicts with the fact). Examples of a contradiction: components call each other directly instead of through the scheduler; demuxers have an input queue; a full queue drops data instead of blocking.\n\nPASS if at least 6 of the 8 facts are SHOWN and none is CONTRADICTED.\nFAIL otherwise. Begin your explanation by listing the SHOWN / ABSENT / CONTRADICTED verdict for each fact number.",
+            "focus": {
+              "source": "file",
+              "path": "out/transcode-threads.png"
+            }
+          }
+        },
+        {
+          "name": "readability",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "You are grading the visual quality of a technical diagram (the attached PNG). Ignore whether its content is technically correct; grade only how readable it is.\n\nCheck each criterion:\n1. Every label is legible at 100% zoom: no text is truncated, clipped, or too small to read.\n2. No nodes overlap, and no labels overlap nodes, edges, or each other.\n3. There is one clear reading direction (top-to-bottom or left-to-right) that a reader can follow from start to end.\n4. Edges are distinguishable: a reader can trace each edge from its source to its target, and edges that mean different things (e.g. control flow vs. data handed off) are visually different or labeled.\n5. The visual grammar is consistent: shape and/or colour encode the role of a node (e.g. decision, action, data structure, queue), and the same role always looks the same.\n6. There are no orphan nodes (unconnected, without an obvious reason) and no purely decorative elements.\n\nPASS if criteria 1, 2 and 3 all hold and at most one of criteria 4–6 fails.\nFAIL otherwise. Begin your explanation by giving a pass/fail for each criterion number.",
+          "config": {
+            "criteria": "You are grading the visual quality of a technical diagram (the attached PNG). Ignore whether its content is technically correct; grade only how readable it is.\n\nCheck each criterion:\n1. Every label is legible at 100% zoom: no text is truncated, clipped, or too small to read.\n2. No nodes overlap, and no labels overlap nodes, edges, or each other.\n3. There is one clear reading direction (top-to-bottom or left-to-right) that a reader can follow from start to end.\n4. Edges are distinguishable: a reader can trace each edge from its source to its target, and edges that mean different things (e.g. control flow vs. data handed off) are visually different or labeled.\n5. The visual grammar is consistent: shape and/or colour encode the role of a node (e.g. decision, action, data structure, queue), and the same role always looks the same.\n6. There are no orphan nodes (unconnected, without an obvious reason) and no purely decorative elements.\n\nPASS if criteria 1, 2 and 3 all hold and at most one of criteria 4–6 fails.\nFAIL otherwise. Begin your explanation by giving a pass/fail for each criterion number.",
+            "focus": {
+              "source": "file",
+              "path": "out/transcode-threads.png"
+            }
+          }
+        },
+        {
+          "name": "render",
+          "type": "file_exists",
+          "weight": 1,
+          "config": {
+            "path": "out/transcode-threads.png",
+            "exists": true
+          }
+        },
+        {
+          "name": "skill-fired",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "Skill",
+            "input_match": "\"skill\"\\s*:\\s*\"(?:[\\w-]+:)?graphviz\""
+          }
+        },
+        {
+          "name": "skill-misrouted",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "Skill",
+            "input_match": "\"skill\"\\s*:\\s*\"(?:[\\w-]+:)?model-architecture\"",
+            "min": 0,
+            "max": 0,
+            "arm": "with-only"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 27,
+            "costUsd": 1.5644163999999998,
+            "judgeCostUsd": 0.17817200000000002,
+            "durationSeconds": 194,
+            "startedAt": "2026-10-01T04:58:57.045Z",
+            "error": null,
+            "tracePath": "/tmp/claude-eval-MchKOR/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "correctness",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS (image)",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "[image shown to the judge: out/transcode-threads.png — sent as image/jpeg, 410.3KB, 2000x1897px; file on disk: image/png, 680.3KB, 2659x2522px]"
+              },
+              {
+                "name": "readability",
+                "passed": false,
+                "weight": 1,
+                "explanation": "judge votes: FAIL FAIL FAIL (image)",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  false,
+                  false,
+                  false
+                ],
+                "evidence": "[image shown to the judge: out/transcode-threads.png — sent as image/jpeg, 410.3KB, 2000x1897px; file on disk: image/png, 680.3KB, 2659x2522px]"
+              },
+              {
+                "name": "render",
+                "passed": true,
+                "weight": 1,
+                "explanation": "out/transcode-threads.png exists as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "skill-fired",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Skill called 1x (expected 1..∞)",
+                "withOnly": true,
+                "scored": false
+              },
+              {
+                "name": "skill-misrouted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Skill called 0x (expected 0..0)",
+                "withOnly": true,
+                "scored": false
+              }
+            ]
+          }
+        ],
+        "without": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 36,
+            "costUsd": 1.8399726,
+            "judgeCostUsd": 0.188296,
+            "durationSeconds": 513,
+            "startedAt": "2026-10-01T05:02:10.548Z",
+            "error": null,
+            "tracePath": "/tmp/claude-eval-YLurdi/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "correctness",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS (image)",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "[image shown to the judge: out/transcode-threads.png — sent as image/jpeg, 365.5KB, 2000x804px; file on disk: image/png, 892.2KB, 3335x1340px]"
+              },
+              {
+                "name": "readability",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS (image)",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "[image shown to the judge: out/transcode-threads.png — sent as image/jpeg, 365.5KB, 2000x804px; file on disk: image/png, 892.2KB, 3335x1340px]"
+              },
+              {
+                "name": "render",
+                "passed": true,
+                "weight": 1,
+                "explanation": "out/transcode-threads.png exists as expected",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 0.6666666666666666,
+        "passRate": 0,
+        "scoreWithout": 1,
+        "passRateWithout": 1,
+        "delta": -0.33333333333333337
+      }
+    },
+    {
+      "name": "megatron-tp-sp-mlp",
+      "dir": "evals/megatron-tp-sp-mlp",
+      "source": "mixed",
+      "promptMarkdown": "I'm trying to understand tensor parallelism with sequence parallelism in Megatron-Core. The source, pinned at the commit in `PINNED.txt`, is in the read-only source directory available to this session. Draw one diagram of a single transformer MLP block (fc1 → activation → fc2) on one of p tensor-parallel ranks with sequence parallelism enabled. Show the per-rank tensor and weight shapes in terms of s, b, h, the FFN hidden size and p, and where all-gather and reduce-scatter happen, in both the forward and the backward pass. Ground every element in the code. Save the finished diagram as a PNG image at `out/tp-sp-mlp.png`.",
+      "runsPerCase": 1,
+      "timeoutSeconds": 1800,
+      "maxTurns": 60,
+      "graders": [
+        {
+          "name": "correctness",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "You are grading a diagram (the attached PNG) that is meant to explain a tensor-parallel + sequence-parallel MLP block in Megatron-Core. Judge only what the picture shows. Do not credit anything you would have to infer from code that is not drawn. Exact identifiers are not required when the mechanism is drawn unambiguously.\n\nReference facts:\n\n1. **Sequence-sharded input.** With sequence parallelism, the MLP input on each rank is sequence-sharded: `[s/p, b, h]`. The full `[s, b, h]` exists only after an all-gather along the first (sequence) dimension.\n2. **fc1 is column-parallel.** `linear_fc1` is a `ColumnParallelLinear` whose weight is split along its output dimension: each rank holds `F/p` output columns (`F` doubled for gated units such as SwiGLU). It is built with `gather_output=False`.\n3. **Forward all-gather before fc1.** In the forward pass, fc1 all-gathers the sequence-sharded input to `[s, b, h]` and then runs the GEMM, giving `[s, b, F/p]` per rank. With sequence parallelism no copy-to-TP region is used.\n4. **Local activation.** The activation (e.g. GeLU/SwiGLU) runs locally on `[s, b, F/p]` with no communication.\n5. **fc2 is row-parallel.** `linear_fc2` is a `RowParallelLinear` with `input_is_parallel=True`: its weight is split along the input dimension (`F/p` per rank), and each rank produces a partial `[s, b, h]`.\n6. **Forward reduce-scatter after fc2.** fc2's partial outputs are reduce-scattered along the sequence dimension: summed across ranks and re-sharded to `[s/p, b, h]`. Without sequence parallelism this would be an all-reduce instead.\n7. **Backward of fc2's reduce-scatter.** The backward of that reduce-scatter is an all-gather of the output gradient along the sequence dimension, back to `[s, b, h]`.\n8. **Backward of fc1.** In fc1's backward, the saved sequence-sharded input is all-gathered again (asynchronously) to compute the weight gradient. The input gradient `grad_output @ W` is reduce-scattered along the sequence dimension back to `[s/p, b, h]`.\n\nFor each fact, decide: SHOWN (drawn correctly), ABSENT (not drawn), or CONTRADICTED (drawn in a way that conflicts with the fact). Examples of a contradiction: the full [s, b, h] activation is kept between blocks; fc1 is row-parallel or fc2 column-parallel; an all-reduce is used in the forward pass with sequence parallelism.\n\nPASS if at least 6 of the 8 facts are SHOWN and none is CONTRADICTED.\nFAIL otherwise. Begin your explanation by listing the SHOWN / ABSENT / CONTRADICTED verdict for each fact number.",
+          "config": {
+            "criteria": "You are grading a diagram (the attached PNG) that is meant to explain a tensor-parallel + sequence-parallel MLP block in Megatron-Core. Judge only what the picture shows. Do not credit anything you would have to infer from code that is not drawn. Exact identifiers are not required when the mechanism is drawn unambiguously.\n\nReference facts:\n\n1. **Sequence-sharded input.** With sequence parallelism, the MLP input on each rank is sequence-sharded: `[s/p, b, h]`. The full `[s, b, h]` exists only after an all-gather along the first (sequence) dimension.\n2. **fc1 is column-parallel.** `linear_fc1` is a `ColumnParallelLinear` whose weight is split along its output dimension: each rank holds `F/p` output columns (`F` doubled for gated units such as SwiGLU). It is built with `gather_output=False`.\n3. **Forward all-gather before fc1.** In the forward pass, fc1 all-gathers the sequence-sharded input to `[s, b, h]` and then runs the GEMM, giving `[s, b, F/p]` per rank. With sequence parallelism no copy-to-TP region is used.\n4. **Local activation.** The activation (e.g. GeLU/SwiGLU) runs locally on `[s, b, F/p]` with no communication.\n5. **fc2 is row-parallel.** `linear_fc2` is a `RowParallelLinear` with `input_is_parallel=True`: its weight is split along the input dimension (`F/p` per rank), and each rank produces a partial `[s, b, h]`.\n6. **Forward reduce-scatter after fc2.** fc2's partial outputs are reduce-scattered along the sequence dimension: summed across ranks and re-sharded to `[s/p, b, h]`. Without sequence parallelism this would be an all-reduce instead.\n7. **Backward of fc2's reduce-scatter.** The backward of that reduce-scatter is an all-gather of the output gradient along the sequence dimension, back to `[s, b, h]`.\n8. **Backward of fc1.** In fc1's backward, the saved sequence-sharded input is all-gathered again (asynchronously) to compute the weight gradient. The input gradient `grad_output @ W` is reduce-scattered along the sequence dimension back to `[s/p, b, h]`.\n\nFor each fact, decide: SHOWN (drawn correctly), ABSENT (not drawn), or CONTRADICTED (drawn in a way that conflicts with the fact). Examples of a contradiction: the full [s, b, h] activation is kept between blocks; fc1 is row-parallel or fc2 column-parallel; an all-reduce is used in the forward pass with sequence parallelism.\n\nPASS if at least 6 of the 8 facts are SHOWN and none is CONTRADICTED.\nFAIL otherwise. Begin your explanation by listing the SHOWN / ABSENT / CONTRADICTED verdict for each fact number.",
+            "focus": {
+              "source": "file",
+              "path": "out/tp-sp-mlp.png"
+            }
+          }
+        },
+        {
+          "name": "readability",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "You are grading the visual quality of a technical diagram (the attached PNG). Ignore whether its content is technically correct; grade only how readable it is.\n\nCheck each criterion:\n1. Every label is legible at 100% zoom: no text is truncated, clipped, or too small to read.\n2. No nodes overlap, and no labels overlap nodes, edges, or each other.\n3. There is one clear reading direction (top-to-bottom or left-to-right) that a reader can follow from start to end.\n4. Edges are distinguishable: a reader can trace each edge from its source to its target, and edges that mean different things (e.g. control flow vs. data handed off) are visually different or labeled.\n5. The visual grammar is consistent: shape and/or colour encode the role of a node (e.g. decision, action, data structure, queue), and the same role always looks the same.\n6. There are no orphan nodes (unconnected, without an obvious reason) and no purely decorative elements.\n\nPASS if criteria 1, 2 and 3 all hold and at most one of criteria 4–6 fails.\nFAIL otherwise. Begin your explanation by giving a pass/fail for each criterion number.",
+          "config": {
+            "criteria": "You are grading the visual quality of a technical diagram (the attached PNG). Ignore whether its content is technically correct; grade only how readable it is.\n\nCheck each criterion:\n1. Every label is legible at 100% zoom: no text is truncated, clipped, or too small to read.\n2. No nodes overlap, and no labels overlap nodes, edges, or each other.\n3. There is one clear reading direction (top-to-bottom or left-to-right) that a reader can follow from start to end.\n4. Edges are distinguishable: a reader can trace each edge from its source to its target, and edges that mean different things (e.g. control flow vs. data handed off) are visually different or labeled.\n5. The visual grammar is consistent: shape and/or colour encode the role of a node (e.g. decision, action, data structure, queue), and the same role always looks the same.\n6. There are no orphan nodes (unconnected, without an obvious reason) and no purely decorative elements.\n\nPASS if criteria 1, 2 and 3 all hold and at most one of criteria 4–6 fails.\nFAIL otherwise. Begin your explanation by giving a pass/fail for each criterion number.",
+            "focus": {
+              "source": "file",
+              "path": "out/tp-sp-mlp.png"
+            }
+          }
+        },
+        {
+          "name": "render",
+          "type": "file_exists",
+          "weight": 1,
+          "config": {
+            "path": "out/tp-sp-mlp.png",
+            "exists": true
+          }
+        },
+        {
+          "name": "skill-fired",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "Skill",
+            "input_match": "\"skill\"\\s*:\\s*\"(?:[\\w-]+:)?model-architecture\""
+          }
+        },
+        {
+          "name": "skill-misrouted",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "Skill",
+            "input_match": "\"skill\"\\s*:\\s*\"(?:[\\w-]+:)?graphviz\"",
+            "min": 0,
+            "max": 0,
+            "arm": "with-only"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 27,
+            "costUsd": 1.1870926,
+            "judgeCostUsd": 0.13439200000000007,
+            "durationSeconds": 225,
+            "startedAt": "2026-10-01T05:10:43.797Z",
+            "error": null,
+            "tracePath": "/tmp/claude-eval-3SvGek/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "correctness",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS (image)",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "[image shown to the judge: out/tp-sp-mlp.png — sent as image/jpeg, 263.6KB, 2000x896px; file on disk: image/png, 398.7KB, 2648x1186px]"
+              },
+              {
+                "name": "readability",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS (image)",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "[image shown to the judge: out/tp-sp-mlp.png — sent as image/jpeg, 263.6KB, 2000x896px; file on disk: image/png, 398.7KB, 2648x1186px]"
+              },
+              {
+                "name": "render",
+                "passed": true,
+                "weight": 1,
+                "explanation": "out/tp-sp-mlp.png exists as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "skill-fired",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Skill called 1x (expected 1..∞)",
+                "withOnly": true,
+                "scored": false
+              },
+              {
+                "name": "skill-misrouted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Skill called 0x (expected 0..0)",
+                "withOnly": true,
+                "scored": false
+              }
+            ]
+          }
+        ],
+        "without": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 18,
+            "costUsd": 0.8354448,
+            "judgeCostUsd": 0.16611599999999993,
+            "durationSeconds": 161,
+            "startedAt": "2026-10-01T05:14:28.650Z",
+            "error": null,
+            "tracePath": "/tmp/claude-eval-40PwFS/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "correctness",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS (image)",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "[image shown to the judge: out/tp-sp-mlp.png — sent as image/jpeg, 475.9KB, 2000x1385px; file on disk: image/png, 626.5KB, 2252x1560px]"
+              },
+              {
+                "name": "readability",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS FAIL PASS (image)",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  false,
+                  true
+                ],
+                "evidence": "[image shown to the judge: out/tp-sp-mlp.png — sent as image/jpeg, 475.9KB, 2000x1385px; file on disk: image/png, 626.5KB, 2252x1560px]"
+              },
+              {
+                "name": "render",
+                "passed": true,
+                "weight": 1,
+                "explanation": "out/tp-sp-mlp.png exists as expected",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 1,
+        "passRate": 1,
+        "scoreWithout": 1,
+        "passRateWithout": 1,
+        "delta": 0
+      }
+    },
+    {
+      "name": "redis-request-path",
+      "dir": "evals/redis-request-path",
+      "source": "mixed",
+      "promptMarkdown": "I'm trying to understand how Redis 8 handles a client request when I/O threads are enabled (`io-threads` greater than 1). The Redis source, pinned at the tag and commit in `PINNED.txt`, is in the read-only source directory available to this session. Draw one diagram that explains the life of one request across the main thread and an I/O thread: which thread accepts the connection, which reads and parses the query, which executes the command, which writes the reply, and how the client is handed between threads. Ground every element in the code. Save the finished diagram as a PNG image at `out/request-path.png`.",
+      "runsPerCase": 1,
+      "timeoutSeconds": 1800,
+      "maxTurns": 60,
+      "graders": [
+        {
+          "name": "correctness",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "You are grading a diagram (the attached PNG) that is meant to explain the life of one client request across the main thread and an I/O thread (Redis 8, `io-threads` > 1). Judge only what the picture shows. Do not credit anything you would have to infer from code that is not drawn. Exact identifiers are not required when the mechanism is drawn unambiguously.\n\nReference facts:\n\n1. **Accept and assign on the main thread.** The main thread accepts the connection and creates the client. `assignClientToIOThread` then picks the I/O thread with the fewest clients, unbinds the connection from the main event loop, and queues the client for that thread.\n2. **Hand-off to the I/O thread.** In the main thread's `beforeSleep`, `sendPendingClientsToIOThreads` moves each thread's queued clients into that thread's `pending_clients` list under a mutex and triggers the thread's event notifier.\n3. **I/O thread binds the client.** The I/O thread wakes in `handleClientsFromMainThread` → `processClientsFromMainThread`. It links the client into its own list, enables read/write, and binds the connection to its own event loop with `readQueryFromClient` as the read handler.\n4. **Read and parse in the I/O thread.** On a readable event the I/O thread runs `readQueryFromClient`, which reads the socket into the query buffer, and `processInputBuffer`, which parses complete commands.\n5. **The I/O thread never executes commands.** When a full command is parsed on an I/O thread, it sets `CLIENT_IO_PENDING_COMMAND` and calls `enqueuePendingClientsToMainThread`, which disables the client's read/write and moves it to the thread's to-main list.\n6. **Batched hand-back.** The I/O thread passes its to-main list to the main thread under a mutex. It does this when 16 clients are pending (`IO_THREAD_MAX_PENDING_CLIENTS`) or before it sleeps, and it notifies the main thread only if the main thread is not already running.\n7. **Execute on the main thread.** The main thread takes the clients in `handleClientsFromIOThread` or in `beforeSleep` (`processClientsOfAllIOThreads`). `processClientsFromIOThread` marks each client as running on the main thread, frees it if it was asked to close, and runs `processPendingCommandAndInputBuffer` → `processCommandAndResetClient` to execute the command. The reply goes into the client's output buffer.\n8. **Return trip and write in the I/O thread.** After execution the client is queued back to its I/O thread, unless it must stay on the main thread (pubsub, monitor, blocked, tracking, ...). Back on the I/O thread, `processClientsFromMainThread` writes the pending reply with `writeToClient` and installs `sendReplyToClient` as the write handler if the reply wasn't fully flushed.\n9. **Main thread owns client lifetime.** I/O threads never free clients: freeing happens on the main thread. Clients kept on the main thread are written by `handleClientsWithPendingWrites` in `beforeSleep`, which hands eligible ones back to I/O threads.\n\nFor each fact, decide: SHOWN (drawn correctly), ABSENT (not drawn), or CONTRADICTED (drawn in a way that conflicts with the fact). Examples of a contradiction: the I/O thread executes the command; the main thread reads from the socket for an I/O-thread client; I/O threads free clients.\n\nPASS if at least 7 of the 9 facts are SHOWN and none is CONTRADICTED.\nFAIL otherwise. Begin your explanation by listing the SHOWN / ABSENT / CONTRADICTED verdict for each fact number.",
+          "config": {
+            "criteria": "You are grading a diagram (the attached PNG) that is meant to explain the life of one client request across the main thread and an I/O thread (Redis 8, `io-threads` > 1). Judge only what the picture shows. Do not credit anything you would have to infer from code that is not drawn. Exact identifiers are not required when the mechanism is drawn unambiguously.\n\nReference facts:\n\n1. **Accept and assign on the main thread.** The main thread accepts the connection and creates the client. `assignClientToIOThread` then picks the I/O thread with the fewest clients, unbinds the connection from the main event loop, and queues the client for that thread.\n2. **Hand-off to the I/O thread.** In the main thread's `beforeSleep`, `sendPendingClientsToIOThreads` moves each thread's queued clients into that thread's `pending_clients` list under a mutex and triggers the thread's event notifier.\n3. **I/O thread binds the client.** The I/O thread wakes in `handleClientsFromMainThread` → `processClientsFromMainThread`. It links the client into its own list, enables read/write, and binds the connection to its own event loop with `readQueryFromClient` as the read handler.\n4. **Read and parse in the I/O thread.** On a readable event the I/O thread runs `readQueryFromClient`, which reads the socket into the query buffer, and `processInputBuffer`, which parses complete commands.\n5. **The I/O thread never executes commands.** When a full command is parsed on an I/O thread, it sets `CLIENT_IO_PENDING_COMMAND` and calls `enqueuePendingClientsToMainThread`, which disables the client's read/write and moves it to the thread's to-main list.\n6. **Batched hand-back.** The I/O thread passes its to-main list to the main thread under a mutex. It does this when 16 clients are pending (`IO_THREAD_MAX_PENDING_CLIENTS`) or before it sleeps, and it notifies the main thread only if the main thread is not already running.\n7. **Execute on the main thread.** The main thread takes the clients in `handleClientsFromIOThread` or in `beforeSleep` (`processClientsOfAllIOThreads`). `processClientsFromIOThread` marks each client as running on the main thread, frees it if it was asked to close, and runs `processPendingCommandAndInputBuffer` → `processCommandAndResetClient` to execute the command. The reply goes into the client's output buffer.\n8. **Return trip and write in the I/O thread.** After execution the client is queued back to its I/O thread, unless it must stay on the main thread (pubsub, monitor, blocked, tracking, ...). Back on the I/O thread, `processClientsFromMainThread` writes the pending reply with `writeToClient` and installs `sendReplyToClient` as the write handler if the reply wasn't fully flushed.\n9. **Main thread owns client lifetime.** I/O threads never free clients: freeing happens on the main thread. Clients kept on the main thread are written by `handleClientsWithPendingWrites` in `beforeSleep`, which hands eligible ones back to I/O threads.\n\nFor each fact, decide: SHOWN (drawn correctly), ABSENT (not drawn), or CONTRADICTED (drawn in a way that conflicts with the fact). Examples of a contradiction: the I/O thread executes the command; the main thread reads from the socket for an I/O-thread client; I/O threads free clients.\n\nPASS if at least 7 of the 9 facts are SHOWN and none is CONTRADICTED.\nFAIL otherwise. Begin your explanation by listing the SHOWN / ABSENT / CONTRADICTED verdict for each fact number.",
+            "focus": {
+              "source": "file",
+              "path": "out/request-path.png"
+            }
+          }
+        },
+        {
+          "name": "readability",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "You are grading the visual quality of a technical diagram (the attached PNG). Ignore whether its content is technically correct; grade only how readable it is.\n\nCheck each criterion:\n1. Every label is legible at 100% zoom: no text is truncated, clipped, or too small to read.\n2. No nodes overlap, and no labels overlap nodes, edges, or each other.\n3. There is one clear reading direction (top-to-bottom or left-to-right) that a reader can follow from start to end.\n4. Edges are distinguishable: a reader can trace each edge from its source to its target, and edges that mean different things (e.g. control flow vs. data handed off) are visually different or labeled.\n5. The visual grammar is consistent: shape and/or colour encode the role of a node (e.g. decision, action, data structure, queue), and the same role always looks the same.\n6. There are no orphan nodes (unconnected, without an obvious reason) and no purely decorative elements.\n\nPASS if criteria 1, 2 and 3 all hold and at most one of criteria 4–6 fails.\nFAIL otherwise. Begin your explanation by giving a pass/fail for each criterion number.",
+          "config": {
+            "criteria": "You are grading the visual quality of a technical diagram (the attached PNG). Ignore whether its content is technically correct; grade only how readable it is.\n\nCheck each criterion:\n1. Every label is legible at 100% zoom: no text is truncated, clipped, or too small to read.\n2. No nodes overlap, and no labels overlap nodes, edges, or each other.\n3. There is one clear reading direction (top-to-bottom or left-to-right) that a reader can follow from start to end.\n4. Edges are distinguishable: a reader can trace each edge from its source to its target, and edges that mean different things (e.g. control flow vs. data handed off) are visually different or labeled.\n5. The visual grammar is consistent: shape and/or colour encode the role of a node (e.g. decision, action, data structure, queue), and the same role always looks the same.\n6. There are no orphan nodes (unconnected, without an obvious reason) and no purely decorative elements.\n\nPASS if criteria 1, 2 and 3 all hold and at most one of criteria 4–6 fails.\nFAIL otherwise. Begin your explanation by giving a pass/fail for each criterion number.",
+            "focus": {
+              "source": "file",
+              "path": "out/request-path.png"
+            }
+          }
+        },
+        {
+          "name": "render",
+          "type": "file_exists",
+          "weight": 1,
+          "config": {
+            "path": "out/request-path.png",
+            "exists": true
+          }
+        },
+        {
+          "name": "skill-fired",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "Skill",
+            "input_match": "\"skill\"\\s*:\\s*\"(?:[\\w-]+:)?graphviz\""
+          }
+        },
+        {
+          "name": "skill-misrouted",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "Skill",
+            "input_match": "\"skill\"\\s*:\\s*\"(?:[\\w-]+:)?model-architecture\"",
+            "min": 0,
+            "max": 0,
+            "arm": "with-only"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 18,
+            "costUsd": 1.080938,
+            "judgeCostUsd": 0.15988000000000002,
+            "durationSeconds": 170,
+            "startedAt": "2026-10-01T05:17:09.982Z",
+            "error": null,
+            "tracePath": "/tmp/claude-eval-eiUa29/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "correctness",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS (image)",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "[image shown to the judge: out/request-path.png — sent as image/jpeg, 248.4KB, 2000x977px; file on disk: image/png, 807.4KB, 4001x1955px]"
+              },
+              {
+                "name": "readability",
+                "passed": false,
+                "weight": 1,
+                "explanation": "judge votes: PASS FAIL FAIL (image)",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  false,
+                  false
+                ],
+                "evidence": "[image shown to the judge: out/request-path.png — sent as image/jpeg, 248.4KB, 2000x977px; file on disk: image/png, 807.4KB, 4001x1955px]"
+              },
+              {
+                "name": "render",
+                "passed": true,
+                "weight": 1,
+                "explanation": "out/request-path.png exists as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "skill-fired",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Skill called 1x (expected 1..∞)",
+                "withOnly": true,
+                "scored": false
+              },
+              {
+                "name": "skill-misrouted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Skill called 0x (expected 0..0)",
+                "withOnly": true,
+                "scored": false
+              }
+            ]
+          }
+        ],
+        "without": [
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 17,
+            "costUsd": 1.1744612,
+            "judgeCostUsd": 0.18873200000000012,
+            "durationSeconds": 186,
+            "startedAt": "2026-10-01T05:19:59.514Z",
+            "error": null,
+            "tracePath": "/tmp/claude-eval-VkQH03/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "correctness",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS (image)",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "[image shown to the judge: out/request-path.png — sent as image/jpeg, 427.4KB, 1774x2000px; file on disk: image/png, 702.9KB, 2444x2755px]"
+              },
+              {
+                "name": "readability",
+                "passed": false,
+                "weight": 1,
+                "explanation": "judge votes: FAIL FAIL FAIL (image)",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  false,
+                  false,
+                  false
+                ],
+                "evidence": "[image shown to the judge: out/request-path.png — sent as image/jpeg, 427.4KB, 1774x2000px; file on disk: image/png, 702.9KB, 2444x2755px]"
+              },
+              {
+                "name": "render",
+                "passed": true,
+                "weight": 1,
+                "explanation": "out/request-path.png exists as expected",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 0.6666666666666666,
+        "passRate": 0,
+        "scoreWithout": 0.6666666666666666,
+        "passRateWithout": 0,
+        "delta": 0
+      }
+    },
+    {
+      "name": "verl-ppo-step",
+      "dir": "evals/verl-ppo-step",
+      "source": "mixed",
+      "promptMarkdown": "I'm trying to understand how verl runs one PPO/GRPO training step with its single-controller design. The trainer source, pinned at the commit in `PINNED.txt`, is in the read-only source directory available to this session. Draw one diagram that explains what one step of the training loop does: the order of rollout, reward, old and reference log-probs, values, advantage, critic and actor updates; which work runs on the driver and which on Ray worker groups; what accumulates in the batch along the way; and where the weights move between the trainer and the rollout engine. Ground every element in the code. Save the finished diagram as a PNG image at `out/ppo-step.png`.",
+      "runsPerCase": 1,
+      "timeoutSeconds": 1800,
+      "maxTurns": 60,
+      "graders": [
+        {
+          "name": "correctness",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "You are grading a diagram (the attached PNG) that is meant to explain one PPO/GRPO training step in verl's single controller (`RayPPOTrainer.fit`). Judge only what the picture shows. Do not credit anything you would have to infer from code that is not drawn. Exact identifiers are not required when the mechanism is drawn unambiguously.\n\nReference facts:\n\n1. **Single controller, one step per batch.** `fit()` runs on the driver and loops over epochs and dataloader batches; each batch becomes one step. Each prompt is repeated `rollout.n` times before generation, so a prompt gets n responses.\n2. **Rollout, then the rollout engine sleeps.** The driver calls `async_rollout_manager.generate_sequences(...)`, which generates on the rollout replicas (LLM servers). Right after, `checkpoint_manager.sleep_replicas()` frees the replicas' weights and KV-cache memory so training can use the GPUs.\n3. **Batch accumulation.** The prompts (repeated n times) are unioned with the generated responses into one `DataProto` batch. Every later stage adds fields to that same batch with `batch.union(...)`: rewards, `old_log_probs`, `ref_log_prob`, values, advantages.\n4. **Reward.** Token-level scores come from the reward loop (streamed during rollout) or a reward-model pass, and are extracted into `token_level_scores`.\n5. **Old log-probs by the actor worker group.** Unless bypass mode reuses `rollout_log_probs`, the actor worker group recomputes `old_log_probs` (and entropy) for the generated tokens via `actor_rollout_wg.compute_log_prob`.\n6. **Optional reference and critic passes.** If a reference policy is used, the ref worker group computes `ref_log_prob`. If a critic is used, the critic worker group computes `values`.\n7. **Advantage on the driver.** On the driver: an optional KL penalty is folded into the reward (`token_level_rewards`), then `compute_advantage` runs. The estimator is GAE for PPO with a critic, or group-normalized outcome advantage over each prompt's n responses for GRPO.\n8. **Updates on worker groups.** The critic is updated first if present. The actor is then updated with the PPO loss, except during critic warm-up steps.\n9. **Weight sync trainer → rollout.** After the actor update, `checkpoint_manager.update_weights` moves the new weights to the rollout engine. With colocated (naive) sync, each actor worker resumes the rollout's weight memory and pushes its per-tensor parameters into the rollout in the same process (`get_per_tensor_param`). With other backends (NCCL/NIXL), it aborts in-flight requests, frees the KV cache, sends the weights over a process group, then resumes.\n\nFor each fact, decide: SHOWN (drawn correctly), ABSENT (not drawn), or CONTRADICTED (drawn in a way that conflicts with the fact). Examples of a contradiction: the actor is updated before rewards or advantages exist; the advantage is computed on the rollout replicas; the weights are synced to the rollout before the actor update.\n\nPASS if at least 7 of the 9 facts are SHOWN and none is CONTRADICTED.\nFAIL otherwise. Begin your explanation by listing the SHOWN / ABSENT / CONTRADICTED verdict for each fact number.",
+          "config": {
+            "criteria": "You are grading a diagram (the attached PNG) that is meant to explain one PPO/GRPO training step in verl's single controller (`RayPPOTrainer.fit`). Judge only what the picture shows. Do not credit anything you would have to infer from code that is not drawn. Exact identifiers are not required when the mechanism is drawn unambiguously.\n\nReference facts:\n\n1. **Single controller, one step per batch.** `fit()` runs on the driver and loops over epochs and dataloader batches; each batch becomes one step. Each prompt is repeated `rollout.n` times before generation, so a prompt gets n responses.\n2. **Rollout, then the rollout engine sleeps.** The driver calls `async_rollout_manager.generate_sequences(...)`, which generates on the rollout replicas (LLM servers). Right after, `checkpoint_manager.sleep_replicas()` frees the replicas' weights and KV-cache memory so training can use the GPUs.\n3. **Batch accumulation.** The prompts (repeated n times) are unioned with the generated responses into one `DataProto` batch. Every later stage adds fields to that same batch with `batch.union(...)`: rewards, `old_log_probs`, `ref_log_prob`, values, advantages.\n4. **Reward.** Token-level scores come from the reward loop (streamed during rollout) or a reward-model pass, and are extracted into `token_level_scores`.\n5. **Old log-probs by the actor worker group.** Unless bypass mode reuses `rollout_log_probs`, the actor worker group recomputes `old_log_probs` (and entropy) for the generated tokens via `actor_rollout_wg.compute_log_prob`.\n6. **Optional reference and critic passes.** If a reference policy is used, the ref worker group computes `ref_log_prob`. If a critic is used, the critic worker group computes `values`.\n7. **Advantage on the driver.** On the driver: an optional KL penalty is folded into the reward (`token_level_rewards`), then `compute_advantage` runs. The estimator is GAE for PPO with a critic, or group-normalized outcome advantage over each prompt's n responses for GRPO.\n8. **Updates on worker groups.** The critic is updated first if present. The actor is then updated with the PPO loss, except during critic warm-up steps.\n9. **Weight sync trainer → rollout.** After the actor update, `checkpoint_manager.update_weights` moves the new weights to the rollout engine. With colocated (naive) sync, each actor worker resumes the rollout's weight memory and pushes its per-tensor parameters into the rollout in the same process (`get_per_tensor_param`). With other backends (NCCL/NIXL), it aborts in-flight requests, frees the KV cache, sends the weights over a process group, then resumes.\n\nFor each fact, decide: SHOWN (drawn correctly), ABSENT (not drawn), or CONTRADICTED (drawn in a way that conflicts with the fact). Examples of a contradiction: the actor is updated before rewards or advantages exist; the advantage is computed on the rollout replicas; the weights are synced to the rollout before the actor update.\n\nPASS if at least 7 of the 9 facts are SHOWN and none is CONTRADICTED.\nFAIL otherwise. Begin your explanation by listing the SHOWN / ABSENT / CONTRADICTED verdict for each fact number.",
+            "focus": {
+              "source": "file",
+              "path": "out/ppo-step.png"
+            }
+          }
+        },
+        {
+          "name": "readability",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "You are grading the visual quality of a technical diagram (the attached PNG). Ignore whether its content is technically correct; grade only how readable it is.\n\nCheck each criterion:\n1. Every label is legible at 100% zoom: no text is truncated, clipped, or too small to read.\n2. No nodes overlap, and no labels overlap nodes, edges, or each other.\n3. There is one clear reading direction (top-to-bottom or left-to-right) that a reader can follow from start to end.\n4. Edges are distinguishable: a reader can trace each edge from its source to its target, and edges that mean different things (e.g. control flow vs. data handed off) are visually different or labeled.\n5. The visual grammar is consistent: shape and/or colour encode the role of a node (e.g. decision, action, data structure, queue), and the same role always looks the same.\n6. There are no orphan nodes (unconnected, without an obvious reason) and no purely decorative elements.\n\nPASS if criteria 1, 2 and 3 all hold and at most one of criteria 4–6 fails.\nFAIL otherwise. Begin your explanation by giving a pass/fail for each criterion number.",
+          "config": {
+            "criteria": "You are grading the visual quality of a technical diagram (the attached PNG). Ignore whether its content is technically correct; grade only how readable it is.\n\nCheck each criterion:\n1. Every label is legible at 100% zoom: no text is truncated, clipped, or too small to read.\n2. No nodes overlap, and no labels overlap nodes, edges, or each other.\n3. There is one clear reading direction (top-to-bottom or left-to-right) that a reader can follow from start to end.\n4. Edges are distinguishable: a reader can trace each edge from its source to its target, and edges that mean different things (e.g. control flow vs. data handed off) are visually different or labeled.\n5. The visual grammar is consistent: shape and/or colour encode the role of a node (e.g. decision, action, data structure, queue), and the same role always looks the same.\n6. There are no orphan nodes (unconnected, without an obvious reason) and no purely decorative elements.\n\nPASS if criteria 1, 2 and 3 all hold and at most one of criteria 4–6 fails.\nFAIL otherwise. Begin your explanation by giving a pass/fail for each criterion number.",
+            "focus": {
+              "source": "file",
+              "path": "out/ppo-step.png"
+            }
+          }
+        },
+        {
+          "name": "render",
+          "type": "file_exists",
+          "weight": 1,
+          "config": {
+            "path": "out/ppo-step.png",
+            "exists": true
+          }
+        },
+        {
+          "name": "skill-fired",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "Skill",
+            "input_match": "\"skill\"\\s*:\\s*\"(?:[\\w-]+:)?graphviz\""
+          }
+        },
+        {
+          "name": "skill-misrouted",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "Skill",
+            "input_match": "\"skill\"\\s*:\\s*\"(?:[\\w-]+:)?model-architecture\"",
+            "min": 0,
+            "max": 0,
+            "arm": "with-only"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 30,
+            "costUsd": 1.2490200000000002,
+            "judgeCostUsd": 0.18240800000000013,
+            "durationSeconds": 195,
+            "startedAt": "2026-10-01T05:23:06.009Z",
+            "error": null,
+            "tracePath": "/tmp/claude-eval-12lZnb/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "correctness",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS (image)",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "[image shown to the judge: out/ppo-step.png — sent as image/jpeg, 330.5KB, 2000x1443px; file on disk: image/png, 831.8KB, 3817x2754px]"
+              },
+              {
+                "name": "readability",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS FAIL PASS (image)",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  false,
+                  true
+                ],
+                "evidence": "[image shown to the judge: out/ppo-step.png — sent as image/jpeg, 330.5KB, 2000x1443px; file on disk: image/png, 831.8KB, 3817x2754px]"
+              },
+              {
+                "name": "render",
+                "passed": true,
+                "weight": 1,
+                "explanation": "out/ppo-step.png exists as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "skill-fired",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Skill called 1x (expected 1..∞)",
+                "withOnly": true,
+                "scored": false
+              },
+              {
+                "name": "skill-misrouted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Skill called 0x (expected 0..0)",
+                "withOnly": true,
+                "scored": false
+              }
+            ]
+          }
+        ],
+        "without": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 23,
+            "costUsd": 1.3978612,
+            "judgeCostUsd": 0.165972,
+            "durationSeconds": 249,
+            "startedAt": "2026-10-01T05:26:21.242Z",
+            "error": null,
+            "tracePath": "/tmp/claude-eval-zznZLQ/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "correctness",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS (image)",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "[image shown to the judge: out/ppo-step.png — sent as image/jpeg, 468.3KB, 1914x2000px; file on disk: image/png, 452.4KB, 2620x2738px]"
+              },
+              {
+                "name": "readability",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS (image)",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "[image shown to the judge: out/ppo-step.png — sent as image/jpeg, 468.3KB, 1914x2000px; file on disk: image/png, 452.4KB, 2620x2738px]"
+              },
+              {
+                "name": "render",
+                "passed": true,
+                "weight": 1,
+                "explanation": "out/ppo-step.png exists as expected",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 1,
+        "passRate": 1,
+        "scoreWithout": 1,
+        "passRateWithout": 1,
+        "delta": 0
+      }
+    },
+    {
+      "name": "vllm-v1-mixed-batch-attn",
+      "dir": "evals/vllm-v1-mixed-batch-attn",
+      "source": "mixed",
+      "promptMarkdown": "I'm trying to understand how vLLM V1's GPU model runner turns one mixed batch, where some requests prefill a chunk and others decode one token, into attention inputs. The source, pinned at the commit in `PINNED.txt`, is in the read-only source directory available to this session. Draw one diagram that uses a small concrete example batch to show how the scheduled tokens are flattened; how `query_start_loc`, `seq_lens`, `block_table` and `slot_mapping` are built; and how the FlashAttention backend uses them to write the new K/V into the paged KV cache and read it back. Ground every element in the code. Save the finished diagram as a PNG image at `out/mixed-batch-attn.png`.",
+      "runsPerCase": 1,
+      "timeoutSeconds": 1800,
+      "maxTurns": 60,
+      "graders": [
+        {
+          "name": "correctness",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "You are grading a diagram (the attached PNG) that is meant to explain how vLLM V1 flattens a mixed prefill + decode batch into attention metadata. Judge only what the picture shows. Do not credit anything you would have to infer from code that is not drawn. Exact identifiers are not required when the mechanism is drawn unambiguously.\n\nReference facts:\n\n1. **One flat token array.** The scheduled tokens of all requests, prefill chunks and decode tokens alike, are concatenated into one 1-D token array. `req_indices` maps each flat token back to its request (`np.repeat`, e.g. `[2,5,3]` → `[0,0,1,1,1,1,1,2,2,2]`).\n2. **Per-request offsets.** `cu_num_tokens = cumsum(num_scheduled_tokens)`, and `query_pos` is each token's index within its request's slice.\n3. **Positions continue from computed tokens.** `positions = num_computed_tokens[req] + query_pos`. A prefill chunk's positions continue from what earlier steps already computed, and a decode token's position equals its request's computed length.\n4. **Input ids gathered.** Input ids are gathered from the per-request token table with `token_indices = positions + req_idx * max_model_len`.\n5. **query_start_loc.** `query_start_loc = [0, cu_num_tokens...]`, of length num_reqs+1 (padded to stay non-decreasing), marks where each request's queries start in the flat array. Logits are taken at each request's last token, `query_start_loc[1:] - 1`.\n6. **seq_lens.** `seq_lens = num_computed_tokens + num_scheduled_tokens` per request: the full context length including this step's new tokens.\n7. **block_table.** `block_table` holds one row of physical KV block ids per request. Each step it is extended with the `new_block_ids` from the `SchedulerOutput`, or replaced when a request resumes from preemption.\n8. **slot_mapping.** Each token's KV-cache slot is `block_table[req][pos // block_size] * block_size + pos % block_size`, computed on the GPU per flat token.\n9. **Write then read in one kernel call.** The attention backend first scatters the new K/V into the paged cache at `slot_mapping` (`reshape_and_cache_flash`). It then runs one varlen attention call with `cu_seqlens_q = query_start_loc`, `seqused_k = seq_lens` and `block_table`, so prefill chunks and decode tokens are processed together in one kernel.\n\nFor each fact, decide: SHOWN (drawn correctly), ABSENT (not drawn), or CONTRADICTED (drawn in a way that conflicts with the fact). Examples of a contradiction: prefill and decode tokens run as separate batches or kernels; slot_mapping is per request rather than per token; seq_lens counts only the new tokens.\n\nPASS if at least 7 of the 9 facts are SHOWN and none is CONTRADICTED.\nFAIL otherwise. Begin your explanation by listing the SHOWN / ABSENT / CONTRADICTED verdict for each fact number.",
+          "config": {
+            "criteria": "You are grading a diagram (the attached PNG) that is meant to explain how vLLM V1 flattens a mixed prefill + decode batch into attention metadata. Judge only what the picture shows. Do not credit anything you would have to infer from code that is not drawn. Exact identifiers are not required when the mechanism is drawn unambiguously.\n\nReference facts:\n\n1. **One flat token array.** The scheduled tokens of all requests, prefill chunks and decode tokens alike, are concatenated into one 1-D token array. `req_indices` maps each flat token back to its request (`np.repeat`, e.g. `[2,5,3]` → `[0,0,1,1,1,1,1,2,2,2]`).\n2. **Per-request offsets.** `cu_num_tokens = cumsum(num_scheduled_tokens)`, and `query_pos` is each token's index within its request's slice.\n3. **Positions continue from computed tokens.** `positions = num_computed_tokens[req] + query_pos`. A prefill chunk's positions continue from what earlier steps already computed, and a decode token's position equals its request's computed length.\n4. **Input ids gathered.** Input ids are gathered from the per-request token table with `token_indices = positions + req_idx * max_model_len`.\n5. **query_start_loc.** `query_start_loc = [0, cu_num_tokens...]`, of length num_reqs+1 (padded to stay non-decreasing), marks where each request's queries start in the flat array. Logits are taken at each request's last token, `query_start_loc[1:] - 1`.\n6. **seq_lens.** `seq_lens = num_computed_tokens + num_scheduled_tokens` per request: the full context length including this step's new tokens.\n7. **block_table.** `block_table` holds one row of physical KV block ids per request. Each step it is extended with the `new_block_ids` from the `SchedulerOutput`, or replaced when a request resumes from preemption.\n8. **slot_mapping.** Each token's KV-cache slot is `block_table[req][pos // block_size] * block_size + pos % block_size`, computed on the GPU per flat token.\n9. **Write then read in one kernel call.** The attention backend first scatters the new K/V into the paged cache at `slot_mapping` (`reshape_and_cache_flash`). It then runs one varlen attention call with `cu_seqlens_q = query_start_loc`, `seqused_k = seq_lens` and `block_table`, so prefill chunks and decode tokens are processed together in one kernel.\n\nFor each fact, decide: SHOWN (drawn correctly), ABSENT (not drawn), or CONTRADICTED (drawn in a way that conflicts with the fact). Examples of a contradiction: prefill and decode tokens run as separate batches or kernels; slot_mapping is per request rather than per token; seq_lens counts only the new tokens.\n\nPASS if at least 7 of the 9 facts are SHOWN and none is CONTRADICTED.\nFAIL otherwise. Begin your explanation by listing the SHOWN / ABSENT / CONTRADICTED verdict for each fact number.",
+            "focus": {
+              "source": "file",
+              "path": "out/mixed-batch-attn.png"
+            }
+          }
+        },
+        {
+          "name": "readability",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "You are grading the visual quality of a technical diagram (the attached PNG). Ignore whether its content is technically correct; grade only how readable it is.\n\nCheck each criterion:\n1. Every label is legible at 100% zoom: no text is truncated, clipped, or too small to read.\n2. No nodes overlap, and no labels overlap nodes, edges, or each other.\n3. There is one clear reading direction (top-to-bottom or left-to-right) that a reader can follow from start to end.\n4. Edges are distinguishable: a reader can trace each edge from its source to its target, and edges that mean different things (e.g. control flow vs. data handed off) are visually different or labeled.\n5. The visual grammar is consistent: shape and/or colour encode the role of a node (e.g. decision, action, data structure, queue), and the same role always looks the same.\n6. There are no orphan nodes (unconnected, without an obvious reason) and no purely decorative elements.\n\nPASS if criteria 1, 2 and 3 all hold and at most one of criteria 4–6 fails.\nFAIL otherwise. Begin your explanation by giving a pass/fail for each criterion number.",
+          "config": {
+            "criteria": "You are grading the visual quality of a technical diagram (the attached PNG). Ignore whether its content is technically correct; grade only how readable it is.\n\nCheck each criterion:\n1. Every label is legible at 100% zoom: no text is truncated, clipped, or too small to read.\n2. No nodes overlap, and no labels overlap nodes, edges, or each other.\n3. There is one clear reading direction (top-to-bottom or left-to-right) that a reader can follow from start to end.\n4. Edges are distinguishable: a reader can trace each edge from its source to its target, and edges that mean different things (e.g. control flow vs. data handed off) are visually different or labeled.\n5. The visual grammar is consistent: shape and/or colour encode the role of a node (e.g. decision, action, data structure, queue), and the same role always looks the same.\n6. There are no orphan nodes (unconnected, without an obvious reason) and no purely decorative elements.\n\nPASS if criteria 1, 2 and 3 all hold and at most one of criteria 4–6 fails.\nFAIL otherwise. Begin your explanation by giving a pass/fail for each criterion number.",
+            "focus": {
+              "source": "file",
+              "path": "out/mixed-batch-attn.png"
+            }
+          }
+        },
+        {
+          "name": "render",
+          "type": "file_exists",
+          "weight": 1,
+          "config": {
+            "path": "out/mixed-batch-attn.png",
+            "exists": true
+          }
+        },
+        {
+          "name": "skill-fired",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "Skill",
+            "input_match": "\"skill\"\\s*:\\s*\"(?:[\\w-]+:)?model-architecture\""
+          }
+        },
+        {
+          "name": "skill-misrouted",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "Skill",
+            "input_match": "\"skill\"\\s*:\\s*\"(?:[\\w-]+:)?graphviz\"",
+            "min": 0,
+            "max": 0,
+            "arm": "with-only"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 32,
+            "costUsd": 1.8626712,
+            "judgeCostUsd": 0.18898799999999993,
+            "durationSeconds": 376,
+            "startedAt": "2026-10-01T05:30:30.213Z",
+            "error": null,
+            "tracePath": "/tmp/claude-eval-uEOyyJ/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "correctness",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS (image)",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "[image shown to the judge: out/mixed-batch-attn.png — sent as image/jpeg, 476.9KB, 2000x1438px; file on disk: image/png, 794.9KB, 3218x2313px]"
+              },
+              {
+                "name": "readability",
+                "passed": false,
+                "weight": 1,
+                "explanation": "judge votes: FAIL FAIL FAIL (image)",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  false,
+                  false,
+                  false
+                ],
+                "evidence": "[image shown to the judge: out/mixed-batch-attn.png — sent as image/jpeg, 476.9KB, 2000x1438px; file on disk: image/png, 794.9KB, 3218x2313px]"
+              },
+              {
+                "name": "render",
+                "passed": true,
+                "weight": 1,
+                "explanation": "out/mixed-batch-attn.png exists as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "skill-fired",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Skill called 1x (expected 1..∞)",
+                "withOnly": true,
+                "scored": false
+              },
+              {
+                "name": "skill-misrouted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Skill called 0x (expected 0..0)",
+                "withOnly": true,
+                "scored": false
+              }
+            ]
+          }
+        ],
+        "without": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 25,
+            "costUsd": 1.7607952000000002,
+            "judgeCostUsd": 0.19102400000000008,
+            "durationSeconds": 321,
+            "startedAt": "2026-10-01T05:36:46.246Z",
+            "error": null,
+            "tracePath": "/tmp/claude-eval-7zyiuP/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "correctness",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS (image)",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "[image shown to the judge: out/mixed-batch-attn.png — sent as image/jpeg, 474.6KB, 2000x1791px; file on disk: image/png, 733.8KB, 3640x3260px]"
+              },
+              {
+                "name": "readability",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS (image)",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "[image shown to the judge: out/mixed-batch-attn.png — sent as image/jpeg, 474.6KB, 2000x1791px; file on disk: image/png, 733.8KB, 3640x3260px]"
+              },
+              {
+                "name": "render",
+                "passed": true,
+                "weight": 1,
+                "explanation": "out/mixed-batch-attn.png exists as expected",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 0.6666666666666666,
+        "passRate": 0,
+        "scoreWithout": 1,
+        "passRateWithout": 1,
+        "delta": -0.33333333333333337
+      }
+    }
+  ],
+  "aggregates": {
+    "casesTotal": 5,
+    "casesPassed": 5,
+    "overallScore": 0.7999999999999999,
+    "overallPassRate": 0.4,
+    "meanDelta": -0.13333333333333336
+  }
+}

@@ -1,0 +1,80 @@
+// Megatron-Core MLP (fc1 -> act -> fc2) on ONE of p tensor-parallel ranks, sequence_parallel=True.
+// Source pinned at Megatron-LM e998be072d22ff57b4b49899819a1a153f4f3dc9.
+// Render: dot -Tpng -Gdpi=150 tp-sp-mlp.dot -o tp-sp-mlp.png
+digraph G {
+  graph [rankdir=TB, fontname="Helvetica", nodesep=0.9, ranksep=0.32, newrank=true, pad=0.3,
+         labelloc=t, fontsize=22,
+         label=<<B>Megatron-Core MLP with tensor + sequence parallelism — view from one of p TP ranks</B><BR/><FONT POINT-SIZE="13">s = sequence length, b = micro-batch, h = hidden_size, F = ffn_hidden_size, p = TP size.   Paths are relative to megatron/core/ @ e998be07.<BR/>Non-gated MLP shown. With gated_linear_unit, fc1 is built with 2F outputs (mlp.py:207-209): W1 is [2F/p, h], the fc1 output is [s, b, 2F/p], and the GLU brings it back to [s, b, F/p].</FONT><BR/> >];
+  node  [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=12, fillcolor="#ffffff", color="#555555", margin="0.15,0.08"];
+  edge  [fontname="Helvetica", fontsize=10, color="#444444", penwidth=1.4];
+
+  // ---------------- FORWARD (top -> bottom) ----------------
+  subgraph cluster_fwd {
+    label=<<B>FORWARD</B>  (top → bottom)>; fontsize=16; style="rounded"; color="#2b6cb0"; penwidth=2;
+
+    fx  [fillcolor="#edf2f7", label=<<B>X</B>  [s/p, b, h]<BR/><FONT POINT-SIZE="10">input is sharded along the sequence dim (SP region)<BR/>fc1 passes it through unchanged (no copy_to_tp_region) — layers.py:1340-1346</FONT>>];
+
+    fag [shape=box, style="filled", fillcolor="#bee3f8", color="#2b6cb0", penwidth=2,
+         label=<<B>ALL-GATHER</B> along dim 0 over the TP group<BR/>[s/p, b, h]  →  [s, b, h]<BR/><FONT POINT-SIZE="10">LinearWithGradAccumulationAndAsyncCommunication.forward, layers.py:724-730<BR/>(into global "mpu" buffer). Saves only the <I>un-gathered</I> shard X for backward: layers.py:705</FONT>>];
+
+    ffc1 [fillcolor="#fefcbf", label=<<B>fc1 = ColumnParallelLinear</B>  (mlp.py:221-235, gather_output=False)<BR/>W1 [F/p, h]  (output_size_per_partition = F/p, layers.py:1150-1160)<BR/>b1 [F/p]  (layers.py:1222-1236; skip_bias_add=True → returned, not added)<BR/>GEMM  total_input · W1ᵀ  (_linear_forward, layers.py:535)<BR/>→  [s, b, F/p]>];
+
+    fact [fillcolor="#fefcbf", label=<<B>activation</B>  (+ b1)   mlp.py:268-372<BR/>[s, b, F/p]  →  [s, b, F/p]<BR/><FONT POINT-SIZE="10">purely local, no communication</FONT>>];
+
+    ffc2 [fillcolor="#fefcbf", label=<<B>fc2 = RowParallelLinear</B>  (mlp.py:242-257, input_is_parallel=True)<BR/>W2 [h, F/p]  (input_size_per_partition = F/p, layers.py:1545-1555)<BR/>GEMM called with sequence_parallel=False (layers.py:1682-1692)<BR/>→  partial sum  [s, b, h]>];
+
+    frs [shape=box, style="filled", fillcolor="#fed7aa", color="#c05621", penwidth=2,
+         label=<<B>REDUCE-SCATTER</B> along dim 0 over the TP group<BR/>[s, b, h] (partial)  →  [s/p, b, h]<BR/><FONT POINT-SIZE="10">reduce_scatter_to_sequence_parallel_region, layers.py:1698-1701<BR/>→ _reduce_scatter_along_first_dim, mappings.py:163-190</FONT>>];
+
+    fy  [fillcolor="#edf2f7", label=<<B>Y</B>  [s/p, b, h]   +   output_bias b2 [h]<BR/><FONT POINT-SIZE="10">b2 is full-size [h] (layers.py:1619-1636), returned unadded (skip_bias_add=True)<BR/>and tagged bias.sequence_parallel=True (layers.py:1636)</FONT>>];
+
+    fx -> fag -> ffc1 -> fact -> ffc2 -> frs -> fy;
+  }
+
+  // ---------------- BACKWARD (bottom -> top) ----------------
+  subgraph cluster_bwd {
+    label=<<B>BACKWARD</B>  (bottom → top)>; fontsize=16; style="rounded"; color="#9b2c2c"; penwidth=2;
+
+    bdx [fillcolor="#edf2f7", label=<<B>dX</B>  [s/p, b, h]<BR/><FONT POINT-SIZE="10">sub_grad_input returned after handle.wait(), layers.py:901-906</FONT>>];
+
+    brs [shape=box, style="filled", fillcolor="#fed7aa", color="#c05621", penwidth=2,
+         label=<<B>REDUCE-SCATTER</B> of dgrad (async)  — <I>replaces the TP all-reduce</I><BR/>[s, b, h] (partial)  →  [s/p, b, h]<BR/><FONT POINT-SIZE="10">layers.py:801-810 (assert not allreduce_dgrad; allreduce_dgrad=False when SP, layers.py:1256-1258)<BR/>overlaps with the fc1 wgrad GEMM  dW1 = dZ1ᵀ · total_input → [F/p, h]  (layers.py:814-894)</FONT>>];
+
+    bfc1 [fillcolor="#fefcbf", label=<<B>fc1 backward</B>  (LinearWithGrad…Communication.backward)<BR/>dgrad  dZ1 · W1  :  [s, b, F/p] · [F/p, h]  →  [s, b, h] partial  (layers.py:784)<BR/>db1 = dZ1.sum → [F/p]  (layers.py:895)>];
+
+    bag2 [shape=box, style="filled", fillcolor="#bee3f8", color="#2b6cb0", penwidth=2,
+          label=<<B>ALL-GATHER</B> (async) of the saved X shard — re-gathered, not stored<BR/>[s/p, b, h]  →  [s, b, h]  = total_input for the wgrad<BR/><FONT POINT-SIZE="10">layers.py:767-781, launched before and overlapped with the dgrad GEMM; handle.wait() at layers.py:786-788</FONT>>];
+
+    bact [fillcolor="#fefcbf", label=<<B>activation backward</B><BR/>[s, b, F/p]  →  dZ1 [s, b, F/p]<BR/><FONT POINT-SIZE="10">local, no communication</FONT>>];
+
+    bfc2 [fillcolor="#fefcbf", label=<<B>fc2 backward</B>  (sequence_parallel=False, allreduce_dgrad=False → no comm inside)<BR/>dgrad  dY · W2  :  [s, b, h] · [h, F/p]  →  [s, b, F/p]  (layers.py:784)<BR/>wgrad  dW2 = dYᵀ · act_out[s, b, F/p]  →  [h, F/p]  (layers.py:894 / fused 814-832)>];
+
+    bag [shape=box, style="filled", fillcolor="#bee3f8", color="#2b6cb0", penwidth=2,
+         label=<<B>ALL-GATHER</B> along dim 0 over the TP group<BR/>[s/p, b, h]  →  [s, b, h]<BR/><FONT POINT-SIZE="10">_ReduceScatterToSequenceParallelRegion.backward, mappings.py:376-381<BR/>→ _gather_along_first_dim, mappings.py:122-150</FONT>>];
+
+    bdy [fillcolor="#edf2f7", label=<<B>dY</B>  [s/p, b, h]<BR/><FONT POINT-SIZE="10">incoming gradient, sequence-sharded</FONT>>];
+
+    // edges declared top->bottom for layout, drawn pointing up
+    bdx -> brs -> bfc1 -> bag2 -> bact -> bfc2 -> bag -> bdy [dir=back, color="#9b2c2c"];
+  }
+
+  // align forward / backward rows
+  {rank=same; fx;   bdx;}
+  {rank=same; fag;  brs;}
+  {rank=same; ffc1; bfc1;}
+  {rank=same; fact; bag2;}
+  {rank=same; ffc2; bact;}
+  {rank=same; frs;  bfc2;}
+  {rank=same; fy;   bag;}
+
+  // legend / summary
+  legend [shape=box, style="rounded,filled", fillcolor="#f7fafc", color="#999999", fontsize=11,
+          label=<<TABLE BORDER="0" CELLSPACING="3" CELLPADDING="2">
+<TR><TD ALIGN="LEFT" BGCOLOR="#bee3f8"><B> all-gather </B></TD><TD ALIGN="LEFT" BGCOLOR="#fed7aa"><B> reduce-scatter </B></TD><TD ALIGN="LEFT" BGCOLOR="#fefcbf"> local compute </TD><TD ALIGN="LEFT" BGCOLOR="#edf2f7"> tensor at block boundary </TD></TR>
+<TR><TD ALIGN="LEFT" COLSPAN="4"><B>Collectives per MLP:</B> forward = 1 all-gather + 1 reduce-scatter.  Backward = 2 all-gathers (dY for fc2, re-gather of the saved X shard for the fc1 wgrad) + 1 reduce-scatter (fc1 dgrad). No all-reduce anywhere.</TD></TR>
+<TR><TD ALIGN="LEFT" COLSPAN="4">Inside the block (fc1 output → fc2 input) tensors are full-sequence and sharded on F: [s, b, F/p]. At both block boundaries they are sequence-sharded and full-hidden: [s/p, b, h].</TD></TR>
+<TR><TD ALIGN="LEFT" COLSPAN="4">The fc2 bias b2 [h] only sees s/p tokens on each rank. That is why it is tagged sequence_parallel (layers.py:1636), so the grad-sync code (outside the vendored files) all-reduces it over TP.</TD></TR>
+</TABLE>>];
+  bdy -> legend [style=invis];
+  fy  -> legend [style=invis];
+}

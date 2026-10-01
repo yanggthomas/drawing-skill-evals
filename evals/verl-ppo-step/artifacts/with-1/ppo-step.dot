@@ -1,0 +1,164 @@
+// One PPO/GRPO training step in verl's single-controller RayPPOTrainer.fit()
+// Source: volcengine/verl @ fbb4b3a8bf636f290c9c59fc346f756849e9c241
+// Render: dot -Tpng ppo-step.dot -o ppo-step.png
+
+digraph ppo_step {
+
+  graph [
+    rankdir    = TB
+    bgcolor    = "white"
+    fontname   = "Helvetica"
+    pad        = "0.4"
+    nodesep    = 0.35
+    ranksep    = 0.32
+    splines    = spline
+    compound   = true
+    newrank    = true
+    labelloc   = t
+    fontsize   = 20
+    label      = <<B>verl — one PPO / GRPO training step (RayPPOTrainer.fit, single controller)</B><BR/><FONT POINT-SIZE="12">verl @ fbb4b3a8 · line refs are verl/trainer/ppo/ray_trainer.py unless prefixed · ⓘ conditional stage shown with its config gate</FONT><BR/> >
+  ]
+
+  edge [color="#555555", fontname="Helvetica", fontsize=10]
+  node [shape=ellipse, style=filled, fillcolor="#E8F4FD", color="#2E86AB", fontname="Helvetica", fontsize=11]
+
+  // ───────────────────────── Driver (single controller) ─────────────────────────
+  subgraph cluster_driver {
+    label     = <<B>DRIVER process — RayPPOTrainer.fit()  (L1405)</B><BR/><FONT POINT-SIZE="10">CPU-side orchestration; every worker call goes through DataProto → TensorDict + left_right_2_no_padding, results come back via no_padding_2_padding and batch.union(...)</FONT>>
+    style     = "rounded,dashed"
+    color     = "#E76F51"
+    fontsize  = 13
+    margin    = 14
+
+    node [shape=box, style="rounded,filled", fillcolor="#E1BEE7", color="#6A1B9A", fontsize=10]
+
+    s0 [label=<<B>0 · load batch</B>   L1478–1491<BR ALIGN="LEFT"/>DataProto.from_single_dict(batch_dict); add <I>uid</I> per prompt<BR ALIGN="LEFT"/>gen_batch = _get_gen_batch(batch) (L572) → gen_batch.repeat(rollout.n)<BR ALIGN="LEFT"/><FONT COLOR="#1B5E20"><B>batch:</B> prompt tensors (input_ids, attention_mask, …) · uid · data_source / reward_model / extra_info</FONT><BR ALIGN="LEFT"/>>]
+
+    s1 [label=<<B>1 · gen</B>  (timer "gen")   L1510–1541<BR ALIGN="LEFT"/>async_rollout_manager.generate_sequences(gen_batch)   L1513<BR ALIGN="LEFT"/>then checkpoint_manager.sleep_replicas()   L1514<BR ALIGN="LEFT"/>batch = batch.repeat(n, interleave).union(gen_output)   L1540–1541<BR ALIGN="LEFT"/><FONT COLOR="#1B5E20"><B>+ </B>prompts · responses · attention_mask (full seq) · [rollout_log_probs] · [rm_scores if streamed]<BR ALIGN="LEFT"/>ⓘ REMAX: greedy baseline in same request → <B>+ reward_baselines</B> (L1525–1535)</FONT><BR ALIGN="LEFT"/>>]
+
+    s2 [label=<<B>2 · prepare</B>   L1543–1560<BR ALIGN="LEFT"/>compute_response_mask (L120) · _balance_batch reorders samples so DP ranks<BR ALIGN="LEFT"/>get equal token load (L1182, trainer.balance_batch) · meta global_token_num<BR ALIGN="LEFT"/><FONT COLOR="#1B5E20"><B>+ </B>response_mask · meta_info[global_token_num, images_seqlens]</FONT><BR ALIGN="LEFT"/>>]
+
+    s3 [label=<<B>3 · reward</B>  (timer "reward")   L1561–1568<BR ALIGN="LEFT"/>ⓘ use_rm and no rm_scores yet → _compute_reward_colocate (L588)<BR ALIGN="LEFT"/>reward_tensor, reward_extra_infos = extract_reward(batch)  — <I>held aside until step 7</I><BR ALIGN="LEFT"/><FONT COLOR="#1B5E20"><B>+ </B>[rm_scores]</FONT><BR ALIGN="LEFT"/>>]
+
+    s4 [label=<<B>4 · old_log_prob</B>  (timer "old_log_prob")   L1585–1610 · _compute_old_log_prob L1290<BR ALIGN="LEFT"/>π_old = current actor weights, recomputed once per batch (entropy → metric actor/entropy)<BR ALIGN="LEFT"/>ⓘ rollout_correction.bypass_mode: skip RPC, apply_bypass_mode uses rollout_log_probs (L1576)<BR ALIGN="LEFT"/><FONT COLOR="#1B5E20"><B>+ </B>old_log_probs · [routed_experts] · [sum_pi_squared]   (entropys popped)</FONT><BR ALIGN="LEFT"/>>]
+
+    s5 [label=<<B>5 · ref log-prob</B>  ⓘ use_reference_policy   L1618–1622 · L1266<BR ALIGN="LEFT"/>ref_in_actor (LoRA) → actor_rollout_wg.compute_log_prob(no_lora_adapter=True)<BR ALIGN="LEFT"/>else → ref_policy_wg.compute_ref_log_prob<BR ALIGN="LEFT"/><FONT COLOR="#1B5E20"><B>+ </B>ref_log_prob</FONT><BR ALIGN="LEFT"/>>]
+
+    s6 [label=<<B>6 · values</B>  ⓘ use_critic (PPO/GAE)   L1625–1628 · _compute_values L1252<BR ALIGN="LEFT"/><FONT COLOR="#1B5E20"><B>+ </B>values</FONT><BR ALIGN="LEFT"/>>]
+
+    s7 [shape=hexagon, style=filled, fillcolor="#F4D35E", color="#D68A1A",
+        label=<<B>7 · advantage — computed ON THE DRIVER</B>  (timer "adv")   L1630–1675<BR/>
+token_level_scores = reward_tensor   (L1633)<BR/>
+ⓘ use_kl_in_reward: apply_kl_penalty (L78): rewards = scores − β·KL(old_log_probs ‖ ref_log_prob)<BR/>
+   else token_level_rewards = token_level_scores   (L1645)<BR/>
+ⓘ rollout_correction (decoupled): IS weights / rejection   (L1650–1660)<BR/>
+compute_advantage (L187): GAE → core_algos.compute_gae_advantage_return (uses values)<BR/>
+GRPO → core_algos.compute_grpo_outcome_advantage (group-normalise by uid) · others via registry<BR/>
+<FONT COLOR="#1B5E20"><B>+ </B>token_level_scores · token_level_rewards · [rollout_is_weights] · advantages · returns · reward extra-info cols</FONT>>]
+
+    s8 [label=<<B>8 · update_critic</B>  ⓘ use_critic   L1677–1681 · _update_critic L1378<BR ALIGN="LEFT"/>ppo_mini_batch_size×n, critic.ppo_epochs → metrics only (batch unchanged)<BR ALIGN="LEFT"/>>]
+
+    s9 [label=<<B>9 · update_actor</B>  ⓘ skipped while critic_warmup &gt; global_steps   L1684–1690 · L1327<BR ALIGN="LEFT"/>PPO loss over mini-batches (ppo_mini_batch_size×n, ppo_epochs) → metrics only<BR ALIGN="LEFT"/>ⓘ save_freq / last step / ESI expiry → _save_checkpoint (L1704–1712)<BR ALIGN="LEFT"/>>]
+
+    s10 [label=<<B>10 · update_weights</B>  (timer "update_weights")   L1715–1716<BR ALIGN="LEFT"/>checkpoint_manager.update_weights(global_steps)  — also called in warm-up branch (L1686)<BR ALIGN="LEFT"/>then: optional _log_rollout_data · ⓘ test_freq → _validate · global_steps += 1<BR ALIGN="LEFT"/>>]
+
+    s0 -> s1 -> s2 -> s3 -> s4 -> s5 -> s6 -> s7 -> s8 -> s9 -> s10 [color="#6A1B9A", penwidth=2.2, weight=20]
+  }
+
+  loader [label="train_dataloader\n(batch_dict)", fillcolor="#F5F5F5", color="#CCCCCC", style="filled,dashed"]
+  loader -> s0 [style=dashed]
+
+  // ───────────────────────── Rollout side ─────────────────────────
+  subgraph cluster_rollout {
+    label    = <<B>Rollout engine (async server mode)</B><BR/><FONT POINT-SIZE="10">replicas from LLMServerManager.create(worker_group=actor_rollout_wg,<BR/>rollout_resource_pool=actor_rollout_resource_pool)  L951 — same GPUs as actor</FONT>>
+    style    = "rounded,dashed"
+    color    = "#B8860B"
+    fontsize = 12
+
+    alm [shape=box, style="rounded,filled", fillcolor="#E1BEE7", color="#6A1B9A", fontsize=10,
+         label=<<B>AgentLoopManager</B>  (L960)<BR/>agent loops issue requests via llm_client>]
+    replicas [shape=cylinder, fillcolor="#FFF2B2", color="#B8860B", fontsize=10,
+              label=<<B>Rollout replicas</B><BR/>vLLM / SGLang servers<BR/>generate responses (temperature, rollout.n)>]
+    rlw [shape=cylinder, fillcolor="#FFF2B2", color="#B8860B", fontsize=10,
+         label=<<B>RewardLoopManager / workers</B>  (L916)<BR/>reward fn or reward model;<BR/>streams rm_scores during rollout if<BR/>no RM or RM has own pool (L949)>]
+    alm -> replicas [label=" requests", fontsize=9]
+    alm -> rlw [style=dashed, label=" score as\n finished", fontsize=9]
+  }
+
+  // ───────────────────────── Ray worker groups ─────────────────────────
+  subgraph cluster_actor {
+    label    = <<B>actor_rollout_wg</B>  — ActorRolloutRefWorker (hybrid engine)<BR/><FONT POINT-SIZE="10">Ray worker group, FSDP/Megatron model engine · nd-compute dispatch splits batch over DP ranks</FONT>>
+    style    = "rounded,filled"
+    fillcolor= "#FFF5F5"
+    color    = "#B71C1C"
+    fontsize = 12
+    node [shape=folder, fillcolor="#FFCDD2", color="#B71C1C", fontsize=10]
+
+    a_logp [label=<<B>compute_log_prob</B><BR/>engine_workers.py:703 · actor.infer_batch>]
+    a_ref  [label=<<B>compute_ref_log_prob</B><BR/>engine_workers.py:696 · ref.infer_batch<BR/>(ref_policy_wg may be this group or its own)>]
+    a_upd  [label=<<B>update_actor</B><BR/>engine_workers.py:713 · actor.train_mini_batch<BR/>(optimizer step → new θ)>]
+    a_w    [label=<<B>update_weights</B>  (ONE_TO_ALL)<BR/>engine_workers.py:728<BR/>engine.get_per_tensor_param()>]
+  }
+
+  subgraph cluster_critic {
+    label    = <<B>critic_wg</B>  — TrainingWorker(model_type="value_model")<BR/><FONT POINT-SIZE="10">L798–835, L882–891 · only when use_critic</FONT>>
+    style    = "rounded,filled"
+    fillcolor= "#FFF5F5"
+    color    = "#B71C1C"
+    fontsize = 12
+    node [shape=folder, fillcolor="#FFCDD2", color="#B71C1C", fontsize=10]
+
+    c_inf [label=<<B>infer_batch</B><BR/>engine_workers.py:398>]
+    c_trn [label=<<B>train_mini_batch</B><BR/>engine_workers.py:243 · value_loss>]
+  }
+
+  // ───────────────────────── Weight sync ─────────────────────────
+  ckpt [shape=hexagon, style=filled, fillcolor="#F4D35E", color="#D68A1A", fontsize=10,
+        label=<<B>CheckpointEngineManager</B>  (checkpoint_engine/base.py:380)<BR/>
+<B>sleep_replicas</B> (:467) free weights + KV cache → GPUs go to training<BR/>
+<B>update_weights</B> (:510):<BR/>
+backend "naive" (colocated): ray.get(actor_wg.update_weights) (:519)<BR/>
+other backends: abort → release KV → build NCCL/NIXL group →<BR/>
+actor send_weights ⇒ rollout receive_weights → server via CUDA IPC<BR/>
+→ finalize → resume KV → resume generation (:523–560)>]
+
+  // ── driver → worker RPCs ──
+  s1 -> alm   [color="#E76F51", penwidth=1.6, label=" generate_sequences", fontsize=9]
+  replicas -> s1 [style=dashed, label=" gen_output", fontsize=9]
+  s1 -> ckpt  [color="#D68A1A", label=" sleep_replicas()", fontsize=9]
+  s3 -> rlw   [color="#E76F51", label=" compute_rm_score\n (colocated RM)", fontsize=9]
+
+  s4 -> a_logp [color="#E76F51", penwidth=1.6, label=" old_log_probs, entropy", fontsize=9]
+  s5 -> a_ref  [color="#E76F51", penwidth=1.6, label=" ref_log_prob", fontsize=9]
+  s6 -> c_inf  [color="#E76F51", penwidth=1.6, label=" values", fontsize=9]
+  s8 -> c_trn  [color="#E76F51", penwidth=1.6, label=" metrics", fontsize=9]
+  s9 -> a_upd  [color="#E76F51", penwidth=1.6, label=" metrics", fontsize=9]
+  s10 -> ckpt  [color="#D68A1A", penwidth=1.6, label=" update_weights(step)", fontsize=9]
+
+  // ── weight movement: trainer → rollout ──
+  ckpt -> a_w [color="#B71C1C", penwidth=2.4, label=" ray.get(actor_wg.update_weights)", fontsize=9, fontcolor="#B71C1C"]
+  a_w -> replicas [color="#B71C1C", penwidth=3, style=bold, fontcolor="#B71C1C", fontsize=10,
+                   label=<<B>WEIGHTS  θ_new → rollout</B><BR/>naive: rollout.resume(weights) +<BR/>rollout.update_weights(per_tensor_param) (:782–806)<BR/>else: checkpoint_engine.send_weights (:764)>]
+  ckpt -> replicas [color="#D68A1A", style=dashed, label=" sleep / wake\n (frees GPU memory)", fontsize=9, constraint=false]
+
+  // keep worker groups beside the steps that call them
+  { rank=same; s4; a_logp }
+  { rank=same; s6; c_inf }
+  { rank=same; s9; a_upd }
+  { rank=same; s1; alm }
+
+  // ───────────────────────── Legend ─────────────────────────
+  legend [shape=plaintext, style="", fontsize=10, label=<
+    <TABLE BORDER="1" COLOR="#999999" CELLBORDER="0" CELLSPACING="2" CELLPADDING="3">
+      <TR><TD COLSPAN="2" ALIGN="LEFT"><B>Legend</B></TD></TR>
+      <TR><TD BGCOLOR="#E1BEE7">   </TD><TD ALIGN="LEFT">driver-side stage (ray_trainer.py)</TD></TR>
+      <TR><TD BGCOLOR="#F4D35E">   </TD><TD ALIGN="LEFT">pure driver compute / weight-sync coordinator</TD></TR>
+      <TR><TD BGCOLOR="#FFCDD2">   </TD><TD ALIGN="LEFT">Ray worker-group RPC (@register, runs on GPUs)</TD></TR>
+      <TR><TD BGCOLOR="#FFF2B2">   </TD><TD ALIGN="LEFT">rollout / reward services</TD></TR>
+      <TR><TD><FONT COLOR="#1B5E20"><B>+ key</B></FONT></TD><TD ALIGN="LEFT">key added to the step's DataProto; [key] = optional</TD></TR>
+      <TR><TD><FONT COLOR="#B71C1C"><B>━━</B></FONT></TD><TD ALIGN="LEFT">weight movement trainer → rollout engine</TD></TR>
+      <TR><TD><FONT COLOR="#E76F51"><B>──</B></FONT></TD><TD ALIGN="LEFT">driver RPC; edge label = what comes back</TD></TR>
+      <TR><TD COLSPAN="2" ALIGN="LEFT"><FONT POINT-SIZE="9">Note: RayPPOTrainer is marked @deprecated in favour of trainer.use_v1 (L285).</FONT></TD></TR>
+    </TABLE>>]
+  s10 -> legend [style=invis]
+}

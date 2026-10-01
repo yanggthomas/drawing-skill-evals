@@ -1,0 +1,53 @@
+[
+  {
+    "arm": "with",
+    "run": 1,
+    "score": 1,
+    "error": null,
+    "judge_cost_usd": 0.1824,
+    "skills": [
+      "drawing-skills:graphviz"
+    ],
+    "routes": [
+      "graphviz"
+    ],
+    "written": [
+      "/tmp/claude-eval-12lZnb/home/cwd/out/ppo-step.dot"
+    ],
+    "leaks": [],
+    "agent_seconds": 149.8,
+    "agent_api_seconds": 145.5,
+    "agent_cost_usd": 1.0666,
+    "agent_turns": 30,
+    "artifacts": [
+      "ppo-step.dot",
+      "ppo-step.png",
+      "trace.jsonl.gz"
+    ]
+  },
+  {
+    "arm": "without",
+    "run": 1,
+    "score": 1,
+    "error": null,
+    "judge_cost_usd": 0.166,
+    "skills": [],
+    "routes": [
+      "matplotlib",
+      "pillow"
+    ],
+    "written": [
+      "/tmp/claude-eval-zznZLQ/home/cwd/out/draw_ppo_step.py"
+    ],
+    "leaks": [],
+    "agent_seconds": 222.5,
+    "agent_api_seconds": 218.1,
+    "agent_cost_usd": 1.2319,
+    "agent_turns": 23,
+    "artifacts": [
+      "draw_ppo_step.py",
+      "ppo-step.png",
+      "trace.jsonl.gz"
+    ]
+  }
+]

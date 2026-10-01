@@ -1,0 +1,6 @@
+- **画图路线**：带 skill 路由到 **model-architecture** skill，用 **TikZ**（268 行 `.tex`）；不带 skill **自己写了 431 行 Pillow 脚本**逐格绘制。
+- **内容**：两张都非常完整（correctness 3:0），都用了具体的玩具 batch，把 `req_indices / query_pos / positions / input_ids / slot_mapping` 逐 token 列成表，画出 KV block 的写入和 varlen attention 的因果 mask。
+- **版式**：
+  - 带 skill：四段式（输入 → 展平 → 写 → 读），排版像论文插图；但"写"那一段有十几条弯箭头从 token 指向 block，彼此交叉，整体字很小。评委 readability 0:3。
+  - 不带 skill：0–6 共 7 个面板，每个请求固定一种颜色贯穿全图，`seq_lens` / `block_table` 用合并单元格表示，写入用"block 行 + 箭头注释"代替连线，更干净。评委 3:0。
+- **效率**：带 skill 329 秒 / $1.67 / 32 轮（本轮带 skill 中最慢）；不带 skill 284 秒 / $1.57 / 25 轮。两组都很贵，因为都在逐格排版。

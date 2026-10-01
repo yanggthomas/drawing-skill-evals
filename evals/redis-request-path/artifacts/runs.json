@@ -1,0 +1,50 @@
+[
+  {
+    "arm": "with",
+    "run": 1,
+    "score": 0.6666666666666666,
+    "error": null,
+    "judge_cost_usd": 0.1599,
+    "skills": [
+      "drawing-skills:graphviz"
+    ],
+    "routes": [
+      "graphviz"
+    ],
+    "written": [
+      "/tmp/claude-eval-eiUa29/home/cwd/out/request-path.dot"
+    ],
+    "leaks": [],
+    "agent_seconds": 123.7,
+    "agent_api_seconds": 120.9,
+    "agent_cost_usd": 0.9211,
+    "agent_turns": 18,
+    "artifacts": [
+      "request-path.dot",
+      "request-path.png",
+      "trace.jsonl.gz"
+    ]
+  },
+  {
+    "arm": "without",
+    "run": 1,
+    "score": 0.6666666666666666,
+    "error": null,
+    "judge_cost_usd": 0.1887,
+    "skills": [],
+    "routes": [
+      "graphviz",
+      "matplotlib"
+    ],
+    "written": [],
+    "leaks": [],
+    "agent_seconds": 151.9,
+    "agent_api_seconds": 147.8,
+    "agent_cost_usd": 0.9857,
+    "agent_turns": 17,
+    "artifacts": [
+      "request-path.png",
+      "trace.jsonl.gz"
+    ]
+  }
+]
