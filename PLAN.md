@@ -14,7 +14,7 @@ Measure whether the two diagram skills in `skills/` (`graphviz`, `model-architec
 | Agent model | `opus` | The user's daily model; the delta should reflect daily use |
 | Judge model | `opus` | User's choice. Self-preference bias inflates both arms roughly equally; read the delta, not the absolute score |
 | Runs per arm | `1` | User's choice (cost). Results are one sample per arm: report them as such, not as a stable Δ |
-| Round 1 scope | Case G1 only | User's choice; other cases are documented in §4 as backlog |
+| Scope | Round 1: G1. Round 2: G2, G3, G4, M1, M2 (tag `round2`) | User's choice; Q1 stays in reserve |
 | Plugin contents | Both skills | Also tests that the agent routes a scheduling-flow question to `graphviz`, not `model-architecture` |
 | Budget | Cloud session credit ($100, expires 2026-11-05); `--max-cost-usd 10` on the full run (one run per arm, about $2.5 incl. judges) | Leaves margin for authoring work in the same session |
 | Branch | `g1-vllm-schedule` | Never push to `main` |
@@ -32,16 +32,16 @@ Source: https://code.claude.com/docs/en/plugin-evals (checked 2026-10-01).
 
 ## 4. Case catalog
 
-All candidate cases. Each asks for one diagram that explains one mechanism, reading vendored source at a pinned commit. Prompts never name a skill; they fix the output path and format so both arms produce the same artifact type. File lists are starting points to be confirmed at the pinned commit.
+All candidate cases. Case directories: G1 `vllm-v1-schedule`, G2 `verl-ppo-step`, G3 `ffmpeg-transcode-threads`, G4 `redis-request-path`, M1 `megatron-tp-sp-mlp`, M2 `vllm-v1-mixed-batch-attn`. Since round 1 every prompt is tool-neutral and asks only for a PNG (the Output column's source files are no longer required). Each asks for one diagram that explains one mechanism, reading vendored source at a pinned commit. Prompts never name a skill; they fix the output path and format so both arms produce the same artifact type. File lists are starting points to be confirmed at the pinned commit.
 
 | ID | Status | Skill | Codebase | Question | Vendored files (to confirm) | Output |
 |---|---|---|---|---|---|---|
 | G1 | **Round 1** | graphviz | vLLM V1 | What one `Scheduler.schedule()` step does under continuous batching with chunked prefill: per-step token budget, running requests before waiting requests, chunked prefill, KV block allocation, preemption, and what the step hands to the model runner | `vllm/v1/core/sched/scheduler.py`, `vllm/v1/core/sched/output.py`, `vllm/v1/core/kv_cache_manager.py`, `vllm/v1/request.py` | `out/schedule-step.dot` + `.png` |
-| G2 | Backlog | graphviz | verl | Single-controller data flow of one PPO/GRPO training step: rollout → old/ref logprob → reward → advantage → actor (and critic) update, and where weights are resharded between trainer and rollout engine | `verl/trainer/ppo/ray_trainer.py`, FSDP/Megatron worker files | `out/ppo-step.dot` + `.png` |
-| G3 | Backlog | graphviz | FFmpeg 7.x | Threaded transcoding pipeline in `fftools`: demux, decode, filter, encode and mux threads and the scheduler queues between them | `fftools/ffmpeg_sched.c`, `ffmpeg_demux.c`, `ffmpeg_dec.c`, `ffmpeg_filter.c`, `ffmpeg_enc.c`, `ffmpeg_mux.c` | `out/transcode-threads.dot` + `.png` |
-| G4 | Backlog | graphviz | Redis 8 | Life of one request across the main thread and I/O threads: read, parse, execute, reply | `src/ae.c`, `src/networking.c`, `src/iothread.c`, `src/server.c` (excerpts) | `out/request-path.dot` + `.png` |
-| M1 | Backlog | model-architecture | Megatron-Core | Tensor-parallel + sequence-parallel MLP: per-rank tensor shapes and where all-gather / reduce-scatter happen, forward and backward | `megatron/core/tensor_parallel/layers.py`, `mappings.py`, `megatron/core/transformer/mlp.py` | `out/tp-sp-mlp.tex` + `.png` |
-| M2 | Backlog | model-architecture | vLLM V1 | How a mixed prefill+decode batch is flattened into attention metadata: `query_start_loc`, `seq_lens`, `block_table`, `slot_mapping`, and the paged-KV write/read they drive (companion to G1) | `vllm/v1/worker/gpu_model_runner.py`, `vllm/v1/attention/backends/` (one backend) | `out/mixed-batch-attn.tex` + `.png` |
+| G2 | **Round 2** | graphviz | verl | Single-controller data flow of one PPO/GRPO training step: rollout → old/ref logprob → reward → advantage → actor (and critic) update, and where weights are resharded between trainer and rollout engine | `verl/trainer/ppo/ray_trainer.py`, FSDP/Megatron worker files | `out/ppo-step.dot` + `.png` |
+| G3 | **Round 2** | graphviz | FFmpeg 7.x | Threaded transcoding pipeline in `fftools`: demux, decode, filter, encode and mux threads and the scheduler queues between them | `fftools/ffmpeg_sched.c`, `ffmpeg_demux.c`, `ffmpeg_dec.c`, `ffmpeg_filter.c`, `ffmpeg_enc.c`, `ffmpeg_mux.c` | `out/transcode-threads.dot` + `.png` |
+| G4 | **Round 2** | graphviz | Redis 8 | Life of one request across the main thread and I/O threads: read, parse, execute, reply | `src/ae.c`, `src/networking.c`, `src/iothread.c`, `src/server.c` (excerpts) | `out/request-path.dot` + `.png` |
+| M1 | **Round 2** | model-architecture | Megatron-Core | Tensor-parallel + sequence-parallel MLP: per-rank tensor shapes and where all-gather / reduce-scatter happen, forward and backward | `megatron/core/tensor_parallel/layers.py`, `mappings.py`, `megatron/core/transformer/mlp.py` | `out/tp-sp-mlp.tex` + `.png` |
+| M2 | **Round 2** | model-architecture | vLLM V1 | How a mixed prefill+decode batch is flattened into attention metadata: `query_start_loc`, `seq_lens`, `block_table`, `slot_mapping`, and the paged-KV write/read they drive (companion to G1) | `vllm/v1/worker/gpu_model_runner.py`, `vllm/v1/attention/backends/` (one backend) | `out/mixed-batch-attn.tex` + `.png` |
 | Q1 | Reserve | graphviz | Qt | Cross-thread signal/slot delivery via queued connection and the receiver's event loop | not sliced yet (codebase too large to vendor cleanly) | — |
 
 Licenses to respect when vendoring into this private repo: vLLM and verl Apache-2.0, Megatron-LM BSD-3/Apache-2.0, FFmpeg LGPL-2.1+, Redis 8 tri-license (RSALv2 / SSPLv1 / AGPLv3). Keep the repo private.
@@ -120,7 +120,15 @@ Work on branch `g1-vllm-schedule`. Commit after each step.
      --trust-plugin --keep-temp --max-cost-usd 10 --threshold 0 \
      --json evals/vllm-v1-schedule/results.json --publish-report
    ```
-8. **Collect.** Run `python3 scripts/collect.py`: it copies each run's `out/` into `evals/vllm-v1-schedule/artifacts/{with,without}-<n>/` and writes `artifacts/runs.json` (route taken, programs run, leaks). Commit `results.json` and `artifacts/`, push the branch, then delete the kept temp dirs.
+7b. **Round 2 run** (after the round-2 key review): all five round-2 cases, one run per arm:
+   ```bash
+   claude plugin eval . --tag round2 \
+     --model opus --judge-model opus \
+     --allow-tools Write Bash \
+     --trust-plugin --keep-temp --max-cost-usd 25 --threshold 0 \
+     --json evals/results.json --publish-report
+   ```
+8. **Collect.** Run `python3 scripts/collect.py` (set `RESULTS_JSON` to the run's `--json` file): it copies each run's `out/` into `evals/vllm-v1-schedule/artifacts/{with,without}-<n>/` and writes `artifacts/runs.json` (route taken, programs run, leaks). Commit `results.json` and `artifacts/`, push the branch, then delete the kept temp dirs.
 9. **Human aesthetics rating.** Aesthetics (palette, contrast, polish) is not an automated grader; the user rates it by hand. Present the PNGs from `artifacts/` blind: shuffled, with arm labels hidden, and reveal the arm mapping only after the ratings are recorded.
 10. **Report.** Give: suite score per arm and Δ; per-grader pass rates per arm; whether the skill fired in each with-arm run; which drawing route each run took; any leak flagged by `collect.py`; the judges' main reasons for failures; **agent-only** wall time, cost and turns per arm (mean / median / sd, from each trace's `result` record via `artifacts/summary.json`, judge calls excluded), with judge cost listed separately; total cost estimate; the published report URL. Then **STOP**.
 

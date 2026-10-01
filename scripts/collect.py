@@ -1,7 +1,7 @@
 """Collect per-run artifacts and trace facts from a `claude plugin eval --keep-temp` run.
 
-For every run in the results JSON this script:
-  - copies the run's workspace `out/` files to <CASE_DIR>/artifacts/<arm>-<n>/
+For every case and run in the results JSON this script:
+  - copies the run's workspace `out/` files to <case dir>/artifacts/<arm>-<n>/
   - records which drawing route the agent took (skills invoked, drawing tools
     used via Bash or written files)
   - reads agent-only time, cost and turns from the trace's final `result` record
@@ -10,7 +10,8 @@ For every run in the results JSON this script:
   - flags reads of files outside the vendored `src/` that would leak the skill or
     the answer key into a run (checked post hoc, not as a grader, so it does not
     change either arm's score)
-and writes per-run facts to <CASE_DIR>/artifacts/runs.json plus per-arm means.
+and writes per-run facts to <case dir>/artifacts/runs.json plus per-arm stats to
+<case dir>/artifacts/summary.json, then prints one table for the whole suite.
 
 Reads the kept workspaces as data only: nothing inside them is executed.
 """
@@ -22,14 +23,12 @@ import shutil
 import statistics
 from pathlib import Path
 
-RESULTS_JSON = Path("evals/vllm-v1-schedule/results.json")
-CASE_DIR = Path("evals/vllm-v1-schedule")
+RESULTS_JSON = Path("evals/results.json")  # the --json file of the run to collect
 OUT_SUBDIR = "out"  # where the prompt asks the agent to save its diagram
 
 REPO_ROOT = "/home/user/drawing-skill-evals"
-# Inside the repo a run may touch only the vendored sources, and in the with-arm
-# the plugin's skills. Anything else (answer key, graders, other skills) is a leak.
-ALLOWED_ALWAYS = REPO_ROOT + "/evals/vllm-v1-schedule/src"
+# Inside the repo a run may touch only its case's vendored src/, and in the
+# with-arm the plugin's skills. Anything else (answer key, graders) is a leak.
 ALLOWED_WITH_ARM = REPO_ROOT + "/skills/"
 LEAK_WORDS = re.compile(r"answer-key|graders/")
 
@@ -64,11 +63,11 @@ def routes_in(text):
     return [name for name, pat in ROUTES.items() if re.search(pat, text, re.I)]
 
 
-def is_leak(arm, text):
+def is_leak(arm, text, allowed_src):
     if LEAK_WORDS.search(text):
         return True
     for path in re.findall(re.escape(REPO_ROOT) + r"[^\s\"']*", text):
-        if path.startswith(ALLOWED_ALWAYS):
+        if path.startswith(allowed_src):
             continue
         if arm == "with" and path.startswith(ALLOWED_WITH_ARM):
             continue
@@ -97,7 +96,7 @@ def agent_result(trace_path):
     }
 
 
-def summarize_run(arm, n, run):
+def summarize_run(case_dir, arm, n, run):
     trace = Path(run["tracePath"])
     info = {"arm": arm, "run": n, "score": run.get("score"), "error": run.get("error"),
             "judge_cost_usd": round(run.get("judgeCostUsd") or 0, 4),
@@ -116,12 +115,12 @@ def summarize_run(arm, n, run):
             body = inp.get("command", "") + inp.get("file_path", "") + inp.get("content", "")
             info["routes"] += [r for r in routes_in(body) if r not in info["routes"]]
         text = json.dumps(inp)
-        if is_leak(arm, text):
+        if is_leak(arm, text, f"{REPO_ROOT}/{case_dir}/src"):
             info["leaks"].append(f"{name}: {text[:200]}")
 
     # Workspace layout: <tmp>/out/trace.jsonl and <tmp>/home/cwd/<agent files>.
     out_dir = trace.parent.parent / "home" / "cwd" / OUT_SUBDIR
-    dest = CASE_DIR / "artifacts" / f"{arm}-{n}"
+    dest = case_dir / "artifacts" / f"{arm}-{n}"
     if out_dir.is_dir():
         dest.mkdir(parents=True, exist_ok=True)
         for f in out_dir.iterdir():
@@ -135,29 +134,14 @@ def summarize_run(arm, n, run):
     return info
 
 
-def main():
-    results = json.loads(RESULTS_JSON.read_text())
-    runs = []
-    for case in results["cases"]:
-        for arm, arm_runs in case["arms"].items():
-            for n, run in enumerate(arm_runs, start=1):
-                runs.append(summarize_run(arm, n, run))
-
-    (CASE_DIR / "artifacts").mkdir(parents=True, exist_ok=True)
-    (CASE_DIR / "artifacts" / "runs.json").write_text(json.dumps(runs, indent=2))
-    for r in runs:
-        print(f"{r['arm']:>7}-{r['run']}  score={r['score']}  "
-              f"agent={r.get('agent_seconds')}s ${r.get('agent_cost_usd')} turns={r.get('agent_turns')}  "
-              f"skills={r['skills']}  routes={r['routes']}  leaks={len(r['leaks'])}")
-        for leak in r["leaks"]:
-            print("          LEAK", leak)
-
-    # Per-arm agent-only statistics (judge cost reported separately).
+def arm_stats(runs):
+    """Per-arm agent-only statistics (judge cost reported separately)."""
     summary = {}
     for arm in sorted({r["arm"] for r in runs}):
-        arm_runs = [r for r in runs if r["arm"] == arm and "agent_seconds" in r]
+        arm_runs = [r for r in runs if r["arm"] == arm]
         summary[arm] = {"n": len(arm_runs)}
-        for key in ("agent_seconds", "agent_api_seconds", "agent_cost_usd", "agent_turns", "judge_cost_usd"):
+        for key in ("score", "agent_seconds", "agent_api_seconds", "agent_cost_usd", "agent_turns",
+                    "judge_cost_usd"):
             vals = [r[key] for r in arm_runs if r.get(key) is not None]
             if vals:
                 summary[arm][key] = {
@@ -166,17 +150,31 @@ def main():
                     "sd": round(statistics.stdev(vals), 3) if len(vals) > 1 else None,
                     "min": min(vals), "max": max(vals),
                 }
-    (CASE_DIR / "artifacts" / "summary.json").write_text(json.dumps(summary, indent=2))
-    print()
-    for arm, s in summary.items():
-        line = [f"{arm:>7} n={s['n']}"]
-        for key, label in (("agent_seconds", "time s"), ("agent_cost_usd", "cost $"),
-                           ("agent_turns", "turns"), ("judge_cost_usd", "judge $")):
-            if key in s:
-                st = s[key]
-                line.append(f"{label}: mean {st['mean']} median {st['median']} sd {st['sd']}")
-        print("  |  ".join(line))
+    return summary
 
+
+def main():
+    results = json.loads(RESULTS_JSON.read_text())
+    print(f"{'case':<26} {'arm':<8} {'score':>5} {'agent s':>8} {'agent $':>8} {'turns':>5} "
+          f"{'judge $':>7}  skills / routes / leaks")
+    for case in results["cases"]:
+        case_dir = Path(case["dir"])
+        runs = [summarize_run(case_dir, arm, n, run)
+                for arm, arm_runs in case["arms"].items()
+                for n, run in enumerate(arm_runs, start=1)]
+        (case_dir / "artifacts").mkdir(parents=True, exist_ok=True)
+        (case_dir / "artifacts" / "runs.json").write_text(json.dumps(runs, indent=2))
+        (case_dir / "artifacts" / "summary.json").write_text(json.dumps(arm_stats(runs), indent=2))
+        for r in runs:
+            score = f"{r['score']:.2f}" if r["score"] is not None else "-"
+            print(f"{case['name']:<26} {r['arm']}-{r['run']:<6} {score:>5} "
+                  f"{r.get('agent_seconds', '-'):>8} {r.get('agent_cost_usd', '-'):>8} "
+                  f"{r.get('agent_turns', '-'):>5} {r['judge_cost_usd']:>7}  "
+                  f"{r['skills']} / {r['routes']} / {len(r['leaks'])}")
+            for leak in r["leaks"]:
+                print("    LEAK", leak)
+            if r["error"]:
+                print("    ERROR", r["error"])
 
 if __name__ == "__main__":
     main()
