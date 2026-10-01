@@ -1,0 +1,210 @@
+"""Build REPORT.md from eval results and the per-case artifacts written by collect.py.
+
+Per case it records: the question, the pinned source, scores and every grader's
+verdict per arm, agent-only time / cost / turns (judge cost separately), the
+drawing route, skill routing, leak check, the final images of both arms, and the
+hand-written observations in <case dir>/notes.md if present.
+"""
+
+import json
+import re
+from pathlib import Path
+
+# Results files to include, in report order (one entry per `claude plugin eval --json` run).
+RESULTS_FILES = [
+    Path("evals/vllm-v1-schedule/results.json"),  # round 1: G1
+    Path("evals/results.json"),                   # round 2: G2 G3 G4 M1 M2
+]
+REPORT = Path("REPORT.md")
+CASE_IDS = {
+    "vllm-v1-schedule": "G1",
+    "verl-ppo-step": "G2",
+    "ffmpeg-transcode-threads": "G3",
+    "redis-request-path": "G4",
+    "megatron-tp-sp-mlp": "M1",
+    "vllm-v1-mixed-batch-attn": "M2",
+}
+SCORED_GRADERS = ["render", "correctness", "readability"]
+INDICATORS = ["skill-fired", "skill-misrouted"]
+ARM_LABEL = {"with": "带 skill", "without": "不带 skill"}
+
+
+def fmt(v, digits=2, prefix=""):
+    if v is None:
+        return "–"
+    if isinstance(v, float):
+        return f"{prefix}{v:.{digits}f}"
+    return f"{prefix}{v}"
+
+
+def verdict(g):
+    if g is None:
+        return "–"
+    mark = "✅" if g["passed"] else "❌"
+    votes = g.get("judgeVotes")
+    if votes:
+        mark += " " + "".join("✓" if v else "✗" for v in votes)
+    return mark
+
+
+def prompt_body(case_dir):
+    text = (case_dir / "prompt.md").read_text()
+    return text.split("---", 2)[2].strip()
+
+
+def pinned(case_dir):
+    p = (case_dir / "src" / "PINNED.txt").read_text()
+    repo = re.search(r"^repo:\s+(\S+)", p, re.M).group(1)
+    commit = re.search(r"^commit:\s+(\S+)", p, re.M).group(1)
+    ref = re.search(r"^ref:\s+(.+)$", p, re.M)
+    ref = ref.group(1).strip() if ref else "main"
+    files = re.findall(r"^  (\S+)", p, re.M)
+    return repo, ref, commit, files
+
+
+def answer_key_titles(case_dir):
+    return re.findall(r"^\d+\. \*\*(.+?)\*\*", (case_dir / "answer-key.md").read_text(), re.M)
+
+
+def pass_rule(case_dir):
+    m = re.search(r"PASS if at least (\d+) of the (\d+) facts", (case_dir / "graders/correctness.md").read_text())
+    return f"{m.group(1)}/{m.group(2)}" if m else "–"
+
+
+def load_cases():
+    cases = []
+    for rf in RESULTS_FILES:
+        if not rf.exists():
+            continue
+        results = json.loads(rf.read_text())
+        for case in results["cases"]:
+            case_dir = Path(case["dir"])
+            runs_file = case_dir / "artifacts" / "runs.json"
+            facts = json.loads(runs_file.read_text()) if runs_file.exists() else []
+            arms = {}
+            for arm, arm_runs in case["arms"].items():
+                run = arm_runs[0]  # one run per arm in this study
+                fact = next((f for f in facts if f["arm"] == arm and f["run"] == 1), {})
+                arms[arm] = {"run": run, "fact": fact,
+                             "graders": {g["name"]: g for g in run.get("graders", [])}}
+            cases.append({"name": case["name"], "dir": case_dir, "arms": arms,
+                          "report_url": results.get("reportUrl")})
+    return sorted(cases, key=lambda c: CASE_IDS.get(c["name"], "Z"))
+
+
+def image_for(case_dir, arm):
+    d = case_dir / "artifacts" / f"{arm}-1"
+    pngs = sorted(d.glob("*.png")) if d.is_dir() else []
+    return pngs[0] if pngs else None
+
+
+def summary_table(cases):
+    lines = [
+        "| Case | 得分 带 / 不带 | Δ | agent 耗时 带 / 不带 (s) | agent 花费 带 / 不带 ($) | 轮数 带 / 不带 | skill 路由 | 不带 skill 的画图路线 |",
+        "|---|---|---|---|---|---|---|---|",
+    ]
+    tot = {"with": [0.0, 0.0, 0.0], "without": [0.0, 0.0, 0.0]}  # seconds, agent $, judge $
+    for c in cases:
+        w, o = c["arms"].get("with"), c["arms"].get("without")
+        sw, so = w["run"]["score"], o["run"]["score"]
+        fw, fo = w["fact"], o["fact"]
+        for arm, f in (("with", fw), ("without", fo)):
+            tot[arm][0] += f.get("agent_seconds") or 0
+            tot[arm][1] += f.get("agent_cost_usd") or 0
+            tot[arm][2] += f.get("judge_cost_usd") or 0
+        fired = w["graders"].get("skill-fired")
+        misrouted = w["graders"].get("skill-misrouted")
+        routing = ("✅" if fired and fired["passed"] else "❌ 未触发") + (
+            "" if not misrouted or misrouted["passed"] else " ⚠ 误用")
+        lines.append(
+            f"| {CASE_IDS.get(c['name'], '')} `{c['name']}` | {sw:.2f} / {so:.2f} | {sw - so:+.2f} | "
+            f"{fmt(fw.get('agent_seconds'), 0)} / {fmt(fo.get('agent_seconds'), 0)} | "
+            f"{fmt(fw.get('agent_cost_usd'))} / {fmt(fo.get('agent_cost_usd'))} | "
+            f"{fmt(fw.get('agent_turns'))} / {fmt(fo.get('agent_turns'))} | {routing} | "
+            f"{', '.join(fo.get('routes') or []) or '–'} |")
+    n = len(cases)
+    mean_w = sum(c["arms"]["with"]["run"]["score"] for c in cases) / n
+    mean_o = sum(c["arms"]["without"]["run"]["score"] for c in cases) / n
+    lines.append(
+        f"| **合计 / 平均** | **{mean_w:.2f} / {mean_o:.2f}** | **{mean_w - mean_o:+.2f}** | "
+        f"**{tot['with'][0]:.0f} / {tot['without'][0]:.0f}** | **{tot['with'][1]:.2f} / {tot['without'][1]:.2f}** | | | |")
+    judge = tot["with"][2] + tot["without"][2]
+    agent = tot["with"][1] + tot["without"][1]
+    return "\n".join(lines), agent, judge
+
+
+def grader_table(c):
+    lines = ["| 评分器 | 带 skill | 不带 skill | 说明 |", "|---|---|---|---|"]
+    notes = {"render": "生成了 PNG", "correctness": f"答案要点至少 {pass_rule(c['dir'])} 画对且无矛盾",
+             "readability": "可读性（文字、重叠、方向、连线、视觉语法、孤立节点）",
+             "skill-fired": "调用了应调用的 skill（只作指示）",
+             "skill-misrouted": "没有调用另一个 skill（只作指示）"}
+    for name in SCORED_GRADERS + INDICATORS:
+        lines.append(f"| {name} | {verdict(c['arms']['with']['graders'].get(name))} | "
+                     f"{verdict(c['arms']['without']['graders'].get(name)) if name in SCORED_GRADERS else '–'} | {notes[name]} |")
+    return "\n".join(lines)
+
+
+def run_table(c):
+    lines = ["| | 带 skill | 不带 skill |", "|---|---|---|"]
+    rows = [("得分", lambda a: fmt(a["run"]["score"])),
+            ("agent 耗时 (s)", lambda a: fmt(a["fact"].get("agent_seconds"), 1)),
+            ("agent API 耗时 (s)", lambda a: fmt(a["fact"].get("agent_api_seconds"), 1)),
+            ("agent 花费 ($)", lambda a: fmt(a["fact"].get("agent_cost_usd"), 3)),
+            ("评委花费 ($)", lambda a: fmt(a["fact"].get("judge_cost_usd"), 3)),
+            ("轮数", lambda a: fmt(a["fact"].get("agent_turns"))),
+            ("调用的 skill", lambda a: ", ".join(a["fact"].get("skills") or []) or "无"),
+            ("画图路线（含只探测过的工具）", lambda a: ", ".join(a["fact"].get("routes") or []) or "–"),
+            ("越界读文件", lambda a: str(len(a["fact"].get("leaks") or [])) if a["fact"] else "–"),
+            ("错误", lambda a: a["run"].get("error") or "无")]
+    for label, f in rows:
+        lines.append(f"| {label} | {f(c['arms']['with'])} | {f(c['arms']['without'])} |")
+    return "\n".join(lines)
+
+
+def case_section(c):
+    d = c["dir"]
+    cid = CASE_IDS.get(c["name"], "")
+    repo, ref, commit, files = pinned(d)
+    titles = answer_key_titles(d)
+    out = [f"## {cid} · `{c['name']}`", ""]
+    out += [f"**代码库：** {repo} @ `{commit[:10]}`（{ref}）  ",
+            f"**复制进来的源码：** {', '.join(f'`{f}`' for f in files)}  ",
+            f"**答案要点：** [{d}/answer-key.md]({d}/answer-key.md)（{len(titles)} 条，通过线 {pass_rule(d)}）", ""]
+    out += ["**Prompt：**", "", "> " + prompt_body(d), ""]
+    out += ["**答案要点标题：** " + " · ".join(f"{i}. {t}" for i, t in enumerate(titles, 1)), ""]
+    out += ["### 评分", "", grader_table(c), "", "### 运行数据（agent 部分不含评委）", "", run_table(c), ""]
+    out += ["### 最终的图", ""]
+    for arm in ("with", "without"):
+        img = image_for(d, arm)
+        out += [f"**{ARM_LABEL[arm]}**", ""]
+        out += [f"![{c['name']} {ARM_LABEL[arm]}]({img})" if img else "_没有生成 PNG_", ""]
+    notes = d / "notes.md"
+    if notes.exists():
+        out += ["### 观察", "", notes.read_text().strip(), ""]
+    return "\n".join(out)
+
+
+def main():
+    cases = load_cases()
+    table, agent_cost, judge_cost = summary_table(cases)
+    head = [
+        "# 绘图 skill A/B 评测报告", "",
+        "评测对象：本仓库的 `drawing-skills` 插件（`graphviz`、`model-architecture` 两个 skill）。"
+        "每个 case 跑两组：带插件（带 skill）和不带插件（不带 skill），**每组 1 次**；agent 和评委都是 Opus。"
+        "prompt 不指定画图工具，只要求输出一张 PNG。分数 = render、correctness、readability 三个评分器的通过比例；"
+        "skill 是否触发只作指示，不计分。美观和配色由人工另行打分（见 PLAN 第 9 步）。", "",
+        "> 每组只有 1 个样本，Δ 和耗时差都是单次观测，不是稳定结论。", "",
+        "## 汇总", "", table, "",
+        f"agent 花费合计 ${agent_cost:.2f}，评委花费合计 ${judge_cost:.2f}，总计 ${agent_cost + judge_cost:.2f}。", "",
+    ]
+    overall = Path("evals/notes.md")
+    if overall.exists():
+        head += ["## 总体观察", "", overall.read_text().strip(), ""]
+    body = [case_section(c) for c in cases]
+    REPORT.write_text("\n".join(head) + "\n" + "\n\n".join(body) + "\n")
+    print(f"wrote {REPORT} with {len(cases)} cases")
+
+
+if __name__ == "__main__":
+    main()
