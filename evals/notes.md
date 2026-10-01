@@ -12,6 +12,8 @@
    - M 类两组都在 0.42–0.43：model-architecture 没有统一的色板。
 6. **质量一致性差不多。** G 类 0.71 vs 0.67；Claude 看图均分带 skill 4.2、不带 skill 4.4。带 skill 在 G 类"版式清晰"四个都是 3 分：很稳定，但稳定在偏低的位置，这正是模板不适合流程题的表现。
 
+**人工评价（用户看图后的判断）：** 流程类题目更适合画成时序图 / 泳道图。G3 FFmpeg 两组**打平**；G1、G2、G4 不带 skill 的泳道 / 表格画法**更清楚**。这和评委的 readability 结果基本一致，唯一的分歧在 G3：评委判不带 skill 的组明显更好（3:0 对 0:3），人工认为两张图各有所长。这也支持 SKILL-IMPROVEMENTS.md 里 P0"先判断图的类型，再选模板"的建议。
+
 **下一步：**
 - 第 3 轮跑 A1–A3 架构题，看 graphviz skill 在主场上能不能把 readability 也赢回来。
 - 按 [SKILL-IMPROVEMENTS.md](SKILL-IMPROVEMENTS.md) 强化 skill，再用同样的 9 个 case 做"旧 skill / 新 skill / 无 skill"三组对比。
