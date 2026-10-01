@@ -1,0 +1,51 @@
+[
+  {
+    "arm": "with",
+    "run": 1,
+    "score": 0.6666666666666666,
+    "error": null,
+    "judge_cost_usd": 0.1919,
+    "skills": [
+      "drawing-skills:graphviz"
+    ],
+    "routes": [
+      "graphviz"
+    ],
+    "written": [],
+    "leaks": [],
+    "agent_seconds": 106.3,
+    "agent_api_seconds": 103.7,
+    "agent_cost_usd": 0.7683,
+    "agent_turns": 19,
+    "artifacts": [
+      "schedule-step.dot",
+      "schedule-step.png",
+      "trace.jsonl.gz"
+    ]
+  },
+  {
+    "arm": "without",
+    "run": 1,
+    "score": 0.6666666666666666,
+    "error": null,
+    "judge_cost_usd": 0.2212,
+    "skills": [],
+    "routes": [
+      "graphviz",
+      "matplotlib"
+    ],
+    "written": [
+      "/tmp/claude-eval-Pwi81a/home/cwd/out/schedule-step.dot"
+    ],
+    "leaks": [],
+    "agent_seconds": 173.5,
+    "agent_api_seconds": 170.4,
+    "agent_cost_usd": 0.9391,
+    "agent_turns": 19,
+    "artifacts": [
+      "schedule-step.dot",
+      "schedule-step.png",
+      "trace.jsonl.gz"
+    ]
+  }
+]

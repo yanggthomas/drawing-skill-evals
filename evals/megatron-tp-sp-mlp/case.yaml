@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: megatron-tp-sp-mlp
+description: M1 — a tensor-parallel + sequence-parallel MLP block in Megatron-Core.
+tags: [model-architecture, round2]
+context:
+  add_dirs: [src]

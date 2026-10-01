@@ -1,0 +1,120 @@
+// vLLM V1 Scheduler.schedule() — one step. Pinned commit 4c2d2776.
+// S = vllm/v1/core/sched/scheduler.py, K = vllm/v1/core/kv_cache_manager.py
+digraph schedule_step {
+  graph [rankdir=TB bgcolor="white" fontname="Helvetica" pad="0.4" nodesep=0.45 ranksep=0.5
+         splines=spline compound=true newrank=true
+         label=<<b>vLLM V1 — one call to Scheduler.schedule()</b>  (commit 4c2d2776; S = sched/scheduler.py, K = core/kv_cache_manager.py)>
+         labelloc=t fontsize=20]
+  edge  [color="#555555" fontname="Helvetica" fontsize=10]
+  node  [shape=ellipse style=filled fillcolor="#E8F4FD" color="#2E86AB" fontname="Helvetica" fontsize=11]
+
+  // ── step start ────────────────────────────────────────────────
+  start [shape=hexagon fillcolor="#F4A261" color="#E76F51" fontsize=13
+         label="schedule()  S:563\nno prefill/decode phases: every request just tries to make\nnum_computed_tokens catch up with num_tokens_with_spec  (S:565-574)"]
+  budget [shape=box style="rounded,filled" fillcolor="#E1BEE7" color="#6A1B9A"
+          label="token_budget = max_num_scheduled_tokens  S:583\n(default = max_num_batched_tokens, S:133-137)\nONE budget, shared by RUNNING first, then WAITING\l\nlong_prefill_token_threshold applies only if >1 eligible request  S:617-621\l(adaptive: floored at max_num_batched_tokens / #requests, S:622-627)\l"]
+  start -> budget
+
+  // ── phase 1: RUNNING ──────────────────────────────────────────
+  subgraph cluster_run {
+    label=<<b>Phase 1 — RUNNING requests, in self.running order</b>  (S:629-861)> fontsize=13
+    style="rounded,filled" fillcolor="#F7FBFE" color="#2E86AB"
+    r_loop [shape=hexagon fillcolor="#F4D35E" color="#D68A1A"
+            label="while req_index < len(running)\nand token_budget > 0   S:631"]
+    r_n [shape=box style="rounded,filled" fillcolor="#E1BEE7" color="#6A1B9A"
+         label="num_new_tokens = num_tokens_with_spec + placeholders − num_computed_tokens  S:675\l  → cap at long_prefill_token_threshold   S:680\l  → min(…, token_budget, input_budget − draft_slots)   S:682\l  → min(…, max_model_len − num_computed − sampled)   S:688\l(decode ⇒ 1 (+spec) token; unfinished prefill ⇒ next chunk)\l"]
+    r_zero [label="num_new_tokens == 0 ?\n→ skip (continue, not break)  S:725-743" fillcolor="#F5F5F5" color="#999999"]
+    r_alloc [shape=box style="rounded,filled" fillcolor="#FFF2B2" color="#B8860B"
+             label="kv_cache_manager.allocate_slots(\l   request, num_new_tokens, num_lookahead_tokens)   S:748\l"]
+    r_ok [shape=box style="rounded,filled" fillcolor="#E1BEE7" color="#6A1B9A"
+          label="scheduled_running_reqs.append(req)   S:821\lreq_to_new_blocks[id] = new_blocks   S:824\lnum_scheduled_tokens[id] = n;  token_budget −= n   S:825-826\l"]
+  }
+
+  // preemption
+  subgraph cluster_pre {
+    label=<<b>Preemption</b> (only inside Phase 1's allocate loop, S:747-818)> fontsize=13
+    style="rounded,filled" fillcolor="#FFF5F5" color="#B71C1C"
+    victim [shape=folder fillcolor="#FFCDD2" color="#B71C1C"
+            label="allocate_slots returned None → pick victim  S:764-772\l  FCFS:     running.pop()  (the LAST running request)\l  PRIORITY: max(running, key=(priority, arrival_time));\l            if already scheduled this step, refund its\l            tokens to token_budget  S:784-789\l"]
+    preempt [shape=folder fillcolor="#FFCDD2" color="#B71C1C"
+             label="_preempt_request()  S:1540\l  free its KV blocks (_free_request_blocks)  S:1558\l  status = PREEMPTED, num_computed_tokens = 0  S:1561-1562\l  waiting.prepend_request(req)  S:1582   (recompute later)\l  reset_preempted_req_ids.add(id)  S:1583\l"]
+    selfvictim [shape=folder fillcolor="#FFCDD2" color="#B71C1C"
+                label="victim == current request?  S:812\l→ give up: break out of Phase 1  S:816-818\l"]
+  }
+
+  // ── KV cache manager ─────────────────────────────────────────
+  kv [shape=cylinder fillcolor="#FFF2B2" color="#B8860B"
+      label="KVCacheManager.allocate_slots()  K:371\l1. free blocks outside sliding window  K:552\l2. need = blocks for (computed + new + lookahead)\l   + watermark (WAITING/PREEMPTED only)  K:509-513, 557-573\l   need > free − reserved  →  return None  K:574-576\l3. attach prefix-cache hit blocks  K:578-589\l4. allocate_new_blocks(...)  K:591\l5. cache_blocks up to request.num_tokens  K:603-612\lreturns the NEW blocks (KVCacheBlocks) or None\l"]
+
+  // ── phase 2: WAITING ──────────────────────────────────────────
+  gate [shape=hexagon fillcolor="#F4D35E" color="#D68A1A"
+        label="any preemption this step?   S:874\n(if not preempted_reqs and UNPAUSED)"]
+  subgraph cluster_wait {
+    label=<<b>Phase 2 — WAITING requests</b> (kv_holding_waiting first, then waiting; FCFS or priority queue)  S:873-1347> fontsize=13
+    style="rounded,filled" fillcolor="#F7FBFE" color="#2E86AB"
+    w_loop [shape=hexagon fillcolor="#F4D35E" color="#D68A1A"
+            label="while token_budget > 0   S:886\nbreak if len(running) ≥ max_num_active_reqs   S:894"]
+    w_prefix [shape=box style="rounded,filled" fillcolor="#E1BEE7" color="#6A1B9A"
+              label="if num_computed_tokens == 0: prefix-cache lookup  S:931-938\l  (+ KV-connector external hit  S:941-1010)\lnum_computed = local hit + external hit  S:1013\l"]
+    w_n [shape=box style="rounded,filled" fillcolor="#E1BEE7" color="#6A1B9A"
+         label="num_new_tokens = num_tokens − num_computed  S:1085\l  (num_tokens, not prompt len: a resumed PREEMPTED req re-prefills its outputs too)\l  → cap at long_prefill_token_threshold   S:1111\l  chunked prefill OFF and doesn't fit → break   S:1116-1123\l  → min(…, token_budget, input_budget − draft_slots)   S:1074, 1125\l"]
+    w_alloc [shape=box style="rounded,filled" fillcolor="#FFF2B2" color="#B8860B"
+             label="allocate_slots(req, n, new_computed_blocks=prefix hit,\l   num_external_computed_tokens, ...)   S:1211\lNone → break (no preemption on behalf of waiting)  S:1225-1232\l"]
+    w_ok [shape=box style="rounded,filled" fillcolor="#E1BEE7" color="#6A1B9A"
+          label="pop from queue; running.append(req)  S:1292-1294\lWAITING   → scheduled_new_reqs      S:1302-1303\lPREEMPTED → scheduled_resumed_reqs  S:1304-1305\lnum_scheduled_tokens[id] = n;  token_budget −= n  S:1314-1315\lstatus = RUNNING; num_computed_tokens = hit  S:1317-1318\l"]
+  }
+
+  // ── output ────────────────────────────────────────────────────
+  out [shape=hexagon fillcolor="#F4A261" color="#E76F51" fontsize=12
+       label="SchedulerOutput → model runner   S:1463-1485  (fields: sched/output.py:232)"]
+  out_fields [shape=box style="rounded,filled" fillcolor="#E8F4FD" color="#2E86AB"
+       label="scheduled_new_reqs: [NewRequestData]  — full prompt, sampling params, block_ids  S:1393-1400\lscheduled_cached_reqs: CachedRequestData — running + resumed reqs: new_block_ids,\l      num_computed_tokens, resumed_req_ids   S:1403-1409, 1661\lnum_scheduled_tokens {req_id: n}, total_num_scheduled_tokens (≤ budget, assert S:1357)\lscheduled_spec_decode_tokens, scheduled_encoder_inputs, num_common_prefix_blocks\lpreempted_req_ids (= reset_preempted_req_ids), finished_req_ids  S:1472-1477\l"]
+  post [shape=box style="rounded,filled" fillcolor="#E1BEE7" color="#6A1B9A"
+        label="_update_after_schedule()   S:1517, 1585\lfor each scheduled req: num_computed_tokens += n   S:1598\lis_prefill_chunk = num_computed_tokens < num_tokens   S:1603\lclear finished_req_ids, reset_preempted_req_ids   S:1616-1617\l"]
+
+  // ── chunked prefill illustration ─────────────────────────────
+  subgraph cluster_chunk {
+    label=<<b>Chunked prefill across steps</b> (illustrative numbers: 5000-token prompt, budget 2048, no other load)> fontsize=12
+    style="rounded,filled" fillcolor="#FBF7FC" color="#6A1B9A"
+    node [shape=record style=filled fillcolor="#E8F4FD" color="#2E86AB" fontsize=10]
+    c1 [label="{step t  (Phase 2, WAITING→RUNNING)|computed 0 → chunk [0,2048)|n = min(5000, budget)}"]
+    c2 [label="{step t+1 (Phase 1, RUNNING)|computed 2048 → chunk [2048,4096)|n = min(2952, budget)}"]
+    c3 [label="{step t+2 (Phase 1)|computed 4096 → [4096,5000)|904 tokens, rest of budget\nleft for other requests}"]
+    c4 [label="{step t+3 (Phase 1)|decode: n = 1 (+spec)|is_prefill_chunk = False}"]
+    c1 -> c2 -> c3 -> c4 [label=" num_computed_tokens += n\l (S:1598)" fontsize=9]
+  }
+
+  // ── edges ─────────────────────────────────────────────────────
+  budget -> r_loop
+  r_loop -> r_n [label=" next request"]
+  r_n -> r_zero [style=dashed label=" n == 0"]
+  r_n -> r_alloc [label=" n > 0"]
+  r_alloc -> kv [color="#B8860B" style=dashed dir=both arrowtail=none label=" "]
+  r_alloc -> r_ok [label=" blocks"]
+  r_ok -> r_loop [label=" req_index += 1" constraint=false]
+  r_zero -> r_loop [style=dashed constraint=false]
+  r_alloc -> victim [color="#B71C1C" fontcolor="#B71C1C" label=" None"]
+  victim -> preempt [color="#B71C1C"]
+  preempt -> r_alloc [color="#B71C1C" fontcolor="#B71C1C" label=" retry allocate\l (while True, S:747)\l" constraint=false]
+  preempt -> selfvictim [color="#B71C1C" style=dashed]
+
+  r_loop -> gate [label=" budget spent /\l end of running\l"]
+  selfvictim -> gate [color="#B71C1C"]
+  gate -> w_loop [label=" no → admit waiting\l with LEFTOVER budget\l"]
+  gate -> out [color="#B71C1C" fontcolor="#B71C1C" label=" yes → skip Phase 2 entirely\l (no new admissions this step)\l"]
+  w_loop -> w_prefix [label=" peek_request()"]
+  w_prefix -> w_n
+  w_n -> w_alloc
+  w_alloc -> kv [color="#B8860B" style=dashed label=" "]
+  w_alloc -> w_ok [label=" blocks"]
+  w_ok -> w_loop [constraint=false label=" loop"]
+  w_loop -> out [label=" budget 0 / queue empty /\l max reqs / alloc fail\l"]
+  out -> out_fields [arrowhead=none style=dotted]
+  out -> post
+  post -> c1 [style=dashed color="#6A1B9A" lhead=cluster_chunk label=" next step starts from\l updated num_computed_tokens\l" fontcolor="#6A1B9A"]
+
+  preempt -> w_prefix [style=dotted color="#B71C1C" constraint=false
+                       label=" re-admitted later via waiting queue\l (resumed, full recompute)\l" fontcolor="#B71C1C"]
+
+  {rank=same; r_alloc; kv}
+}

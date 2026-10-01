@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: vllm-v1-mixed-batch-attn
+description: M2 — how vLLM V1 flattens a mixed prefill + decode batch into attention metadata.
+tags: [model-architecture, round2]
+context:
+  add_dirs: [src]

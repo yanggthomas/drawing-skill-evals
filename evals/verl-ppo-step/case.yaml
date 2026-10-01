@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: verl-ppo-step
+description: G2 — one PPO/GRPO training step in verl's single controller (RayPPOTrainer.fit).
+tags: [graphviz, round2]
+context:
+  add_dirs: [src]

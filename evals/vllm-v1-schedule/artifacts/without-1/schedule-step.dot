@@ -1,0 +1,164 @@
+// vLLM V1 Scheduler.schedule() — one step.
+// Source: vllm-project/vllm @ 4c2d277643e217344056e1d2c42115d5f005912f
+// Line refs: S = vllm/v1/core/sched/scheduler.py, K = vllm/v1/core/kv_cache_manager.py,
+//            O = vllm/v1/core/sched/output.py
+digraph schedule_step {
+  graph [rankdir=TB, fontname="DejaVu Sans", fontsize=12, nodesep=0.35, ranksep=0.32,
+         bgcolor="white", pad=0.4, newrank=true, compound=true,
+         label=<<FONT POINT-SIZE="26"><B>vLLM V1 — one call to Scheduler.schedule()</B></FONT><BR/><FONT POINT-SIZE="13" COLOR="#555555">vllm/v1/core/sched/scheduler.py @ 4c2d2776 &#160;·&#160; S:n = scheduler.py line, K:n = kv_cache_manager.py line, O:n = output.py line<BR/>There is no separate prefill or decode phase. Each request has num_computed_tokens, and the scheduler hands out tokens so it can catch up to num_tokens_with_spec (S:565-574).</FONT><BR/> >,
+         labelloc=t];
+  node  [fontname="DejaVu Sans", fontsize=11, shape=box, style="rounded,filled", fillcolor="#ffffff", color="#444444", margin="0.14,0.07"];
+  edge  [fontname="DejaVu Sans", fontsize=10, color="#444444", arrowsize=0.7];
+
+  // ---------------------------------------------------------------- setup
+  setup [fillcolor="#eeeeee", label=<<B>0. Initialize the per-step budget</B>  <FONT COLOR="#666666">S:576-627</FONT><BR ALIGN="LEFT"/>
+<FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">token_budget = max_num_scheduled_tokens   </FONT><FONT POINT-SIZE="10">(defaults to max_num_batched_tokens, S:133-137)</FONT><BR ALIGN="LEFT"/>
+<FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">input_budget = max_num_batched_tokens     </FONT><FONT POINT-SIZE="10">(each request also costs draft_slots here)</FONT><BR ALIGN="LEFT"/>
+<FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">long_prefill_token_threshold             </FONT><FONT POINT-SIZE="10">cap per request; 0 (off) if only one request is eligible (S:612-621)</FONT><BR ALIGN="LEFT"/>
+<FONT POINT-SIZE="10">The two phases below draw from <B>one shared budget</B>: RUNNING requests take what they need first, and WAITING requests get what is left.</FONT><BR ALIGN="LEFT"/>>];
+
+  // ---------------------------------------------------------------- phase 1
+  subgraph cluster_running {
+    label=<<B>  PHASE 1 — RUNNING requests first</B>   <FONT COLOR="#555555">S:629-861 &#160; while req_index &lt; len(self.running) and token_budget &gt; 0</FONT>>;
+    labeljust=l; style="rounded,filled"; fillcolor="#e8f1fb"; color="#4a7fb5"; fontsize=13;
+
+    r_pick [label=<<B>request = self.running[req_index]</B><BR/><FONT POINT-SIZE="10">in list order: FCFS order, plus requests that were admitted earlier</FONT>>];
+    r_n [label=<<B>How many tokens this step?</B>  <FONT COLOR="#666666">S:675-693</FONT><BR ALIGN="LEFT"/>
+<FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">n = num_tokens_with_spec + num_output_placeholders - num_computed_tokens</FONT><BR ALIGN="LEFT"/>
+<FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">n = min(n, long_prefill_token_threshold*, token_budget, input_budget - draft_slots)</FONT><BR ALIGN="LEFT"/>
+<FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">n = min(n, max_model_len - num_computed_tokens - num_sampled_tokens_per_step)</FONT><BR ALIGN="LEFT"/>
+<FONT POINT-SIZE="10">A decode gives n = 1 (+ spec tokens). A request still mid-prefill gives n = its next prompt chunk.</FONT><BR ALIGN="LEFT"/>
+<FONT POINT-SIZE="10">The encoder budget (multimodal), Mamba alignment and MTP lookahead can reduce n further (S:695-723).</FONT><BR ALIGN="LEFT"/>>];
+    r_zero [shape=diamond, style="filled", fillcolor="#fff8e0", label=<n == 0 ?>, margin="0.02,0.02"];
+    r_alloc [fillcolor="#fff1d6", color="#c98a1a", penwidth=1.6, label=<<B>KV ALLOC #1:</B> kv_cache_manager.allocate_slots(request, n, num_lookahead_tokens)  <FONT COLOR="#666666">S:745-752</FONT><BR/><FONT POINT-SIZE="10">retried in a while-True loop: each failure preempts one victim and then tries again</FONT>>];
+    r_ok [shape=diamond, style="filled", fillcolor="#fff8e0", label=<blocks<BR/>returned?>, margin="0.02,0.02"];
+    r_sched [fillcolor="#dff3e3", color="#3c8d50", label=<<B>Schedule it</B>  <FONT COLOR="#666666">S:820-861</FONT><BR ALIGN="LEFT"/>
+<FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">scheduled_running_reqs.append(req)<BR ALIGN="LEFT"/>num_scheduled_tokens[id] = n;  req_to_new_blocks[id] = new_blocks<BR ALIGN="LEFT"/>token_budget -= n;  input_budget -= n + draft_slots<BR ALIGN="LEFT"/>scheduled_spec_decode_tokens[id] = spec_token_ids[:k]</FONT><BR ALIGN="LEFT"/>>];
+    r_victim [fillcolor="#fde2e1", color="#c0392b", penwidth=1.6, label=<<B>PREEMPT a victim</B>  <FONT COLOR="#666666">S:764-811</FONT><BR ALIGN="LEFT"/>
+<FONT POINT-SIZE="10">FCFS:      </FONT><FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">victim = self.running.pop()</FONT><FONT POINT-SIZE="10">   (last = most recently admitted)</FONT><BR ALIGN="LEFT"/>
+<FONT POINT-SIZE="10">PRIORITY: </FONT><FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">max(running, key=(priority, arrival_time))</FONT><BR ALIGN="LEFT"/>
+<FONT POINT-SIZE="10">     if the victim was already scheduled this step, its tokens, blocks and encoder budget are refunded (S:784-802)</FONT><BR ALIGN="LEFT"/>
+<FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">_preempt_request(victim); preempted_reqs.append(victim)</FONT><BR ALIGN="LEFT"/>
+<FONT POINT-SIZE="10">If the victim is the current request itself, stop: it cannot be scheduled (S:812-814).</FONT><BR ALIGN="LEFT"/>>];
+    r_stop [shape=box, style="rounded,filled", fillcolor="#f4f4f4", label=<<B>break</B> out of Phase 1<BR/><FONT POINT-SIZE="10">S:816-818 (no blocks, even after preempting)</FONT>>];
+  }
+
+  // ---------------------------------------------------------------- gate
+  gate [shape=diamond, style="filled", fillcolor="#fff8e0", margin="0.05,0.02",
+        label=<<B>preempted_reqs empty</B><BR/>and not paused?<BR/><FONT POINT-SIZE="9">S:874</FONT>>];
+
+  // ---------------------------------------------------------------- phase 2
+  subgraph cluster_waiting {
+    label=<<B>  PHASE 2 — WAITING requests get the leftover budget</B>   <FONT COLOR="#555555">S:886-1347 &#160; while token_budget &gt; 0</FONT>>;
+    labeljust=l; style="rounded,filled"; fillcolor="#f0ebf8"; color="#7a5aa6"; fontsize=13;
+
+    w_pick [label=<<B>request = (kv_holding_waiting or waiting).peek_request()</B>  <FONT COLOR="#666666">S:888-897</FONT><BR ALIGN="LEFT"/>
+<FONT POINT-SIZE="10">break if the queue is empty or </FONT><FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">len(running) &gt;= max_num_active_reqs</FONT><FONT POINT-SIZE="10"> (max_num_seqs)</FONT><BR ALIGN="LEFT"/>
+<FONT POINT-SIZE="10">requests that are blocked, have a LoRA limit conflict or need remote KV are skip_request()-ed, then prepended back to the queue (S:878-923, 1343-1347)</FONT><BR ALIGN="LEFT"/>
+<FONT POINT-SIZE="10">The waiting queue is FCFS or priority ordered (request_queue.py). Preempted requests are at the front.</FONT><BR ALIGN="LEFT"/>>];
+    w_prefix [label=<<B>Prefix-cache lookup</B> (only if num_computed_tokens == 0)  <FONT COLOR="#666666">S:930-1041</FONT><BR ALIGN="LEFT"/>
+<FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">new_computed_blocks, num_new_local_computed_tokens = kv_cache_manager.get_computed_blocks(req)</FONT><BR ALIGN="LEFT"/>
+<FONT POINT-SIZE="10">+ external hit tokens from the KV connector (P/D, offload): </FONT><FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">connector.get_num_new_matched_tokens()</FONT><BR ALIGN="LEFT"/>
+<FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">num_computed_tokens = local_hit + external_hit</FONT><FONT POINT-SIZE="10">   (cached tokens use no compute budget)</FONT><BR ALIGN="LEFT"/>>];
+    w_n [label=<<B>How many tokens this step? (this is where a chunk is cut)</B>  <FONT COLOR="#666666">S:1074-1174</FONT><BR ALIGN="LEFT"/>
+<FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">n = request.num_tokens - num_computed_tokens</FONT><FONT POINT-SIZE="10">     (num_tokens counts output already produced, so a resumed request re-prefills it)</FONT><BR ALIGN="LEFT"/>
+<FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">n = min(n, long_prefill_token_threshold*)</FONT><FONT POINT-SIZE="10">     (* only when the threshold is &gt; 0)</FONT><BR ALIGN="LEFT"/>
+<FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">if not enable_chunked_prefill and n &gt; budget: break</FONT><FONT POINT-SIZE="10">     (with chunking off, the whole prompt has to fit)</FONT><BR ALIGN="LEFT"/>
+<FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">n = min(n, token_budget, input_budget - draft_slots)</FONT><FONT POINT-SIZE="10">   (with chunking on, the prompt is cut to the leftover budget)</FONT><BR ALIGN="LEFT"/>>];
+    w_alloc [fillcolor="#fff1d6", color="#c98a1a", penwidth=1.6, label=<<B>KV ALLOC #2:</B> kv_cache_manager.allocate_slots(request, n, num_new_computed_tokens,<BR/>new_computed_blocks, num_external_computed_tokens, num_lookahead_tokens, ...)  <FONT COLOR="#666666">S:1211-1223</FONT><BR/><FONT POINT-SIZE="10">adopts the prefix-cache blocks and allocates new ones; the watermark applies (K:506-513)</FONT>>];
+    w_ok [shape=diamond, style="filled", fillcolor="#fff8e0", label=<blocks<BR/>returned?>, margin="0.02,0.02"];
+    w_stop [fillcolor="#f4f4f4", label=<<B>break</B> out of Phase 2  <FONT COLOR="#666666">S:1225-1232</FONT><BR/><FONT POINT-SIZE="10">Waiting requests <B>never</B> cause preemption. They just wait for a later step.</FONT>>];
+    w_sched [fillcolor="#dff3e3", color="#3c8d50", label=<<B>Admit it</B>  <FONT COLOR="#666666">S:1292-1341</FONT><BR ALIGN="LEFT"/>
+<FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">queue.pop_request(); self.running.append(req)<BR ALIGN="LEFT"/>WAITING → scheduled_new_reqs | PREEMPTED → scheduled_resumed_reqs<BR ALIGN="LEFT"/>req.status = RUNNING; req.num_computed_tokens = num_computed_tokens<BR ALIGN="LEFT"/>num_scheduled_tokens[id] = n; token_budget -= n; input_budget -= n + draft_slots</FONT><BR ALIGN="LEFT"/>
+<FONT POINT-SIZE="10">(async remote-KV load: status WAITING_FOR_REMOTE_KVS, n = 0, skipped this step; S:1260-1290)</FONT><BR ALIGN="LEFT"/>>];
+  }
+
+  // ---------------------------------------------------------------- output
+  out [fillcolor="#e3f4f4", color="#2b8a8a", penwidth=1.6, label=<<B>3. Build the SchedulerOutput → model runner</B>  <FONT COLOR="#666666">S:1355-1485, O:232-315</FONT><BR ALIGN="LEFT"/>
+<FONT POINT-SIZE="10">assert sum(num_scheduled_tokens) &lt;= max_num_scheduled_tokens; len(running) &lt;= max_num_seqs  (S:1356-1361)</FONT><BR ALIGN="LEFT"/>
+<FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">scheduled_new_reqs           </FONT><FONT POINT-SIZE="10">list[NewRequestData]: full prompt token ids, sampling params, block_ids, num_computed_tokens</FONT><BR ALIGN="LEFT"/>
+<FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">scheduled_cached_reqs        </FONT><FONT POINT-SIZE="10">CachedRequestData: running + resumed requests, sent as a diff (new_block_ids, num_computed_tokens, resumed_req_ids)</FONT><BR ALIGN="LEFT"/>
+<FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">num_scheduled_tokens         </FONT><FONT POINT-SIZE="10">{req_id: n}, which together with total_num_scheduled_tokens defines the flattened batch</FONT><BR ALIGN="LEFT"/>
+<FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">scheduled_spec_decode_tokens </FONT><FONT POINT-SIZE="10">draft tokens to verify  ·  </FONT><FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">scheduled_encoder_inputs</FONT><FONT POINT-SIZE="10"> multimodal inputs to encode</FONT><BR ALIGN="LEFT"/>
+<FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">preempted_req_ids            </FONT><FONT POINT-SIZE="10">so the runner drops their state  ·  </FONT><FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">finished_req_ids</FONT><FONT POINT-SIZE="10"> (finished since the last step)</FONT><BR ALIGN="LEFT"/>
+<FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">num_common_prefix_blocks     </FONT><FONT POINT-SIZE="10">for cascade attention  ·  plus kv_connector_metadata, new_block_ids_to_zero, kv_cache_block_copies, ...</FONT><BR ALIGN="LEFT"/>>];
+  after [fillcolor="#e3f4f4", color="#2b8a8a", label=<<B>4. _update_after_schedule(output)</B>  <FONT COLOR="#666666">S:1585-1617</FONT><BR ALIGN="LEFT"/>
+<FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">req.num_computed_tokens += n</FONT><FONT POINT-SIZE="10">   advanced <I>optimistically</I>, so a prefill can get its next chunk on the very next step</FONT><BR ALIGN="LEFT"/>
+<FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">req.is_prefill_chunk = num_computed_tokens &lt; num_tokens + num_output_placeholders</FONT><BR ALIGN="LEFT"/>
+<FONT POINT-SIZE="10">Rejected spec tokens are rolled back later in update_from_output. finished_req_ids and reset_preempted_req_ids are reset.</FONT><BR ALIGN="LEFT"/>>];
+  runner [shape=box3d, style="filled", fillcolor="#d5ecec", color="#2b8a8a", label=<<B>Model runner</B><BR/><FONT POINT-SIZE="10">one forward pass over a single flat batch<BR/>that mixes decode tokens and prefill chunks</FONT>>];
+
+  // ---------------------------------------------------------------- side panels
+  preempt_fn [fillcolor="#fde2e1", color="#c0392b", label=<<B>_preempt_request(victim)</B>  <FONT COLOR="#666666">S:1540-1583</FONT><BR ALIGN="LEFT"/>
+<FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">_free_request_blocks(victim)       </FONT><FONT POINT-SIZE="10">return all its KV blocks to the pool</FONT><BR ALIGN="LEFT"/>
+<FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">encoder_cache_manager.free(victim)</FONT><BR ALIGN="LEFT"/>
+<FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">status = PREEMPTED</FONT><BR ALIGN="LEFT"/>
+<FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">num_computed_tokens = 0            </FONT><FONT POINT-SIZE="10"><B>recompute</B>, not swap: KV is rebuilt on resume,</FONT><BR ALIGN="LEFT"/>
+<FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">                                   </FONT><FONT POINT-SIZE="10">helped by any prefix-cache hits that remain</FONT><BR ALIGN="LEFT"/>
+<FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">num_preemptions += 1</FONT><BR ALIGN="LEFT"/>
+<FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">self.waiting.prepend_request(v)    </FONT><FONT POINT-SIZE="10">goes to the front of the waiting queue</FONT><BR ALIGN="LEFT"/>
+<FONT FACE="DejaVu Sans Mono" POINT-SIZE="10">reset_preempted_req_ids.add(id)    </FONT><FONT POINT-SIZE="10">→ output.preempted_req_ids</FONT><BR ALIGN="LEFT"/>
+<FONT POINT-SIZE="10">Any preemption in Phase 1 means <B>no</B> new admissions this step (S:874).</FONT><BR ALIGN="LEFT"/>>];
+
+  alloc_fn [fillcolor="#fff1d6", color="#c98a1a", label=<<B>KVCacheManager.allocate_slots()</B>  <FONT COLOR="#666666">K:371-600</FONT><BR ALIGN="LEFT"/>
+<FONT FACE="DejaVu Sans Mono" POINT-SIZE="9">| comp | new_comp | ext_comp | new | lookahead |</FONT><BR ALIGN="LEFT"/>
+<FONT FACE="DejaVu Sans Mono" POINT-SIZE="9">                              └── to compute ──┘</FONT><BR ALIGN="LEFT"/>
+<FONT FACE="DejaVu Sans Mono" POINT-SIZE="9">           └──────── to be allocated ─────────┘</FONT><BR ALIGN="LEFT"/>
+<FONT POINT-SIZE="10">1. remove_skipped_blocks() frees blocks outside the sliding window (K:552)</FONT><BR ALIGN="LEFT"/>
+<FONT POINT-SIZE="10">2. need = get_num_blocks_to_allocate(comp + new_comp + ext + new + lookahead)</FONT><BR ALIGN="LEFT"/>
+<FONT POINT-SIZE="10">     + watermark_blocks if the request is WAITING or PREEMPTED (K:506-513)</FONT><BR ALIGN="LEFT"/>
+<FONT POINT-SIZE="10">3. if need &gt; free_blocks - reserved_blocks: <B>return None</B> (K:572-576)</FONT><BR ALIGN="LEFT"/>
+<FONT POINT-SIZE="10">4. allocate_new_computed_blocks(): adopt the prefix-hit blocks (K:584)</FONT><BR ALIGN="LEFT"/>
+<FONT POINT-SIZE="10">5. allocate_new_blocks() → returns the new KVCacheBlocks (K:591)</FONT><BR ALIGN="LEFT"/>
+<FONT POINT-SIZE="10">Blocks only cover the tokens computed <I>this step</I>, so a long prompt</FONT><BR ALIGN="LEFT"/>
+<FONT POINT-SIZE="10">gets its blocks one chunk at a time.</FONT><BR ALIGN="LEFT"/>>];
+
+  chunk_ex [shape=plain, label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="2" CELLPADDING="3" COLOR="#7a5aa6" BGCOLOR="#fbf9ff">
+<TR><TD COLSPAN="5" ALIGN="LEFT"><B>Worked example: chunked prefill + continuous batching</B></TD></TR>
+<TR><TD COLSPAN="5" ALIGN="LEFT"><FONT POINT-SIZE="10">Example values: max_num_batched_tokens = 2048, 3 requests decoding (D1-D3), new prompt P of 5000 tokens, no prefix hit, long_prefill_token_threshold = 0 (off)</FONT></TD></TR>
+<TR><TD><B>step</B></TD><TD><B>Phase 1 (running)</B></TD><TD><B>Phase 2 (waiting)</B></TD><TD><B>batch = token_budget used</B></TD><TD><B>P.num_computed after</B></TD></TR>
+<TR><TD>t</TD><TD BGCOLOR="#e8f1fb">D1 D2 D3: 1 each = 3</TD><TD BGCOLOR="#f0ebf8">P: min(5000, 2045) = 2045, admitted</TD><TD>3 + 2045 = 2048</TD><TD>2045 (is_prefill_chunk)</TD></TR>
+<TR><TD>t+1</TD><TD BGCOLOR="#e8f1fb">D1-D3: 3;  P: min(2955, 2045) = 2045</TD><TD BGCOLOR="#f0ebf8">budget 0, nothing admitted</TD><TD>2048</TD><TD>4090 (is_prefill_chunk)</TD></TR>
+<TR><TD>t+2</TD><TD BGCOLOR="#e8f1fb">D1-D3: 3;  P: last chunk = 910</TD><TD BGCOLOR="#f0ebf8">1135 tokens left for the next waiting request</TD><TD>913 + new prompt chunk</TD><TD>5000 (prefill done)</TD></TR>
+<TR><TD>t+3</TD><TD BGCOLOR="#e8f1fb">D1-D3 and P: 1 each (decode)</TD><TD BGCOLOR="#f0ebf8">...</TD><TD>4 + ...</TD><TD></TD></TR>
+<TR><TD COLSPAN="5" ALIGN="LEFT"><FONT POINT-SIZE="10">After its first chunk, P is in self.running, so later chunks come from Phase 1 (S:675-684). Each chunk calls allocate_slots for only that chunk's blocks.</FONT></TD></TR>
+<TR><TD COLSPAN="5" ALIGN="LEFT"><FONT POINT-SIZE="10">Running requests are always served first, so decodes are never starved by a new long prompt. long_prefill_token_threshold also caps a single chunk.</FONT></TD></TR>
+</TABLE>>];
+
+  // ---------------------------------------------------------------- edges
+  setup -> r_pick;
+  r_pick -> r_n;
+  r_n -> r_zero;
+  r_zero -> r_alloc [label=" no"];
+  r_zero:e -> r_pick:e [label=" yes: skip\n (continue, not break)\n S:725-743", style=dashed, constraint=false];
+  r_alloc -> r_ok;
+  r_ok -> r_sched [label=" yes"];
+  r_ok -> r_victim [label=" no", color="#c0392b", fontcolor="#c0392b"];
+  r_victim -> r_alloc [label=" retry", color="#c0392b", fontcolor="#c0392b", constraint=false];
+  r_victim -> r_stop [label=" victim == request", color="#c0392b", fontcolor="#c0392b"];
+  r_sched:w -> r_pick:w [label="next\nreq_index ", style=dashed, constraint=false];
+  r_victim -> preempt_fn [style=dotted, arrowhead=none, color="#c0392b", constraint=false];
+  r_alloc -> alloc_fn [style=dotted, arrowhead=none, color="#c98a1a", constraint=false];
+  w_alloc -> alloc_fn [style=dotted, arrowhead=none, color="#c98a1a", constraint=false];
+
+  r_sched -> gate [label=" running exhausted\n or token_budget == 0", ltail=cluster_running];
+  r_stop -> gate;
+  gate -> w_pick [label=" yes"];
+  gate:e -> out [label=" no: skip Phase 2", color="#c0392b", fontcolor="#c0392b"];
+
+  w_pick -> w_prefix -> w_n -> w_alloc -> w_ok;
+  w_ok -> w_sched [label=" yes"];
+  w_ok -> w_stop [label=" no"];
+  w_sched:w -> w_pick:w [label="next ", style=dashed, constraint=false];
+  w_sched -> out [label=" queue empty / budget 0 /\n max_num_seqs reached", ltail=cluster_waiting];
+  w_stop -> out;
+  w_n -> chunk_ex [style=dotted, arrowhead=none, color="#7a5aa6", constraint=false];
+
+  out -> after -> runner [penwidth=1.6, color="#2b8a8a"];
+
+  // side-panel placement
+  { rank=same; r_victim; preempt_fn; }
+  { rank=same; r_alloc; alloc_fn; }
+  { rank=same; w_n; chunk_ex; }
+}

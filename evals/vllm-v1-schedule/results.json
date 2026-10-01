@@ -1,0 +1,229 @@
+{
+  "schemaVersion": 1,
+  "claudeVersion": "2.1.286",
+  "startedAt": "2026-10-01T04:48:27.902Z",
+  "durationSeconds": 366,
+  "costUsd": 2.1204742,
+  "partial": false,
+  "suite": {
+    "root": "/home/user/drawing-skill-evals",
+    "ablation": "with-without",
+    "modelOverride": "opus",
+    "judgeModel": "opus",
+    "caseFilter": "vllm-v1-schedule",
+    "threshold": 0,
+    "concurrency": 1,
+    "plugins": [
+      {
+        "name": "drawing-skills",
+        "version": "0.1.0",
+        "path": "/home/user/drawing-skill-evals"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "name": "vllm-v1-schedule",
+      "dir": "evals/vllm-v1-schedule",
+      "source": "mixed",
+      "promptMarkdown": "I'm trying to understand how vLLM V1 does continuous batching. The scheduler source, pinned at the commit in `PINNED.txt`, is in the read-only source directory available to this session. Draw one diagram that explains what happens in a single scheduler step: how the per-step token budget is shared between already-running requests and waiting requests, how chunked prefill splits a long prompt across steps, where KV cache blocks are allocated, when and how preemption happens, and what the step outputs to the model runner. Ground every element in the code. Save the finished diagram as a PNG image at `out/schedule-step.png`.",
+      "runsPerCase": 1,
+      "timeoutSeconds": 1800,
+      "maxTurns": 60,
+      "graders": [
+        {
+          "name": "correctness",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "You are grading a diagram (the attached PNG) that is meant to explain one step of vLLM V1's `Scheduler.schedule()`. Judge only what the picture shows. Do not credit anything you would have to infer from code that is not drawn. Exact identifiers are not required when the mechanism is drawn unambiguously.\n\nReference facts:\n\n1. **Budget source.** The step starts with one token budget, `token_budget = max_num_scheduled_tokens`. That value defaults to `max_num_batched_tokens` and is shared by every request scheduled in the step.\n2. **Budget decrement.** Each scheduled request takes `num_new_tokens` off the budget, whether it came from running or waiting. Both loops stop once the budget reaches 0.\n3. **Running before waiting.** The step first walks the `running` list in order. Only after that does it admit requests from the `waiting` queue.\n4. **Chunked prefill.** A request's `num_new_tokens` is the gap between its tokens and its `num_computed_tokens`. The scheduler caps it by `long_prefill_token_threshold` and then by the remaining budget, so a long prompt gets only a chunk this step. After scheduling, `num_computed_tokens` is advanced by the scheduled count, so the next step continues the prompt where this chunk stopped. There is no separate prefill or decode phase: a decode is the same rule with a gap of 1.\n5. **KV block allocation.** Before a request is committed to the step, `kv_cache_manager.allocate_slots(request, num_new_tokens, ...)` reserves KV-cache blocks for the new tokens. It returns `None` when there are not enough free blocks.\n6. **Preemption (running side only).** When allocation fails for a running request, the scheduler preempts a victim and retries. The victim is the last request in `running` (FCFS), or the lowest-priority request under the priority policy. `_preempt_request` frees the victim's KV blocks, sets it to `PREEMPTED` with `num_computed_tokens = 0`, and puts it back at the **front** of the waiting queue. If the victim is the current request itself, that request is not scheduled this step.\n7. **Preemption blocks admission.** If any request was preempted in this step, the waiting queue is skipped entirely: `if not preempted_reqs`.\n8. **Admission stop conditions.** A waiting request is admitted only while all of these hold: the budget is > 0, the queue is non-empty, and `len(running) < max_num_active_reqs`. Its `allocate_slots` call must also succeed, and a failure there **stops** admission without preempting anyone. On admission the request first takes its prefix-cache hit as already-computed tokens, so only the uncached suffix is scheduled. The request then moves into `running` with status `RUNNING`.\n9. **Output to the model runner.** The step returns a `SchedulerOutput` carrying:\n   - `scheduled_new_reqs`: full `NewRequestData` (prompt tokens and block ids) for requests scheduled for the first time.\n   - `scheduled_cached_reqs`: a `CachedRequestData` diff (new block ids, `num_computed_tokens`) for continuing running requests and resumed preempted requests.\n   - `num_scheduled_tokens`: tokens per request, plus `total_num_scheduled_tokens`.\n   - `finished_req_ids` and `preempted_req_ids`, so the workers can free their cached state.\n\nFor each fact, decide: SHOWN (drawn correctly), ABSENT (not drawn), or CONTRADICTED (drawn in a way that conflicts with the fact). Examples of a contradiction: waiting requests are scheduled before running ones; a failed waiting allocation triggers preemption; a preempted request goes to the back of the queue; there are separate prefill and decode phases.\n\nPASS if at least 7 of the 9 facts are SHOWN and none is CONTRADICTED.\nFAIL otherwise. Begin your explanation by listing the SHOWN / ABSENT / CONTRADICTED verdict for each fact number.",
+          "config": {
+            "criteria": "You are grading a diagram (the attached PNG) that is meant to explain one step of vLLM V1's `Scheduler.schedule()`. Judge only what the picture shows. Do not credit anything you would have to infer from code that is not drawn. Exact identifiers are not required when the mechanism is drawn unambiguously.\n\nReference facts:\n\n1. **Budget source.** The step starts with one token budget, `token_budget = max_num_scheduled_tokens`. That value defaults to `max_num_batched_tokens` and is shared by every request scheduled in the step.\n2. **Budget decrement.** Each scheduled request takes `num_new_tokens` off the budget, whether it came from running or waiting. Both loops stop once the budget reaches 0.\n3. **Running before waiting.** The step first walks the `running` list in order. Only after that does it admit requests from the `waiting` queue.\n4. **Chunked prefill.** A request's `num_new_tokens` is the gap between its tokens and its `num_computed_tokens`. The scheduler caps it by `long_prefill_token_threshold` and then by the remaining budget, so a long prompt gets only a chunk this step. After scheduling, `num_computed_tokens` is advanced by the scheduled count, so the next step continues the prompt where this chunk stopped. There is no separate prefill or decode phase: a decode is the same rule with a gap of 1.\n5. **KV block allocation.** Before a request is committed to the step, `kv_cache_manager.allocate_slots(request, num_new_tokens, ...)` reserves KV-cache blocks for the new tokens. It returns `None` when there are not enough free blocks.\n6. **Preemption (running side only).** When allocation fails for a running request, the scheduler preempts a victim and retries. The victim is the last request in `running` (FCFS), or the lowest-priority request under the priority policy. `_preempt_request` frees the victim's KV blocks, sets it to `PREEMPTED` with `num_computed_tokens = 0`, and puts it back at the **front** of the waiting queue. If the victim is the current request itself, that request is not scheduled this step.\n7. **Preemption blocks admission.** If any request was preempted in this step, the waiting queue is skipped entirely: `if not preempted_reqs`.\n8. **Admission stop conditions.** A waiting request is admitted only while all of these hold: the budget is > 0, the queue is non-empty, and `len(running) < max_num_active_reqs`. Its `allocate_slots` call must also succeed, and a failure there **stops** admission without preempting anyone. On admission the request first takes its prefix-cache hit as already-computed tokens, so only the uncached suffix is scheduled. The request then moves into `running` with status `RUNNING`.\n9. **Output to the model runner.** The step returns a `SchedulerOutput` carrying:\n   - `scheduled_new_reqs`: full `NewRequestData` (prompt tokens and block ids) for requests scheduled for the first time.\n   - `scheduled_cached_reqs`: a `CachedRequestData` diff (new block ids, `num_computed_tokens`) for continuing running requests and resumed preempted requests.\n   - `num_scheduled_tokens`: tokens per request, plus `total_num_scheduled_tokens`.\n   - `finished_req_ids` and `preempted_req_ids`, so the workers can free their cached state.\n\nFor each fact, decide: SHOWN (drawn correctly), ABSENT (not drawn), or CONTRADICTED (drawn in a way that conflicts with the fact). Examples of a contradiction: waiting requests are scheduled before running ones; a failed waiting allocation triggers preemption; a preempted request goes to the back of the queue; there are separate prefill and decode phases.\n\nPASS if at least 7 of the 9 facts are SHOWN and none is CONTRADICTED.\nFAIL otherwise. Begin your explanation by listing the SHOWN / ABSENT / CONTRADICTED verdict for each fact number.",
+            "focus": {
+              "source": "file",
+              "path": "out/schedule-step.png"
+            }
+          }
+        },
+        {
+          "name": "readability",
+          "type": "llm",
+          "weight": 1,
+          "graderMarkdown": "You are grading the visual quality of a technical diagram (the attached PNG). Ignore whether its content is technically correct; grade only how readable it is.\n\nCheck each criterion:\n1. Every label is legible at 100% zoom: no text is truncated, clipped, or too small to read.\n2. No nodes overlap, and no labels overlap nodes, edges, or each other.\n3. There is one clear reading direction (top-to-bottom or left-to-right) that a reader can follow from start to end.\n4. Edges are distinguishable: a reader can trace each edge from its source to its target, and edges that mean different things (e.g. control flow vs. data handed off) are visually different or labeled.\n5. The visual grammar is consistent: shape and/or colour encode the role of a node (e.g. decision, action, data structure, queue), and the same role always looks the same.\n6. There are no orphan nodes (unconnected, without an obvious reason) and no purely decorative elements.\n\nPASS if criteria 1, 2 and 3 all hold and at most one of criteria 4–6 fails.\nFAIL otherwise. Begin your explanation by giving a pass/fail for each criterion number.",
+          "config": {
+            "criteria": "You are grading the visual quality of a technical diagram (the attached PNG). Ignore whether its content is technically correct; grade only how readable it is.\n\nCheck each criterion:\n1. Every label is legible at 100% zoom: no text is truncated, clipped, or too small to read.\n2. No nodes overlap, and no labels overlap nodes, edges, or each other.\n3. There is one clear reading direction (top-to-bottom or left-to-right) that a reader can follow from start to end.\n4. Edges are distinguishable: a reader can trace each edge from its source to its target, and edges that mean different things (e.g. control flow vs. data handed off) are visually different or labeled.\n5. The visual grammar is consistent: shape and/or colour encode the role of a node (e.g. decision, action, data structure, queue), and the same role always looks the same.\n6. There are no orphan nodes (unconnected, without an obvious reason) and no purely decorative elements.\n\nPASS if criteria 1, 2 and 3 all hold and at most one of criteria 4–6 fails.\nFAIL otherwise. Begin your explanation by giving a pass/fail for each criterion number.",
+            "focus": {
+              "source": "file",
+              "path": "out/schedule-step.png"
+            }
+          }
+        },
+        {
+          "name": "render",
+          "type": "file_exists",
+          "weight": 1,
+          "config": {
+            "path": "out/schedule-step.png",
+            "exists": true
+          }
+        },
+        {
+          "name": "skill-fired",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "Skill",
+            "input_match": "\"skill\"\\s*:\\s*\"(?:[\\w-]+:)?graphviz\""
+          }
+        },
+        {
+          "name": "skill-misrouted",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "Skill",
+            "input_match": "\"skill\"\\s*:\\s*\"(?:[\\w-]+:)?model-architecture\"",
+            "min": 0,
+            "max": 0,
+            "arm": "with-only"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 19,
+            "costUsd": 0.9601972,
+            "judgeCostUsd": 0.19193199999999996,
+            "durationSeconds": 141,
+            "startedAt": "2026-10-01T04:48:27.943Z",
+            "error": null,
+            "tracePath": "/tmp/claude-eval-uS6qxL/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "correctness",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS (image)",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "[image shown to the judge: out/schedule-step.png — sent as image/jpeg, 470.3KB, 2000x1975px; file on disk: image/png, 872KB, 3069x3030px]"
+              },
+              {
+                "name": "readability",
+                "passed": false,
+                "weight": 1,
+                "explanation": "judge votes: FAIL FAIL FAIL (image)",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  false,
+                  false,
+                  false
+                ],
+                "evidence": "[image shown to the judge: out/schedule-step.png — sent as image/jpeg, 470.3KB, 2000x1975px; file on disk: image/png, 872KB, 3069x3030px]"
+              },
+              {
+                "name": "render",
+                "passed": true,
+                "weight": 1,
+                "explanation": "out/schedule-step.png exists as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "skill-fired",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Skill called 1x (expected 1..∞)",
+                "withOnly": true,
+                "scored": false
+              },
+              {
+                "name": "skill-misrouted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Skill called 0x (expected 0..0)",
+                "withOnly": true,
+                "scored": false
+              }
+            ]
+          }
+        ],
+        "without": [
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 19,
+            "costUsd": 1.160277,
+            "judgeCostUsd": 0.221212,
+            "durationSeconds": 225,
+            "startedAt": "2026-10-01T04:50:48.938Z",
+            "error": null,
+            "tracePath": "/tmp/claude-eval-Pwi81a/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "correctness",
+                "passed": true,
+                "weight": 1,
+                "explanation": "judge votes: PASS PASS PASS (image)",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  true,
+                  true,
+                  true
+                ],
+                "evidence": "[image shown to the judge: out/schedule-step.png — sent as image/jpeg, 472.2KB, 1987x2000px; file on disk: image/png, 998.1KB, 3012x3032px]"
+              },
+              {
+                "name": "readability",
+                "passed": false,
+                "weight": 1,
+                "explanation": "judge votes: FAIL FAIL FAIL (image)",
+                "withOnly": false,
+                "scored": true,
+                "judgeVotes": [
+                  false,
+                  false,
+                  false
+                ],
+                "evidence": "[image shown to the judge: out/schedule-step.png — sent as image/jpeg, 472.2KB, 1987x2000px; file on disk: image/png, 998.1KB, 3012x3032px]"
+              },
+              {
+                "name": "render",
+                "passed": true,
+                "weight": 1,
+                "explanation": "out/schedule-step.png exists as expected",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 0.6666666666666666,
+        "passRate": 0,
+        "scoreWithout": 0.6666666666666666,
+        "passRateWithout": 0,
+        "delta": 0
+      }
+    }
+  ],
+  "aggregates": {
+    "casesTotal": 1,
+    "casesPassed": 1,
+    "overallScore": 0.6666666666666666,
+    "overallPassRate": 0,
+    "meanDelta": 0
+  }
+}

@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: ffmpeg-transcode-threads
+description: G3 — the threaded transcoding pipeline in fftools (FFmpeg master).
+tags: [graphviz, round2]
+context:
+  add_dirs: [src]
