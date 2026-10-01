@@ -48,12 +48,13 @@ CASE_KIND = {
     "vllm-v1-mixed-batch-attn": "模型内部（逐 token 元数据）",
     "vllm-v1-process-arch": "架构（进程与组件）",
     "verl-resource-placement": "架构（资源池与放置）",
-    "megatron-parallel-groups": "架构（rank 与并行组拓扑）",
+    "megatron-parallel-groups": "成员映射 / 网格（rank → 并行组，非架构依赖）",
 }
 GROUPS = {  # consistency groups: label -> case ids
     "流程/时序/混合（graphviz 设计范围外）": ["G1", "G2", "G3", "G4"],
     "模型内部（model-architecture 范围内）": ["M1", "M2"],
-    "架构（graphviz 范围内）": ["A1", "A2", "A3"],
+    "架构（graphviz 范围内）": ["A1", "A2"],
+    "成员映射 / 网格（不是架构依赖图）": ["A3"],
 }
 SCORED_GRADERS = ["render", "correctness", "readability"]
 INDICATORS = ["skill-fired", "skill-misrouted"]
@@ -435,7 +436,7 @@ def main():
         "> 每组只有 1 个样本，Δ 和耗时差都是单次观测，不是稳定结论。", "",
         "**读结果前先看题型。** graphviz skill 是为**架构图**设计的（SKILL.md：“topology-first graphs”，并明确“Not for UML sequence / activity”）。"
         "第 1、2 轮的 G1–G4 问的是单步算法、训练步骤顺序、跨线程请求生命周期，属于流程图 / 时序图，**在 graphviz skill 的设计范围之外**；"
-        "M1、M2 在 model-architecture skill 的范围内。第 3 轮的 A1–A3 是只问组成与连接的架构题，用来测 graphviz skill 的主场。", "",
+        "M1、M2 在 model-architecture skill 的范围内。第 3 轮的 A1、A2 是架构 / 部署拓扑题，属于 graphviz 的主场；A3 问的是 rank 到并行组的成员映射，本质是网格 / 表格，也不是架构依赖图。", "",
         "## 汇总", "", table, "",
         f"agent 花费合计 ${agent_cost:.2f}，评委花费合计 ${judge_cost:.2f}，总计 ${agent_cost + judge_cost:.2f}。", "",
     ]
