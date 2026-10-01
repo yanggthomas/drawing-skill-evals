@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: vllm-v1-schedule
+description: G1 — diagram one vLLM V1 Scheduler.schedule() step (continuous batching, chunked prefill, KV allocation, preemption).
+tags: [graphviz, vllm, round1]
+context:
+  add_dirs: [src]
