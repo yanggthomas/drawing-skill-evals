@@ -2,3 +2,4 @@
 - **评委**：两组 readability 都是 0:3，correctness 都是 3:0。
 - **效率**：带 skill 129 秒 / $0.86 / 27 轮，不带 skill 147 秒 / $0.90 / 25 轮。
 - **观察**：同一种工具画出来的图，两组差别很小，共同的问题是自动布局下的长交叉边。说明在这道题上，限制可读性的是 Graphviz 的自动布局，而不是 skill。
+- **细看对比（带 / 不带）**：两张都是 Graphviz，各有各的毛病。带 skill 的把 5 个 manager 画成一排黄色六边形（模板里 supervisor = accent 六边形），长标签把六边形撑得很宽，manager 到各个 pool 的细橙线又长又多，左下大片空白。不带 skill 的用白底圆角框，按 manager 配色，"每个 GPU bundle → WorkerDict + Rollout replica worker"的嵌套直接表达了同 GPU 共存；但从 driver 的 wg 句柄绕过整张图的灰色点线弧更难看。**判定：打平。**

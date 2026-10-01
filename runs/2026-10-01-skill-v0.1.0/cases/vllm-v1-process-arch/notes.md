@@ -2,3 +2,4 @@
 - **评委**：带 skill 的 readability 0:3，不带 skill 3:0；correctness 两组 3:0。
 - **效率**：带 skill **136 秒 / $0.88** / 22 轮，不带 skill **370 秒 / $1.90** / 39 轮。这是所有 case 里 skill 省得最多的一次：时间和花费都约是不带 skill 的一半，不带 skill 的组在手工排版上反复调整。
 - **观察**：这是标准的架构图题，也是 graphviz 的主场，但 Graphviz 的自动布局把三个进程摆成了"右、中、左下"，主线不直；手工排版的三列布局更清楚。
+- **细看对比（带 / 不带）**：带 skill 的图其实画出了更多结构：39 条边，进程内部的调用关系（busy loop → Scheduler / Executor / output_queue 等）都是真实的边；不带 skill 的图只画了约 8 条进程间的边，进程内部关系全写成方框里的文字。但带 skill 的布局是反的：前端在右、EngineCore 居中、worker 在左下，读者要从右往左读，左上还空出一大块。不带 skill 的三列从左到右加传输图例，一眼能读。**判定：不带 skill 更好读；带 skill 更像一张图。**
