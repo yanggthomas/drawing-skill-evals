@@ -234,6 +234,7 @@ def case_section(c):
     out += ["**Prompt：**", "", "> " + prompt_body(d), ""]
     out += ["**答案要点标题：** " + " · ".join(f"{i}. {t}" for i, t in enumerate(titles, 1)), ""]
     out += ["### 评分", "", grader_table(c), "", "### 运行数据（agent 部分不含评委）", "", run_table(c), ""]
+    out += content_detail(c)
     out += ["### 最终的图", ""]
     for arm in ("with", "without"):
         img = image_for(d, arm)
@@ -340,6 +341,46 @@ def consistency_section(cases):
     return "\n".join(lines)
 
 
+def load_content_review(case_dir):
+    f = case_dir / "content-review.json"
+    return json.loads(f.read_text()) if f.exists() else None
+
+
+def content_table(cases):
+    rows = [(c, load_content_review(c["dir"])) for c in cases]
+    rows = [(c, r) for c, r in rows if r]
+    if not rows:
+        return ""
+    lines = ["## 内容可读性（Claude 逐子问题检查）", "",
+             "只看内容：把每个 prompt 明确问的子问题列出来，看读者能不能从图里直接读到答案。"
+             "每个子问题 2 = 一眼可读，1 = 在图里但要在小字或代码里找，0 = 读不出或画错。"
+             "另给一个 1–5 的整体分：读者能不能把题目要的那条主线拼起来。这是模型的判断，不是人工打分。", "",
+             "| Case | 题型 | 子问题得分 带 / 不带 | 内容可读性 (1–5) 带 / 不带 |", "|---|---|---|---|"]
+    tw = to = tmax = 0
+    sw, so = [], []
+    for c, r in rows:
+        mx = 2 * len(r["questions"])
+        tw += sum(r["with"]); to += sum(r["without"]); tmax += mx
+        sw.append(r["with_score"]); so.append(r["without_score"])
+        lines.append(f"| {CASE_IDS.get(c['name'], '')} | {CASE_KIND.get(c['name'], '')} | "
+                     f"{sum(r['with'])}/{mx} / {sum(r['without'])}/{mx} | {r['with_score']} / {r['without_score']} |")
+    lines.append(f"| **合计 / 平均** | | **{tw}/{tmax} / {to}/{tmax}** | "
+                 f"**{statistics.mean(sw):.1f} / {statistics.mean(so):.1f}** |")
+    return "\n".join(lines)
+
+
+def content_detail(c):
+    r = load_content_review(c["dir"])
+    if not r:
+        return []
+    out = ["### 内容可读性", "", "| 子问题 | 带 skill | 不带 skill |", "|---|---|---|"]
+    mark = {2: "2 一眼可读", 1: "1 要找", 0: "0 读不出"}
+    for q, a, b in zip(r["questions"], r["with"], r["without"]):
+        out.append(f"| {q} | {mark[a]} | {mark[b]} |")
+    out += [f"| **整体 (1–5)** | **{r['with_score']}** | **{r['without_score']}** |", "", r["note"], ""]
+    return out
+
+
 def review_table(cases):
     if not any(load_review(c["dir"]) for c in cases):
         return ""
@@ -378,6 +419,9 @@ def main():
         f"agent 花费合计 ${agent_cost:.2f}，评委花费合计 ${judge_cost:.2f}，总计 ${agent_cost + judge_cost:.2f}。", "",
     ]
     head += [consistency_section(cases), ""]
+    ct = content_table(cases)
+    if ct:
+        head += [ct, ""]
     rt = review_table(cases)
     if rt:
         head += [rt, ""]

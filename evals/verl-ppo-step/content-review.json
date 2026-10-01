@@ -1,0 +1,23 @@
+{
+  "questions": [
+    "各阶段的先后顺序",
+    "哪些在 driver、哪些在 worker group",
+    "batch 一路累积了什么",
+    "权重在哪里、怎么从训练端到 rollout 端"
+  ],
+  "with": [
+    2,
+    2,
+    1,
+    2
+  ],
+  "without": [
+    2,
+    2,
+    2,
+    2
+  ],
+  "with_score": 4,
+  "without_score": 5,
+  "note": "带 skill 的图顺序清楚（0–10 编号的 driver 主干），但每一步新增的 batch 字段写成节点里的绿色小字，要逐个节点去找；worker group 在左侧，RPC 边从右向左横穿，读者要来回对照。不带 skill 的图是\"步骤行 × 角色列\"的表格，最右一列专门写\"batch 新增了哪些 key\"，四个子问题都能按行直接读到，第 11 行用红色粗箭头标出 θ_k+1 从 actor 到 rollout。"
+}

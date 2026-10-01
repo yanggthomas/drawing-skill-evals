@@ -1,0 +1,20 @@
+{
+  "questions": [
+    "每个 rank 上的张量和权重形状",
+    "前向在哪里 all-gather / reduce-scatter",
+    "反向在哪里 all-gather / reduce-scatter"
+  ],
+  "with": [
+    2,
+    2,
+    2
+  ],
+  "without": [
+    2,
+    2,
+    2
+  ],
+  "with_score": 5,
+  "without_score": 4,
+  "note": "两张都答全。带 skill 的 TikZ 图把\"按序列切分的 SP 区\"和\"按 FFN 切分的 TP 区\"画成两块底色，前向和反向上下镜像，读者一眼就能看出张量在哪里从 [s/p,b,h] 变成 [s,b,F/p]，通信节点用倒角框、用颜色区分 all-gather 和 reduce-scatter。不带 skill 的图信息相同，但写成左右两列文字卡片，形状要从文字里读出来；好在底部有一行\"每个 MLP 前向 1 次 all-gather + 1 次 reduce-scatter、反向 2 次 all-gather + 1 次 reduce-scatter\"的总结。"
+}

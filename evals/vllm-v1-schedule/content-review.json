@@ -1,0 +1,26 @@
+{
+  "questions": [
+    "token 预算如何在 running / waiting 之间共享",
+    "chunked prefill 如何跨步切分",
+    "KV block 在哪里分配",
+    "何时、如何抢占",
+    "输出给 model runner 什么"
+  ],
+  "with": [
+    2,
+    2,
+    2,
+    2,
+    2
+  ],
+  "without": [
+    2,
+    2,
+    2,
+    2,
+    2
+  ],
+  "with_score": 4,
+  "without_score": 5,
+  "note": "两张都把 5 个子问题答全了。差别在讲解：不带 skill 的图有一张 worked example 表（每一步 running 用多少预算、waiting 拿到多少、P 的已计算长度），把预算共享、running 优先、chunked prefill 三件事放在同一张表里讲清楚，还在标题下直接写出\"只有一个共享预算、没有 prefill/decode 阶段\"。带 skill 的图也有 chunked prefill 示例，但放在左下角，离切分发生的节点很远，读者要自己把它和 Phase 1/2 对上。"
+}

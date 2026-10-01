@@ -1,0 +1,23 @@
+{
+  "questions": [
+    "混合 batch 如何展平成一维",
+    "query_start_loc / seq_lens / block_table / slot_mapping 如何构造",
+    "新 K/V 如何写进分页 cache",
+    "attention 如何读回"
+  ],
+  "with": [
+    2,
+    2,
+    1,
+    2
+  ],
+  "without": [
+    2,
+    2,
+    2,
+    2
+  ],
+  "with_score": 4,
+  "without_score": 5,
+  "note": "两张都用具体的小 batch 逐 token 列表，内容都很完整。带 skill 的图\"写入\"一段有十几条弯箭头把 token 连到 cache 槽位，要顺着交叉的线去对应，是唯一扣分的子问题；读回部分为每个请求画了因果 mask 网格，很直观。不带 skill 的图每个请求固定一种颜色贯穿全图，写入用\"每个 block 一行 + ← t1–t4 → slots 92–95\"的文字标注代替连线，读者不用追线。"
+}
