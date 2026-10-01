@@ -58,10 +58,10 @@ evals/vllm-v1-schedule/
 ├── answer-key.md      # facts with file:line, for human review; copied into the correctness grader
 └── graders/
     ├── render.md          # file_exists out/schedule-step.png
-    ├── mentions-*.md      # regex graders on out/schedule-step.dot (one concept each)
     ├── correctness.md     # llm on the PNG against the answer key
     ├── readability.md     # llm on the PNG against the visual rubric
-    └── skill-fired.md     # tool_used Skill, input_match graphviz (indicator only)
+    ├── skill-fired.md     # tool_used Skill, input_match graphviz (indicator only)
+    └── skill-misrouted.md # tool_used Skill model-architecture, max 0 (indicator only)
 ```
 
 ### 5.2 prompt.md frontmatter
@@ -77,22 +77,19 @@ allowed_tools: [Read, Glob, Grep, Skill, Write, Bash]
 
 ### 5.3 Prompt body (draft; adjust only what the vendored code forces)
 
-> I'm trying to understand how vLLM V1 does continuous batching. The scheduler source, pinned at the commit in `PINNED.txt`, is in the read-only source directory available to this session. Draw one diagram that explains what happens in a single scheduler step: how the per-step token budget is shared between already-running requests and waiting requests, how chunked prefill splits a long prompt across steps, where KV cache blocks are allocated, when and how preemption happens, and what the step outputs to the model runner. Ground every element in the code. Write the Graphviz source to `out/schedule-step.dot` and render it to `out/schedule-step.png`.
+> I'm trying to understand how vLLM V1 does continuous batching. The scheduler source, pinned at the commit in `PINNED.txt`, is in the read-only source directory available to this session. Draw one diagram that explains what happens in a single scheduler step: how the per-step token budget is shared between already-running requests and waiting requests, how chunked prefill splits a long prompt across steps, where KV cache blocks are allocated, when and how preemption happens, and what the step outputs to the model runner. Ground every element in the code. Save the finished diagram as a PNG image at `out/schedule-step.png`.
 
 ### 5.4 Graders
 
 | Grader | Type | Looks at | Passes when |
 |---|---|---|---|
 | render | `file_exists` | `out/schedule-step.png` | The PNG was created in the run |
-| mentions-budget | `regex` (flags `i`) | file `out/schedule-step.dot` | Mentions the token budget (e.g. `token_budget\|max_num_batched_tokens\|budget`) |
-| mentions-running-waiting | `regex` | same | Mentions both the running and the waiting queue |
-| mentions-preemption | `regex` | same | Mentions preemption |
-| mentions-kv-alloc | `regex` | same | Mentions KV block allocation (e.g. `allocate_slots\|block`) |
-| correctness | `llm` | `{ source: file, path: out/schedule-step.png }` | Answer-key facts: the diagram shows at least N of M facts correctly and contradicts none. Set N after writing the key (target ≈ 75%) |
+| correctness | `llm` | `{ source: file, path: out/schedule-step.png }` | At least 7 of the 9 answer-key facts shown, none contradicted |
 | readability | `llm` | same PNG | Labels legible at 100% zoom; no overlapping nodes or labels; one clear reading direction; edges distinguishable; consistent visual grammar (shape/colour encodes role); no orphan or decorative nodes |
 | skill-fired | `tool_used` | trace | `tool: Skill`, `input_match: graphviz` (with-only indicator) |
+| skill-misrouted | `tool_used` | trace | `tool: Skill`, `input_match: model-architecture`, `max: 0` (with-only indicator) |
 
-Finalize regex patterns against the identifiers actually used in the vendored code, not the guesses above.
+**Tool neutrality.** The prompt names no drawing tool and asks only for a PNG, so the without-arm picks its own route (Graphviz, Mermaid, matplotlib, SVG, an image model, ...). Graders therefore look only at the PNG; there are no regex graders over a tool-specific source file. Which route each run took, and whether any run read outside `src/` (skills, answer key, graders), is extracted post hoc by `scripts/collect.py`, not graded, so neither changes either arm's score.
 
 ### 5.5 Answer key requirements
 
@@ -110,7 +107,7 @@ Work on branch `g1-vllm-schedule`. Commit after each step.
    ```bash
    claude plugin eval . --case vllm-v1-schedule --runs 1 --ablation none \
      --model opus --judge-model opus \
-     --allow-tools Write "Bash(dot *)" \
+     --allow-tools Write Bash \
      --trust-plugin --keep-temp --max-cost-usd 10 --publish-report
    ```
    Check: the child authenticated; Bash ran under the sandbox; the PNG rendered; every grader produced a verdict; report the cost estimate. If auth, sandbox, or render fails → **STOP** and report the exact error; no workarounds.
@@ -119,12 +116,12 @@ Work on branch `g1-vllm-schedule`. Commit after each step.
    ```bash
    claude plugin eval . --case vllm-v1-schedule \
      --model opus --judge-model opus \
-     --allow-tools Write "Bash(dot *)" \
+     --allow-tools Write Bash \
      --trust-plugin --keep-temp --max-cost-usd 60 --threshold 0 \
      --json evals/vllm-v1-schedule/results.json --publish-report
    ```
-8. **Collect.** From the kept temp workspaces, copy each run's `out/schedule-step.{dot,png}` into `evals/vllm-v1-schedule/artifacts/{with,without}-<n>.{dot,png}`. Commit `results.json` and `artifacts/`, push the branch.
-9. **Report.** Give: suite score per arm and Δ; per-grader pass rates per arm; whether the skill fired in each with-arm run; the judges' main reasons for failures; total cost estimate; the published report URL. Then **STOP**.
+8. **Collect.** Run `python3 scripts/collect.py`: it copies each run's `out/` into `evals/vllm-v1-schedule/artifacts/{with,without}-<n>/` and writes `artifacts/runs.json` (route taken, programs run, leaks). Commit `results.json` and `artifacts/`, push the branch, then delete the kept temp dirs.
+9. **Report.** Give: suite score per arm and Δ; per-grader pass rates per arm; whether the skill fired in each with-arm run; which drawing route each run took; any leak flagged by `collect.py`; the judges' main reasons for failures; total cost estimate; the published report URL. Then **STOP**.
 
 ## 7. Known unknowns (resolve in steps 1, 5, 6)
 
