@@ -1,0 +1,5 @@
+{
+  "name": "drawing-skills",
+  "version": "0.1.0",
+  "description": "Graphviz and TikZ model-architecture diagram skills, with an A/B eval suite (with skill vs. no skill) on real codebases."
+}

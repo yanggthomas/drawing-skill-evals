@@ -1,0 +1,76 @@
+// Obsidian Vault — Graphviz XMind-style cluster palette
+// Usage: copy this file, keep one hue per semantic branch, and vary only
+// saturation/lightness inside that branch. Color encodes cluster membership;
+// shape and font weight encode hierarchy. Keep splines=curved so branches use
+// smooth Bezier connections instead of rigid straight-line segments.
+// Render: dot -Tpng your-diagram.dot -o your-diagram.png
+
+digraph xmind_cluster_template {
+  graph [
+    rankdir=LR
+    bgcolor="white"
+    fontname="PingFang SC"
+    pad="0.35"
+    nodesep="0.28"
+    ranksep="0.65"
+    splines=curved
+    outputorder=edgesfirst
+  ]
+
+  node [
+    shape=box
+    style="rounded,filled"
+    fontname="PingFang SC"
+    fontsize=11
+    margin="0.12,0.08"
+    penwidth=0
+  ]
+
+  edge [
+    arrowhead=none
+    fontname="PingFang SC"
+    penwidth=1.8
+  ]
+
+  // Palette copied from XMind multi-line-colors:
+  // #F9423A red, #F6A04D orange, #F3D321 yellow,
+  // #00BC7B green, #486AFF blue, #4D49BE purple.
+  // Root — neutral anchor, not a semantic cluster.
+  root [label="中心主题", fillcolor="#000229", color="#000229", fontcolor="white", fontsize=15]
+
+  // Cluster A — blue. Use the same hue from branch root to leaves.
+  a_branch [label="Cluster A", fillcolor="#486AFF", color="#486AFF", fontcolor="white", fontsize=13]
+  a_group  [label="Subcluster", fillcolor="#C7D1FF", color="#C7D1FF"]
+  a_leaf   [label="Leaf / work / year", fillcolor="#EEF1FF", color="#EEF1FF"]
+  a_leaf -> a_group -> a_branch -> root [color="#486AFF"]
+
+  // Cluster B — orange.
+  b_branch [label="Cluster B", fillcolor="#F6A04D", color="#F6A04D", fontcolor="white", fontsize=13]
+  b_group  [label="Subcluster", fillcolor="#F9CEA6", color="#F9CEA6"]
+  b_leaf   [label="Leaf / work / year", fillcolor="#FFF3E7", color="#FFF3E7"]
+  b_leaf -> b_group -> b_branch -> root [color="#F6A04D"]
+
+  // Cluster C — green.
+  c_branch [label="Cluster C", fillcolor="#00BC7B", color="#00BC7B", fontcolor="white", fontsize=13]
+  c_group  [label="Subcluster", fillcolor="#A5E8D0", color="#A5E8D0"]
+  c_leaf   [label="Leaf / work / year", fillcolor="#E5F8F1", color="#E5F8F1"]
+  c_leaf -> c_group -> c_branch -> root [color="#00BC7B"]
+
+  // Cluster D — red/pink.
+  d_branch [label="Cluster D", fillcolor="#F9423A", color="#F9423A", fontcolor="white", fontsize=13]
+  d_group  [label="Subcluster", fillcolor="#F8A39E", color="#F8A39E"]
+  d_leaf   [label="Leaf / work / year", fillcolor="#FDE9E7", color="#FDE9E7"]
+  root -> d_branch -> d_group -> d_leaf [color="#F9423A"]
+
+  // Cluster E — yellow.
+  e_branch [label="Cluster E", fillcolor="#F3D321", color="#F3D321", fontsize=13]
+  e_group  [label="Subcluster", fillcolor="#F8E991", color="#F8E991"]
+  e_leaf   [label="Leaf / work / year", fillcolor="#FFF9DC", color="#FFF9DC"]
+  root -> e_branch -> e_group -> e_leaf [color="#F3D321"]
+
+  // Cluster F — purple.
+  f_branch [label="Cluster F", fillcolor="#4D49BE", color="#4D49BE", fontcolor="white", fontsize=13]
+  f_group  [label="Subcluster", fillcolor="#B7B5E8", color="#B7B5E8"]
+  f_leaf   [label="Leaf / work / year", fillcolor="#EFEEFA", color="#EFEEFA"]
+  root -> f_branch -> f_group -> f_leaf [color="#4D49BE"]
+}

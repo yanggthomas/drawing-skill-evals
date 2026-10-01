@@ -1,0 +1,128 @@
+// ─── Graphviz Style Template — Semantic Node-Class Palette ──────────────────
+// Usage: copy this file, rename to your diagram, replace node/edge definitions.
+// Render: dot -Tpng your-diagram.dot -o your-diagram.png
+// ─────────────────────────────────────────────────────────────────────────────
+
+digraph template {
+
+  // ── Graph-level defaults ──────────────────────────────────────────────────
+  graph [
+    rankdir    = TB
+    bgcolor    = "white"
+    fontname   = "Helvetica"
+    pad        = "0.4"
+    nodesep    = 0.45
+    ranksep    = 0.65
+    splines    = curved
+    compound   = true
+  ]
+
+  // ── Edge defaults ─────────────────────────────────────────────────────────
+  edge [
+    color     = "#555555"
+    fontname  = "Helvetica"
+    fontsize  = 10
+  ]
+
+  // ── Node defaults ────────────────────────────────────────────────────────
+  node [
+    shape     = ellipse
+    style     = filled
+    fillcolor = "#E8F4FD"
+    fontname  = "Helvetica"
+    fontsize  = 12
+    color     = "#2E86AB"
+  ]
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // Color Palette
+  // ─────────────────────────────────────────────────────────────────────────
+  //
+  //  primary   — main subject, top-level system (hexagon shape)
+  //              fill #F4A261 (warm orange)   border #E76F51 (coral)
+  //              text default (black)
+  //
+  //  secondary — default node style
+  //              fill #E8F4FD (light blue)    border #2E86AB (medium blue)
+  //
+  //  accent    — nested supervisor, key branching point (hexagon shape)
+  //              fill #F4D35E (yellow)        border #D68A1A (gold)
+  //
+  //  workflow  — process, pipeline, fixed sequence (rounded box)
+  //              fill #E1BEE7 (light purple)  border #6A1B9A (purple)
+  //
+  //  swarm     — peer group, mesh, collaborative (folder shape)
+  //              fill #FFCDD2 (light pink)    border #B71C1C (dark red)
+  //
+  //  tool      — external tool, service, resource (cylinder shape)
+  //              fill #FFF2B2 (light yellow)  border #B8860B (dark gold)
+  //
+  //  muted     — external dependency, out-of-scope
+  //              fill #F5F5F5 (light grey)    border #CCCCCC dashed
+  //
+  // ─────────────────────────────────────────────────────────────────────────
+
+  // ── Example nodes (replace with real content) ─────────────────────────────
+
+  // primary (hexagon = top-level anchor)
+  root [
+    shape     = hexagon
+    fillcolor = "#F4A261"
+    color     = "#E76F51"
+    label     = "Primary\n(Top-level)"
+  ]
+
+  // secondary (default ellipse)
+  A [label="Secondary A"]
+  B [label="Secondary B"]
+
+  // accent (hexagon = branching supervisor)
+  nested [
+    shape     = hexagon
+    fillcolor = "#F4D35E"
+    color     = "#D68A1A"
+    label     = "Accent\n(Key branch)"
+  ]
+
+  // workflow (rounded box)
+  workflow [
+    shape     = box
+    style     = "rounded,filled"
+    fillcolor = "#E1BEE7"
+    color     = "#6A1B9A"
+    label     = "Workflow\n(Process)"
+  ]
+
+  // swarm (folder = peer mesh)
+  swarm [
+    shape     = folder
+    fillcolor = "#FFCDD2"
+    color     = "#B71C1C"
+    label     = "Swarm\n(Peer group)"
+  ]
+
+  // tool (cylinder = external resource)
+  tool [
+    shape     = cylinder
+    fillcolor = "#FFF2B2"
+    color     = "#B8860B"
+    label     = "Tool\n(Resource)"
+  ]
+
+  // muted (dashed, grey)
+  external [
+    fillcolor = "#F5F5F5"
+    color     = "#CCCCCC"
+    style     = "filled,dashed"
+    label     = "Muted\n(External)"
+  ]
+
+  // ── Example edges ─────────────────────────────────────────────────────────
+  root -> A
+  root -> B
+  A -> nested
+  B -> workflow
+  nested -> tool
+  workflow -> swarm
+  swarm -> external [style=dashed]
+}

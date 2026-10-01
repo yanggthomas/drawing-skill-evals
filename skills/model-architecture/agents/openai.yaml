@@ -1,0 +1,4 @@
+interface:
+  display_name: "Model Architecture"
+  short_description: "Draw publication-ready ML architecture figures"
+  default_prompt: "Use $model-architecture to create an editable publication-style ML model architecture figure."
