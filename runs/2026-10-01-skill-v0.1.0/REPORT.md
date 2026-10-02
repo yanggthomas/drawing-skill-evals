@@ -1,12 +1,66 @@
 # 绘图 skill A/B 评测报告
 
-评测对象：本仓库的 `drawing-skills` 插件（`graphviz`、`model-architecture` 两个 skill）。每个 case 跑两组：带插件（带 skill）和不带插件（不带 skill），**每组 1 次**；agent 和评委都是 Opus。prompt 不指定画图工具，只要求输出一张 PNG。分数 = render、correctness、readability 三个评分器的通过比例；skill 是否触发只作指示，不计分。美观和配色由人工另行打分（见 PLAN 第 9 步）。
+评测对象：本仓库的 `drawing-skills` 插件（`graphviz`、`model-architecture` 两个 skill）。每个 case 跑两组：带插件（带 skill）和不带插件（不带 skill），**每组 1 次**；agent 和评委都是 Opus。prompt 不指定画图工具，只要求输出一张 PNG。原始分数 = render、correctness、readability 三个评分器的通过比例；skill 是否触发只作指示，不计分。报告后续加入了 Codex + ImageGen 第三组，并对全部 27 张图重新逐图复核；新分数与原 Claude grader 分数分开报告。
 
 > ⚠ **这次评测的设计存在问题，分数和 Δ 不能用来判断 skill 的好坏**，见 [LIMITATIONS.md](LIMITATIONS.md)。可以采信的部分是路由、效率（agent 耗时和花费）、定性观察，以及产物本身。
 
 > 每组只有 1 个样本，Δ 和耗时差都是单次观测，不是稳定结论。
 
 **读结果前先看题型。** graphviz skill 是为**架构图**设计的（SKILL.md：“topology-first graphs”，并明确“Not for UML sequence / activity”）。第 1、2 轮的 G1–G4 问的是单步算法、训练步骤顺序、跨线程请求生命周期，属于流程图 / 时序图，**在 graphviz skill 的设计范围之外**；M1、M2 在 model-architecture skill 的范围内。第 3 轮的 A1、A2 是架构 / 部署拓扑题，属于 graphviz 的主场；A3 问的是 rank 到并行组的成员映射，本质是网格 / 表格，也不是架构依赖图。
+
+<!-- three-arm-review:start -->
+## 27 张图三路线复核（2026-10-02）
+
+本节是对带 skill、不带 skill、Codex + ImageGen 三条路线各 9 张最终 PNG 的新一轮复核，由 Codex 在原始分辨率下逐图检查，不复用 Claude grader 的看图分。完整的逐图分数、语义缺陷、成本推导和 ImageGen token 记录见 [MANUAL-SCORES.md](../2026-10-01-codex-imagegen-v1/MANUAL-SCORES.md)，三组图片可在 [Gallery](../2026-10-01-codex-imagegen-v1/GALLERY.md) 对照查看。
+
+每个维度 1–5 分：事实准确性、题目覆盖、阅读流向、可辨识度、视觉编码。等权总分为 25 分；技术分把事实准确性计算两次，总分为 30 分，避免错误连线或错误张量形状被视觉美观掩盖。
+
+| 路线 | 准确性 | 覆盖 | 流向 | 可辨识度 | 视觉编码 | 等权均分 /25 | 技术均分 /30 |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| 带 skill | **5.00** | **5.00** | 2.78 | 2.67 | 3.56 | 19.00 | 24.00 |
+| 不带 skill | **5.00** | **5.00** | 4.56 | 3.78 | 4.11 | 22.44 | **27.44** |
+| Codex + ImageGen | 3.33 | 4.67 | **5.00** | **4.89** | **5.00** | **22.89** | 26.22 |
+
+ImageGen 的等权分最高，比不带 skill 高 0.45；优势来自流向、可辨识度和视觉完成度。技术分由不带 skill 领先 1.22，因为 9 张 ImageGen 图中有 5 张的准确性只有 2–3 分。它们的主要问题不是遗漏小字，而是控制流终点、组件归属、张量形状或组成员发生错误，且高完成度会让错误更有迷惑性。
+
+| Case | 复核后的实用首选 | 主要依据 |
+|---|---|---|
+| G1 vLLM schedule | 不带 skill | ImageGen 最易读，但 preemption/bypass 路径终点和成功分支不准确。 |
+| G2 verl PPO step | 不带 skill | 不带 skill 的角色矩阵顺序清楚且准确；ImageGen 的 next-step、batch 和 weight-transfer 表达有实质错误。 |
+| G3 FFmpeg threads | ImageGen | 端到端流水线最清楚；DTS 回边、队列槽数和 sync queue 位置需小幅修正。 |
+| G4 Redis request path | ImageGen | 主线程与 IO 线程的职责和交接完整清楚，未发现实质语义错误。 |
+| M1 Megatron TP/SP MLP | 带 skill | TikZ 图同时保持论文级版式、通信路径和张量形状准确。 |
+| M2 vLLM mixed-batch attention | 不带 skill | ImageGen 的 GQA Q/K/V 形状和 slot-mapping 连线有错误。 |
+| A1 vLLM process architecture | 不带 skill | ImageGen 的 worker 返回路径和模块路径标注不可靠。 |
+| A2 verl resource placement | 不带 skill | ImageGen 把 `teacher_client` 和 weight-sync 连到错误组件。 |
+| A3 Megatron parallel groups | 不带 skill | ImageGen 的文字集合正确，但 embedding 环漏掉 4 个 rank。 |
+
+### 生成成本与性价比
+
+为保证可比性，生产成本只计算生成 agent，不计 grader。带 skill 和不带 skill 使用 Claude eval 产物里记录的 agent 成本；ImageGen 使用 9 个隔离 Codex agent 的 token 历史，加 9 次图片调用的官方价格估算。ImageGen 后端没有暴露实际质量档位，因此给出区间。
+
+| 路线 | 9 张生产成本 | 单张成本 | 技术均分 /30 | 每美元每张技术分 |
+|---|---:|---:|---:|---:|
+| 带 skill | **$9.63** | **$1.07** | 24.00 | 22.42 |
+| 不带 skill | $10.65 | $1.18 | **27.44** | **23.19** |
+| Codex + ImageGen | $10.94–$12.38 | $1.22–$1.38 | 26.22 | 19.06–21.57 |
+
+带 skill 最便宜，比不带 skill 低 9.6%。不带 skill 比带 skill 贵 10.6%，但技术均分高 3.44，因此性价比最高。ImageGen 比不带 skill 贵 2.7–16.2%；图片调用本身只占约 $0.07–$1.51，主要成本来自读取源码、建立 grounding 和撰写生成 prompt 的 Codex agent。原 Claude 评测另花 $1.46 / $1.54 评审两组；这些 grader 成本未放入生产成本，也不能直接与本次无 API grader 的逐图复核比较。
+
+### 跨 case 风格与配色一致性
+
+人工式一致性评分关注版式、字体、面板、边线和颜色含义。色相相似度沿用仓库原指标：忽略白、灰、黑和低亮度像素，对每张图建立 12 桶色相直方图，计算组内图片两两直方图交集的均值。该数值只说明色板接近程度，不说明颜色语义是否一致。
+
+| 路线 | 版式与字体一致性 /5 | 色板一致性 /5 | 色相相似度 | 颜色语义复用 /5 |
+|---|---:|---:|---:|---:|
+| 带 skill | 3 | 3 | 0.49 | **3** |
+| 不带 skill | 2 | 3 | 0.53 | 2 |
+| Codex + ImageGen | **5** | **4** | **0.58** | **3** |
+
+ImageGen 的 9 张图最像同一套产品视觉：深蓝标题、圆角浅色面板、扁平图标、统一留白，以及反复出现的青蓝、橙、紫强调色。它的色彩主要用于分类和装饰，同一种颜色没有跨 case 保持唯一技术含义。带 skill 的 7 张 Graphviz 图有明确语义色板，但两张 model-architecture TikZ 图使用另一套论文插图语言，A3 又使用自定义网格配色，所以把两个 skill 合并统计后只有 0.49；这不代表 Graphviz 模板单独不稳定。不带 skill 虽然经常使用蓝色，版式却混合 Graphviz、Pillow 表格、rank card、泳道和横向流水线，缺少共同视觉系统。
+
+综合这三个新增维度，不带 skill 是当前**技术准确性与成本的默认首选**；ImageGen 适合需要统一展示风格的场景，但必须经过语义复核；带 skill 的主要优势是最低成本和 Graphviz 语义色板，M1 则证明 model-architecture 在题型匹配时可以同时取得最高准确性与最高视觉质量。
+<!-- three-arm-review:end -->
 
 ## 汇总
 
@@ -66,7 +120,7 @@ agent 花费合计 $20.29，评委花费合计 $3.00，总计 $23.29。
 
 ## Claude 看图评分（1–5）
 
-我逐张检查了所有最终 PNG，按同一标准打分。这是模型打的分，**不是人工美观打分**（人工打分见 PLAN 第 9 步）。标准：
+Claude 逐张检查了原始 18 张最终 PNG，并按同一标准打分。这是原 Claude 模型分；报告顶部的 27 张三路线复核是后来独立完成的 Codex 评分。标准：
 - **信息完整**：题目要求的机制是否都画出来、是否与代码一致；
 - **版式清晰**：阅读方向、交叉线、文字大小、留白、分区；
 - **配色**：色板克制、颜色有含义、对比度、整体协调。
@@ -122,7 +176,7 @@ agent 花费合计 $20.29，评委花费合计 $3.00，总计 $23.29。
 - 还缺一个纯**依赖图**题（例如模块或包之间的依赖关系），可以作为下一个补充 case。
 - skill 本身暂不修改（用户决定）；[SKILL-IMPROVEMENTS.md](SKILL-IMPROVEMENTS.md) 留作参考。
 
-**局限：** 每个 case 每组只跑了 1 次；G1 跑过三次，带 skill 组的 readability 结果就翻转过一次，看趋势比看单个数字更有意义。评委和看图评分都是模型给出的；人工美观打分（PLAN 第 9 步）还没做。总花费：冒烟 $3.18 + G1 正式 $2.12 + 第 2 轮 $13.95 + 第 3 轮 $7.21 = **$26.46**（含评委）。
+**局限：** 每个 case 每组只跑了 1 次；G1 跑过三次，带 skill 组的 readability 结果就翻转过一次，看趋势比看单个数字更有意义。原始评委和“Claude 看图评分”都是 Claude 模型给出的；主报告顶部已补充 Codex 对 27 张图的新一轮逐图复核，两组模型判断仍不等价于真实用户研究。原 Claude 运行总花费：冒烟 $3.18 + G1 正式 $2.12 + 第 2 轮 $13.95 + 第 3 轮 $7.21 = **$26.46**（含评委）。
 
 ## skill 强化方案（未实施）
 

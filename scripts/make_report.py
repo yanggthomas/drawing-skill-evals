@@ -406,7 +406,7 @@ def review_table(cases):
         return ""
     head = " | ".join(f"{v} 带/不带" for v in REVIEW_KEYS.values())
     lines = ["## Claude 看图评分（1–5）", "",
-             "我逐张检查了所有最终 PNG，按同一标准打分。这是模型打的分，**不是人工美观打分**（人工打分见 PLAN 第 9 步）。标准：",
+             "Claude 逐张检查了原始 18 张最终 PNG，并按同一标准打分。这是原 Claude 模型分；报告顶部的 27 张三路线复核是后来独立完成的 Codex 评分。标准：",
              "- **信息完整**：题目要求的机制是否都画出来、是否与代码一致；",
              "- **版式清晰**：阅读方向、交叉线、文字大小、留白、分区；",
              "- **配色**：色板克制、颜色有含义、对比度、整体协调。", "",
@@ -422,21 +422,36 @@ def review_table(cases):
     return "\n".join(lines)
 
 
+def preserved_three_arm_review():
+    """Keep the manually maintained three-arm review when regenerating REPORT.md."""
+    if not REPORT.exists():
+        return ""
+    match = re.search(
+        r"<!-- three-arm-review:start -->\n.*?\n<!-- three-arm-review:end -->",
+        REPORT.read_text(),
+        re.S,
+    )
+    return match.group(0) if match else ""
+
+
 def main():
     cases = load_cases()
     table, agent_cost, judge_cost = summary_table(cases)
+    three_arm_review = preserved_three_arm_review()
     head = [
         "# 绘图 skill A/B 评测报告", "",
         "评测对象：本仓库的 `drawing-skills` 插件（`graphviz`、`model-architecture` 两个 skill）。"
         "每个 case 跑两组：带插件（带 skill）和不带插件（不带 skill），**每组 1 次**；agent 和评委都是 Opus。"
-        "prompt 不指定画图工具，只要求输出一张 PNG。分数 = render、correctness、readability 三个评分器的通过比例；"
-        "skill 是否触发只作指示，不计分。美观和配色由人工另行打分（见 PLAN 第 9 步）。", "",
+        "prompt 不指定画图工具，只要求输出一张 PNG。原始分数 = render、correctness、readability 三个评分器的通过比例；"
+        "skill 是否触发只作指示，不计分。报告后续加入了 Codex + ImageGen 第三组，并对全部 27 张图重新逐图复核；"
+        "新分数与原 Claude grader 分数分开报告。", "",
         "> ⚠ **这次评测的设计存在问题，分数和 Δ 不能用来判断 skill 的好坏**，见 [LIMITATIONS.md](LIMITATIONS.md)。"
         "可以采信的部分是路由、效率（agent 耗时和花费）、定性观察，以及产物本身。", "",
         "> 每组只有 1 个样本，Δ 和耗时差都是单次观测，不是稳定结论。", "",
         "**读结果前先看题型。** graphviz skill 是为**架构图**设计的（SKILL.md：“topology-first graphs”，并明确“Not for UML sequence / activity”）。"
         "第 1、2 轮的 G1–G4 问的是单步算法、训练步骤顺序、跨线程请求生命周期，属于流程图 / 时序图，**在 graphviz skill 的设计范围之外**；"
         "M1、M2 在 model-architecture skill 的范围内。第 3 轮的 A1、A2 是架构 / 部署拓扑题，属于 graphviz 的主场；A3 问的是 rank 到并行组的成员映射，本质是网格 / 表格，也不是架构依赖图。", "",
+        three_arm_review, "",
         "## 汇总", "", table, "",
         f"agent 花费合计 ${agent_cost:.2f}，评委花费合计 ${judge_cost:.2f}，总计 ${agent_cost + judge_cost:.2f}。", "",
     ]

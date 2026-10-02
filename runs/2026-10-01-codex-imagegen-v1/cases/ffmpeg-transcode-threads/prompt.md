@@ -1,0 +1,8 @@
+---
+runs: 1
+max_turns: 60
+timeout_seconds: 1800
+allowed_tools: [Read, Glob, Grep, Skill, Write, Bash]
+---
+
+I'm trying to understand how the ffmpeg command-line tool runs a transcode with threads. The fftools source, pinned at the commit in `PINNED.txt`, is in the read-only source directory available to this session. Draw one diagram that explains the threaded transcoding pipeline: which threads exist, what queues sit between them, how packets and frames flow from demuxer to muxer (including stream copy), how backpressure works, and how the scheduler keeps the outputs in sync. Ground every element in the code. Save the finished diagram as a PNG image at `out/transcode-threads.png`.
