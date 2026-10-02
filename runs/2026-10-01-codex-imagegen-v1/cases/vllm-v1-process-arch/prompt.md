@@ -1,8 +1,0 @@
----
-runs: 1
-max_turns: 60
-timeout_seconds: 1800
-allowed_tools: [Read, Glob, Grep, Skill, Write, Bash]
----
-
-I want an architecture overview of how vLLM V1 is put together when it serves a model on one node with tensor parallelism and the multiprocess executor. The engine source, pinned at the commit in `PINNED.txt`, is in the read-only source directory available to this session. Draw one architecture diagram showing which OS processes exist, which components live in each process, and how the processes are connected (what transport, what travels over each link). This is about structure, not about the order of steps. Ground every element in the code. Save the finished diagram as a PNG image at `out/process-arch.png`.

@@ -1,8 +1,0 @@
----
-runs: 1
-max_turns: 60
-timeout_seconds: 1800
-allowed_tools: [Read, Glob, Grep, Skill, Write, Bash]
----
-
-I want an architecture view of how Megatron-Core lays out its process groups. The source, pinned at the commit in `PINNED.txt`, is in the read-only source directory available to this session. For 16 GPUs on 2 nodes (8 per node) with tensor-parallel size 2, pipeline-parallel size 4 and no context or expert parallelism, draw one diagram that shows every rank, which node it is on, and which tensor-parallel, pipeline-parallel, data-parallel and model-parallel group it belongs to, plus the embedding group. Make clear the rule that assigns ranks to groups. Ground every element in the code. Save the finished diagram as a PNG image at `out/parallel-groups.png`.

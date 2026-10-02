@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "id": "G1",
+      "name": "vllm-v1-schedule",
+      "kind": "flow",
+      "expected_skill": "graphviz",
+      "inside_skill_domain": false,
+      "case_git_blob": "a9386309c7f1bf36caf57efbc1aeb6afa39eb5cc",
+      "prompt_git_blob": "a6c5904d428a8b1c3a4be019f1b36a46e9fdc44b",
+      "pinned_git_blob": "8032dc0a546e2db62bb82ad2109994b949470761"
+    },
+    {
+      "id": "G2",
+      "name": "verl-ppo-step",
+      "kind": "flow",
+      "expected_skill": "graphviz",
+      "inside_skill_domain": false,
+      "case_git_blob": "b5c0c44aaf67e9c810727bb4cd6c57dbd8583628",
+      "prompt_git_blob": "e80f0e63b619c43cf228d844dbde2223fe2944bb",
+      "pinned_git_blob": "71bee8c3c90d95a88525ea413984018c9a292ad2"
+    },
+    {
+      "id": "G3",
+      "name": "ffmpeg-transcode-threads",
+      "kind": "hybrid-topology-flow",
+      "expected_skill": "graphviz",
+      "inside_skill_domain": true,
+      "case_git_blob": "baf0c957a2e6bc0ac555c921bc20863aabd3d7ae",
+      "prompt_git_blob": "db5e394d376c871d2ab1bcacb78ded95bd9b8893",
+      "pinned_git_blob": "b4b103cfba75f6e89a73cc0ff058a20ad583d90c"
+    },
+    {
+      "id": "G4",
+      "name": "redis-request-path",
+      "kind": "sequence",
+      "expected_skill": "graphviz",
+      "inside_skill_domain": false,
+      "case_git_blob": "b52dbab3090cc2fb7f413b10250b21e331687b81",
+      "prompt_git_blob": "8eca6cdc10a6afa7740d03bef9f6e20c9450c2c8",
+      "pinned_git_blob": "ff8c47c70c21b471435373711fc2a8d79b616c9e"
+    },
+    {
+      "id": "M1",
+      "name": "megatron-tp-sp-mlp",
+      "kind": "model-internals",
+      "expected_skill": "model-architecture",
+      "inside_skill_domain": true,
+      "case_git_blob": "43099c81d96d5a5dc1702e70a9e6a8b3c70678d2",
+      "prompt_git_blob": "0325461c0181c2f2a4fabf6d1df8b42aad1a40a6",
+      "pinned_git_blob": "980a298e669d7a9be1cd1e20e3b83407ae8b98ec"
+    },
+    {
+      "id": "M2",
+      "name": "vllm-v1-mixed-batch-attn",
+      "kind": "model-internals",
+      "expected_skill": "model-architecture",
+      "inside_skill_domain": true,
+      "case_git_blob": "f880281f7a5ba457d140e8e1de42ea0b61541c80",
+      "prompt_git_blob": "895887b17740c0f430f082f35dab96941eb77554",
+      "pinned_git_blob": "ed16d2c8a5afdc1c309f605e44533d156ed5a2ba"
+    },
+    {
+      "id": "A1",
+      "name": "vllm-v1-process-arch",
+      "kind": "architecture",
+      "expected_skill": "graphviz",
+      "inside_skill_domain": true,
+      "case_git_blob": "30aebdb812c35d320cabbf4cf4bcd7a19ca7d921",
+      "prompt_git_blob": "1c0cfbc02970f54cf1da40c10bd292458ef06219",
+      "pinned_git_blob": "77d6cff47e6bd36ecba62ce889923e28373caacd"
+    },
+    {
+      "id": "A2",
+      "name": "verl-resource-placement",
+      "kind": "deployment-topology",
+      "expected_skill": "graphviz",
+      "inside_skill_domain": true,
+      "case_git_blob": "4576c0854a13e6b679c7563a8c81d76d57b1a4c7",
+      "prompt_git_blob": "a8acd8a8434ba67fd13367e50e7332abda44415e",
+      "pinned_git_blob": "eaf5cf0ff81d734d27ee8eca59c960e31135ab17"
+    },
+    {
+      "id": "A3",
+      "name": "megatron-parallel-groups",
+      "kind": "membership-grid",
+      "expected_skill": "graphviz",
+      "inside_skill_domain": false,
+      "case_git_blob": "689a5d70e8a8ad9381205755396425f3ed2833bb",
+      "prompt_git_blob": "2b3a5a5f08b10ecd6f372cc21357ea1d4c15f2ba",
+      "pinned_git_blob": "cba364a83b8278a3b9ce3a028108162d632c7e3e"
+    }
+  ]
+}

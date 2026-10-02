@@ -1,0 +1,365 @@
+{
+  "schema_version": 1,
+  "rubric": {
+    "dimensions": [
+      "fidelity",
+      "coverage",
+      "flow",
+      "legibility",
+      "visual_encoding"
+    ],
+    "range": [
+      1,
+      5
+    ],
+    "technical_score": "total + fidelity"
+  },
+  "aggregate": {
+    "skill": {
+      "fidelity": 5.0,
+      "coverage": 5.0,
+      "flow": 2.78,
+      "legibility": 2.67,
+      "visual_encoding": 3.56,
+      "mean_25": 19.0,
+      "technical_mean_30": 24.0,
+      "production_cost_usd": 9.63,
+      "style_5": 3,
+      "palette_5": 3,
+      "hue_similarity": 0.49,
+      "semantic_color_5": 3
+    },
+    "no_skill": {
+      "fidelity": 5.0,
+      "coverage": 5.0,
+      "flow": 4.56,
+      "legibility": 3.78,
+      "visual_encoding": 4.11,
+      "mean_25": 22.44,
+      "technical_mean_30": 27.44,
+      "production_cost_usd": 10.65,
+      "style_5": 2,
+      "palette_5": 3,
+      "hue_similarity": 0.53,
+      "semantic_color_5": 2
+    },
+    "imagegen": {
+      "fidelity": 3.33,
+      "coverage": 4.67,
+      "flow": 5.0,
+      "legibility": 4.89,
+      "visual_encoding": 5.0,
+      "mean_25": 22.89,
+      "technical_mean_30": 26.22,
+      "production_cost_usd": {
+        "low": 10.94,
+        "high": 12.38
+      },
+      "style_5": 5,
+      "palette_5": 4,
+      "hue_similarity": 0.58,
+      "semantic_color_5": 3
+    }
+  },
+  "recommendations": {
+    "G1": "no_skill",
+    "G2": "no_skill",
+    "G3": "imagegen",
+    "G4": "imagegen",
+    "M1": "skill",
+    "M2": "no_skill",
+    "A1": "no_skill",
+    "A2": "no_skill",
+    "A3": "no_skill"
+  },
+  "cases": {
+    "G1": {
+      "label": "vLLM schedule",
+      "arms": {
+        "skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 2,
+          "legibility": 2,
+          "visual_encoding": 3,
+          "total_25": 17,
+          "technical_30": 22
+        },
+        "no_skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 4,
+          "legibility": 3,
+          "visual_encoding": 4,
+          "total_25": 21,
+          "technical_30": 26
+        },
+        "imagegen": {
+          "fidelity": 3,
+          "coverage": 5,
+          "flow": 5,
+          "legibility": 5,
+          "visual_encoding": 5,
+          "total_25": 23,
+          "technical_30": 26
+        }
+      }
+    },
+    "G2": {
+      "label": "verl PPO step",
+      "arms": {
+        "skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 2,
+          "legibility": 2,
+          "visual_encoding": 3,
+          "total_25": 17,
+          "technical_30": 22
+        },
+        "no_skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 5,
+          "legibility": 4,
+          "visual_encoding": 4,
+          "total_25": 23,
+          "technical_30": 28
+        },
+        "imagegen": {
+          "fidelity": 2,
+          "coverage": 4,
+          "flow": 5,
+          "legibility": 5,
+          "visual_encoding": 5,
+          "total_25": 21,
+          "technical_30": 23
+        }
+      }
+    },
+    "G3": {
+      "label": "FFmpeg threads",
+      "arms": {
+        "skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 3,
+          "legibility": 3,
+          "visual_encoding": 4,
+          "total_25": 20,
+          "technical_30": 25
+        },
+        "no_skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 4,
+          "legibility": 3,
+          "visual_encoding": 4,
+          "total_25": 21,
+          "technical_30": 26
+        },
+        "imagegen": {
+          "fidelity": 4,
+          "coverage": 4,
+          "flow": 5,
+          "legibility": 5,
+          "visual_encoding": 5,
+          "total_25": 23,
+          "technical_30": 27
+        }
+      }
+    },
+    "G4": {
+      "label": "Redis request path",
+      "arms": {
+        "skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 3,
+          "legibility": 2,
+          "visual_encoding": 3,
+          "total_25": 18,
+          "technical_30": 23
+        },
+        "no_skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 5,
+          "legibility": 4,
+          "visual_encoding": 4,
+          "total_25": 23,
+          "technical_30": 28
+        },
+        "imagegen": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 5,
+          "legibility": 4,
+          "visual_encoding": 5,
+          "total_25": 24,
+          "technical_30": 29
+        }
+      }
+    },
+    "M1": {
+      "label": "Megatron TP/SP MLP",
+      "arms": {
+        "skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 5,
+          "legibility": 5,
+          "visual_encoding": 5,
+          "total_25": 25,
+          "technical_30": 30
+        },
+        "no_skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 4,
+          "legibility": 4,
+          "visual_encoding": 4,
+          "total_25": 22,
+          "technical_30": 27
+        },
+        "imagegen": {
+          "fidelity": 4,
+          "coverage": 5,
+          "flow": 5,
+          "legibility": 5,
+          "visual_encoding": 5,
+          "total_25": 24,
+          "technical_30": 28
+        }
+      }
+    },
+    "M2": {
+      "label": "vLLM mixed-batch attention",
+      "arms": {
+        "skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 3,
+          "legibility": 3,
+          "visual_encoding": 4,
+          "total_25": 20,
+          "technical_30": 25
+        },
+        "no_skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 5,
+          "legibility": 4,
+          "visual_encoding": 4,
+          "total_25": 23,
+          "technical_30": 28
+        },
+        "imagegen": {
+          "fidelity": 3,
+          "coverage": 5,
+          "flow": 5,
+          "legibility": 5,
+          "visual_encoding": 5,
+          "total_25": 23,
+          "technical_30": 26
+        }
+      }
+    },
+    "A1": {
+      "label": "vLLM process architecture",
+      "arms": {
+        "skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 2,
+          "legibility": 2,
+          "visual_encoding": 3,
+          "total_25": 17,
+          "technical_30": 22
+        },
+        "no_skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 5,
+          "legibility": 4,
+          "visual_encoding": 4,
+          "total_25": 23,
+          "technical_30": 28
+        },
+        "imagegen": {
+          "fidelity": 3,
+          "coverage": 5,
+          "flow": 5,
+          "legibility": 5,
+          "visual_encoding": 5,
+          "total_25": 23,
+          "technical_30": 26
+        }
+      }
+    },
+    "A2": {
+      "label": "verl resource placement",
+      "arms": {
+        "skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 2,
+          "legibility": 2,
+          "visual_encoding": 3,
+          "total_25": 17,
+          "technical_30": 22
+        },
+        "no_skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 4,
+          "legibility": 3,
+          "visual_encoding": 4,
+          "total_25": 21,
+          "technical_30": 26
+        },
+        "imagegen": {
+          "fidelity": 2,
+          "coverage": 4,
+          "flow": 5,
+          "legibility": 5,
+          "visual_encoding": 5,
+          "total_25": 21,
+          "technical_30": 23
+        }
+      }
+    },
+    "A3": {
+      "label": "Megatron parallel groups",
+      "arms": {
+        "skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 3,
+          "legibility": 3,
+          "visual_encoding": 4,
+          "total_25": 20,
+          "technical_30": 25
+        },
+        "no_skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 5,
+          "legibility": 5,
+          "visual_encoding": 5,
+          "total_25": 25,
+          "technical_30": 30
+        },
+        "imagegen": {
+          "fidelity": 4,
+          "coverage": 5,
+          "flow": 5,
+          "legibility": 5,
+          "visual_encoding": 5,
+          "total_25": 24,
+          "technical_30": 28
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,302 @@
+{
+  "schema_version": 1,
+  "id": "2026-10-01-codex-imagegen-v1",
+  "date": "2026-10-01",
+  "status": "complete",
+  "protocol": "codex-imagegen",
+  "source_commit": "5e6d1451c8c15bdd1a168bb6efcf988c33d397bb",
+  "models": {
+    "agent": "gpt-6-astra",
+    "image": "not_exposed_by_tool"
+  },
+  "arms": [
+    "imagegen"
+  ],
+  "cost_usd": {
+    "low": 10.94,
+    "medium": 11.26,
+    "high": 12.38,
+    "assumptions": "Nine recorded gpt-6-astra agent sessions plus nine GPT Image 2-equivalent output charges; image backend and quality setting were not exposed by the tool."
+  },
+  "review": {
+    "status": "complete",
+    "reviewer": "codex",
+    "images_reviewed": 27,
+    "report": "../../comparisons/2026-10-02-three-arm/REPORT.md"
+  },
+  "comparison_refs": [
+    "../../comparisons/2026-10-02-three-arm/comparison.yaml"
+  ],
+  "cases": [
+    {
+      "id": "G1",
+      "case": "vllm-v1-schedule",
+      "arms": {
+        "imagegen": [
+          {
+            "path": "generation-prompt.md",
+            "sha256": "eec18c58bfd6bdf171ef6ebeb227dbccf044c1d7e8a0781816a2acbecbc42a16",
+            "bytes": 4722
+          },
+          {
+            "path": "grounding.md",
+            "sha256": "f97ae754b69b8a58ac44d9f4a17cf9e4f8e7a26ed3d8aadae2f8b153e0c9cf94",
+            "bytes": 2379
+          },
+          {
+            "path": "qa.md",
+            "sha256": "323400bc004e4ff0888faaa3b10bb8b4b13351ca14420cff154b725656607813",
+            "bytes": 2023
+          },
+          {
+            "path": "schedule-step.png",
+            "sha256": "c5262da3d0f5eb622356ef6e85a6e548b6bb5e6e9e67229e52dfaef7feb36754",
+            "bytes": 1811055,
+            "width": 1536,
+            "height": 1024
+          }
+        ]
+      }
+    },
+    {
+      "id": "G2",
+      "case": "verl-ppo-step",
+      "arms": {
+        "imagegen": [
+          {
+            "path": "generation-prompt.md",
+            "sha256": "a9337c124f9db2a70d0048e66c1eb52a2798c8e0a5a71dc65d118f943f27953b",
+            "bytes": 4751
+          },
+          {
+            "path": "grounding.md",
+            "sha256": "58be2bec7448b8d5b01810eb45bba40e3ca3368ac9fc5a274c3bcea755170fc3",
+            "bytes": 1987
+          },
+          {
+            "path": "ppo-step.png",
+            "sha256": "974f955f4c74818e9ecff140b54d263c9cb66875655752d7ec88d5a1cc81edb1",
+            "bytes": 1738758,
+            "width": 1536,
+            "height": 1024
+          },
+          {
+            "path": "qa.md",
+            "sha256": "ace1ba300702feb7fe254f1d571689e01a44ee6516063ed1b58d0273299de748",
+            "bytes": 1882
+          }
+        ]
+      }
+    },
+    {
+      "id": "G3",
+      "case": "ffmpeg-transcode-threads",
+      "arms": {
+        "imagegen": [
+          {
+            "path": "generation-prompt.md",
+            "sha256": "2dd17763e6493fbc3d034fe2f96a311f611f43a635fb7ad395952a085b6ddc49",
+            "bytes": 3899
+          },
+          {
+            "path": "grounding.md",
+            "sha256": "1993a48dd5cd62c21692447e380606fd173693da2aa23c5e4223fb4774b88e9f",
+            "bytes": 2235
+          },
+          {
+            "path": "qa.md",
+            "sha256": "8367b3be6c8706b7902174903c6df4b9f90c3fa62423f00dfa9144fa925d85f4",
+            "bytes": 2352
+          },
+          {
+            "path": "transcode-threads.png",
+            "sha256": "848fc5f39a21eff05069314e1e54ab18930575ca3a543deb82ea5ee5b44f46f9",
+            "bytes": 1558592,
+            "width": 1536,
+            "height": 1024
+          }
+        ]
+      }
+    },
+    {
+      "id": "G4",
+      "case": "redis-request-path",
+      "arms": {
+        "imagegen": [
+          {
+            "path": "generation-prompt.md",
+            "sha256": "8b3e7802505f5f710b667200150ccbb1fe824974a3395bc40f2d74114cb7b027",
+            "bytes": 4029
+          },
+          {
+            "path": "grounding.md",
+            "sha256": "f38662448a22fb9864185d2be6e366615735bc05b77e5cd9854647422e2dc865",
+            "bytes": 1806
+          },
+          {
+            "path": "qa.md",
+            "sha256": "ea4c36d8db95f533a7f915ef40b4eb5fb8e16552482c071be3bd464b09357d8d",
+            "bytes": 1084
+          },
+          {
+            "path": "request-path.png",
+            "sha256": "447cf2e99dbe71506063a1a5543725c2ef1905bddea69fd3241656b0d31905c3",
+            "bytes": 1631535,
+            "width": 1422,
+            "height": 1106
+          }
+        ]
+      }
+    },
+    {
+      "id": "M1",
+      "case": "megatron-tp-sp-mlp",
+      "arms": {
+        "imagegen": [
+          {
+            "path": "generation-prompt.md",
+            "sha256": "8519bf97d2aebfb7571025e0029a09a8d9fc3c725f6a9d3306d13a301fb1f338",
+            "bytes": 3231
+          },
+          {
+            "path": "grounding.md",
+            "sha256": "49db831e6345cf95d15d0b02baed5227087a4d6505c7693398b77c70bdc748df",
+            "bytes": 2732
+          },
+          {
+            "path": "qa.md",
+            "sha256": "b70dddba28192c7617678725a7416c799e82e964eee22e27059556ae12b300f5",
+            "bytes": 1915
+          },
+          {
+            "path": "tp-sp-mlp.png",
+            "sha256": "1fca1d367bbce97027cd8997df355b7e38a68893d14d44540fa7648949e59dfe",
+            "bytes": 1565491,
+            "width": 1536,
+            "height": 1024
+          }
+        ]
+      }
+    },
+    {
+      "id": "M2",
+      "case": "vllm-v1-mixed-batch-attn",
+      "arms": {
+        "imagegen": [
+          {
+            "path": "generation-prompt.md",
+            "sha256": "0319e553c135dd951a17822d5678e5ee94db9db103a7e53403776426fa0994d8",
+            "bytes": 4071
+          },
+          {
+            "path": "grounding.md",
+            "sha256": "06d6d417b8be6cd48dc3c9dd60aa5bccbcac793f47c90e451cbd4d1a607a2dfe",
+            "bytes": 2756
+          },
+          {
+            "path": "mixed-batch-attn.png",
+            "sha256": "8dafaae093b312b9d5d161b4f50b3a3718243c2bef63bda4aee65aaf92e8b388",
+            "bytes": 1729343,
+            "width": 1536,
+            "height": 1024
+          },
+          {
+            "path": "qa.md",
+            "sha256": "18a771fb877b3fd640856a1fd63fa75a5f38ed8270f97519cf7acd2c7a88f17b",
+            "bytes": 2076
+          }
+        ]
+      }
+    },
+    {
+      "id": "A1",
+      "case": "vllm-v1-process-arch",
+      "arms": {
+        "imagegen": [
+          {
+            "path": "generation-prompt.md",
+            "sha256": "6bad42565bc95e03ba4b8d376e4bcf90df9550ed3f013715505a94afd3786924",
+            "bytes": 3619
+          },
+          {
+            "path": "grounding.md",
+            "sha256": "124c382482b2585a889973306cf9287f86e5ab17b59ea43f9823fce8ef6e4ef8",
+            "bytes": 4011
+          },
+          {
+            "path": "process-arch.png",
+            "sha256": "b7d62d9ff3968ea3000ec659648d3adee9440fe07a8e532747be10939e5cfd80",
+            "bytes": 1587761,
+            "width": 1536,
+            "height": 1024
+          },
+          {
+            "path": "qa.md",
+            "sha256": "f026854d3ff9801bea485c0a955e61beae91aa674e3ddafb358598df87d0c6dc",
+            "bytes": 2412
+          }
+        ]
+      }
+    },
+    {
+      "id": "A2",
+      "case": "verl-resource-placement",
+      "arms": {
+        "imagegen": [
+          {
+            "path": "generation-prompt.md",
+            "sha256": "27729f1f9c716f87c126e682b7ef6bec39933bb4ed8ae38b9178beafc399f06a",
+            "bytes": 4930
+          },
+          {
+            "path": "grounding.md",
+            "sha256": "df122bf642c8bd6066c56386b0584bae0dfc6d26ec30ae7ddcf362dcf30cb866",
+            "bytes": 4127
+          },
+          {
+            "path": "qa.md",
+            "sha256": "3004e384c30abe6cee7713ed2f65fbed43af0f5e394a2d5c3670d70efba7761a",
+            "bytes": 2943
+          },
+          {
+            "path": "resource-placement.png",
+            "sha256": "25de3364e09fbc34893cc8df624ad7cd5b0b8f9f10c0145530b0314ce9386fa7",
+            "bytes": 1767166,
+            "width": 1536,
+            "height": 1024
+          }
+        ]
+      }
+    },
+    {
+      "id": "A3",
+      "case": "megatron-parallel-groups",
+      "arms": {
+        "imagegen": [
+          {
+            "path": "generation-prompt.md",
+            "sha256": "6d38994102df7217c5b19895878a0b2039bc2fe833b31141dd81e31abc8413f4",
+            "bytes": 3095
+          },
+          {
+            "path": "grounding.md",
+            "sha256": "3f478cec90ace0a54dc2f388e5707e800beba3293de3007462e63cc2aa1777be",
+            "bytes": 1900
+          },
+          {
+            "path": "parallel-groups.png",
+            "sha256": "1d52d0a8066fc587c3c29cb32372f3e4b7797aa3b8114f6664e141e1ce917527",
+            "bytes": 1548435,
+            "width": 1536,
+            "height": 1024
+          },
+          {
+            "path": "qa.md",
+            "sha256": "fa90140a9ddf9bfc4fd2442192b9df6f2f6edd13ca1b489107335467b380619c",
+            "bytes": 1464
+          }
+        ]
+      }
+    }
+  ]
+}

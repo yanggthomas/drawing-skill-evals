@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "id": "2026-10-02-three-arm",
+  "date": "2026-10-02",
+  "source_runs": [
+    "../../runs/2026-10-01-skill-v0.1.0/run.yaml",
+    "../../runs/2026-10-01-codex-imagegen-v1/run.yaml"
+  ],
+  "scores": "scores.json",
+  "report": "REPORT.md",
+  "gallery": "GALLERY.md"
+}

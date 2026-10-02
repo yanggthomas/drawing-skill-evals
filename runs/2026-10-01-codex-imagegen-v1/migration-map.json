@@ -1,0 +1,724 @@
+{
+  "schema_version": 1,
+  "base_commit": "c4cc022",
+  "entries": [
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/GALLERY.md",
+      "new": "comparisons/2026-10-02-three-arm/GALLERY.md",
+      "sha256": "d5b516d8b5756d3e061c651c7a245e0001df05914915901c374d16c3291ce3db",
+      "edited_after_move": true,
+      "sha256_after": "250ad9593fef102e56f7b4fa690162d4ff5877c36282f0aff8c793dd7ee180eb"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/MANUAL-SCORES.md",
+      "new": "comparisons/2026-10-02-three-arm/REPORT.md",
+      "sha256": "75f621731e12d41c48009c39321130e5b695893e6b08074996ff8436c19e261e"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/ffmpeg-transcode-threads/generation-prompt.md",
+      "new": "runs/2026-10-01-codex-imagegen-v1/cases/ffmpeg-transcode-threads/arms/imagegen/generation-prompt.md",
+      "sha256": "2dd17763e6493fbc3d034fe2f96a311f611f43a635fb7ad395952a085b6ddc49"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/ffmpeg-transcode-threads/grounding.md",
+      "new": "runs/2026-10-01-codex-imagegen-v1/cases/ffmpeg-transcode-threads/arms/imagegen/grounding.md",
+      "sha256": "1993a48dd5cd62c21692447e380606fd173693da2aa23c5e4223fb4774b88e9f"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/ffmpeg-transcode-threads/out/transcode-threads.png",
+      "new": "runs/2026-10-01-codex-imagegen-v1/cases/ffmpeg-transcode-threads/arms/imagegen/transcode-threads.png",
+      "sha256": "848fc5f39a21eff05069314e1e54ab18930575ca3a543deb82ea5ee5b44f46f9"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/ffmpeg-transcode-threads/prompt.md",
+      "canonical": "evals/ffmpeg-transcode-threads/prompt.md",
+      "git_blob_sha": "db5e394d376c871d2ab1bcacb78ded95bd9b8893",
+      "sha256": "8f6bbd27bd4fb17ba5fdafe2bbb0bae199d65ee6d00d1a0cde1277933386e773"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/ffmpeg-transcode-threads/qa.md",
+      "new": "runs/2026-10-01-codex-imagegen-v1/cases/ffmpeg-transcode-threads/arms/imagegen/qa.md",
+      "sha256": "8367b3be6c8706b7902174903c6df4b9f90c3fa62423f00dfa9144fa925d85f4"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/ffmpeg-transcode-threads/src/COPYING.LGPLv2.1",
+      "canonical": "evals/ffmpeg-transcode-threads/src/COPYING.LGPLv2.1",
+      "git_blob_sha": "40924c2a6da76a2b0c639f6fe7ef0b2d095a6adb",
+      "sha256": "246041b6ecf9bc32d718a62c57877c78b5eb397b6467e74ed7ae2626ab189c30"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/ffmpeg-transcode-threads/src/LICENSE.md",
+      "canonical": "evals/ffmpeg-transcode-threads/src/LICENSE.md",
+      "git_blob_sha": "0e75dd3030844784ae339fb51300bd1a3b1e6207",
+      "sha256": "e6dc72d5665a1ebd6dcc841de59278dad4ca77ecc47b03f1064a55c3e9ea8bb8"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/ffmpeg-transcode-threads/src/PINNED.txt",
+      "canonical": "evals/ffmpeg-transcode-threads/src/PINNED.txt",
+      "git_blob_sha": "b4b103cfba75f6e89a73cc0ff058a20ad583d90c",
+      "sha256": "58941e5e5cc1a8834d9102cddf937d3ce0baf856f0c19c93123daa193f6e229a"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/ffmpeg-transcode-threads/src/fftools/ffmpeg_dec.c",
+      "canonical": "evals/ffmpeg-transcode-threads/src/fftools/ffmpeg_dec.c",
+      "git_blob_sha": "1498afa880b5db3f2fda39500a2745648a2dcfb3",
+      "sha256": "c7b3488848552fced778f759dfb6a294508c97a6770b60d5855181f509e2bf21"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/ffmpeg-transcode-threads/src/fftools/ffmpeg_demux.c",
+      "canonical": "evals/ffmpeg-transcode-threads/src/fftools/ffmpeg_demux.c",
+      "git_blob_sha": "8ae548658267ff460895d4d67d222111acbf4da3",
+      "sha256": "95bc6019cd53886c7d37acedd906a3ca459274748033ed735621f7c0e9d0427a"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/ffmpeg-transcode-threads/src/fftools/ffmpeg_enc.c",
+      "canonical": "evals/ffmpeg-transcode-threads/src/fftools/ffmpeg_enc.c",
+      "git_blob_sha": "cf145f13e00dae5a42f26c480af159af03e45417",
+      "sha256": "b20f1dfa53f2725e165e460a6fc601cf18a194b012abb9d0fe12bd42994e408f"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/ffmpeg-transcode-threads/src/fftools/ffmpeg_filter.c",
+      "canonical": "evals/ffmpeg-transcode-threads/src/fftools/ffmpeg_filter.c",
+      "git_blob_sha": "058d64421d6299b493b1ff3379f04d8d9928a9c4",
+      "sha256": "55b3ec9ccfe49977eaeba38f96e29e4194bf7884ef4575988221b9d679cf8750"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/ffmpeg-transcode-threads/src/fftools/ffmpeg_mux.c",
+      "canonical": "evals/ffmpeg-transcode-threads/src/fftools/ffmpeg_mux.c",
+      "git_blob_sha": "9e7ebd301609afed566aa9502bc1a171ba8934f3",
+      "sha256": "f293e798a591d30ca50976bc6c8c609ffd33c1d9b673b158b613f1913a428edd"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/ffmpeg-transcode-threads/src/fftools/ffmpeg_sched.c",
+      "canonical": "evals/ffmpeg-transcode-threads/src/fftools/ffmpeg_sched.c",
+      "git_blob_sha": "e9b57ed62b5e55d0c6091b813a59c5856c3cb7bd",
+      "sha256": "a51afaedf9b08c4656cbac08814f7d2fc6be9844742e55c7b2c10f7ef19e7245"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/ffmpeg-transcode-threads/src/fftools/ffmpeg_sched.h",
+      "canonical": "evals/ffmpeg-transcode-threads/src/fftools/ffmpeg_sched.h",
+      "git_blob_sha": "952e56e7b5fed95f7381b2642db3dc6e7ca5fc1c",
+      "sha256": "4eb335708c33a66a5e2f910b0269c25ca79337935e28c0ff553190cceda4a473"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/ffmpeg-transcode-threads/src/fftools/thread_queue.c",
+      "canonical": "evals/ffmpeg-transcode-threads/src/fftools/thread_queue.c",
+      "git_blob_sha": "af112810c605cce0b34b7f4f335cb782463fb58f",
+      "sha256": "e9e0bfae3f6793362b0a5e4e9afd573a8797157ed461935330e00447a1095e42"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/megatron-parallel-groups/generation-prompt.md",
+      "new": "runs/2026-10-01-codex-imagegen-v1/cases/megatron-parallel-groups/arms/imagegen/generation-prompt.md",
+      "sha256": "6d38994102df7217c5b19895878a0b2039bc2fe833b31141dd81e31abc8413f4"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/megatron-parallel-groups/grounding.md",
+      "new": "runs/2026-10-01-codex-imagegen-v1/cases/megatron-parallel-groups/arms/imagegen/grounding.md",
+      "sha256": "3f478cec90ace0a54dc2f388e5707e800beba3293de3007462e63cc2aa1777be"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/megatron-parallel-groups/out/parallel-groups.png",
+      "new": "runs/2026-10-01-codex-imagegen-v1/cases/megatron-parallel-groups/arms/imagegen/parallel-groups.png",
+      "sha256": "1d52d0a8066fc587c3c29cb32372f3e4b7797aa3b8114f6664e141e1ce917527"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/megatron-parallel-groups/prompt.md",
+      "canonical": "evals/megatron-parallel-groups/prompt.md",
+      "git_blob_sha": "2b3a5a5f08b10ecd6f372cc21357ea1d4c15f2ba",
+      "sha256": "5e528a1dac6c83934092d046c9ac5a7b0d48fd8481351143825785b6d39a8f98"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/megatron-parallel-groups/qa.md",
+      "new": "runs/2026-10-01-codex-imagegen-v1/cases/megatron-parallel-groups/arms/imagegen/qa.md",
+      "sha256": "fa90140a9ddf9bfc4fd2442192b9df6f2f6edd13ca1b489107335467b380619c"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/megatron-parallel-groups/src/LICENSE",
+      "canonical": "evals/megatron-parallel-groups/src/LICENSE",
+      "git_blob_sha": "1f1ee0241bd19498200861f96279f7cf30cb864a",
+      "sha256": "9d70d3ebc699d4c78ebe3f78dfb94b6dbae3529aea3dbc912e65e34a9f17667e"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/megatron-parallel-groups/src/PINNED.txt",
+      "canonical": "evals/megatron-parallel-groups/src/PINNED.txt",
+      "git_blob_sha": "cba364a83b8278a3b9ce3a028108162d632c7e3e",
+      "sha256": "49fbe951688025577ba1efa7dd58cc0ec0f21bcba730fbdd29ab04b48fe6e7be"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/megatron-parallel-groups/src/megatron/core/parallel_state.py",
+      "canonical": "evals/megatron-parallel-groups/src/megatron/core/parallel_state.py",
+      "git_blob_sha": "471f944f218ceb757f2e511b7063c45b2f32bfd0",
+      "sha256": "b47a4592e34652d8347bbffb4c66b51ae68dcde7d329dee7dce1f1fea2296040"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/megatron-tp-sp-mlp/generation-prompt.md",
+      "new": "runs/2026-10-01-codex-imagegen-v1/cases/megatron-tp-sp-mlp/arms/imagegen/generation-prompt.md",
+      "sha256": "8519bf97d2aebfb7571025e0029a09a8d9fc3c725f6a9d3306d13a301fb1f338"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/megatron-tp-sp-mlp/grounding.md",
+      "new": "runs/2026-10-01-codex-imagegen-v1/cases/megatron-tp-sp-mlp/arms/imagegen/grounding.md",
+      "sha256": "49db831e6345cf95d15d0b02baed5227087a4d6505c7693398b77c70bdc748df"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/megatron-tp-sp-mlp/out/tp-sp-mlp.png",
+      "new": "runs/2026-10-01-codex-imagegen-v1/cases/megatron-tp-sp-mlp/arms/imagegen/tp-sp-mlp.png",
+      "sha256": "1fca1d367bbce97027cd8997df355b7e38a68893d14d44540fa7648949e59dfe"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/megatron-tp-sp-mlp/prompt.md",
+      "canonical": "evals/megatron-tp-sp-mlp/prompt.md",
+      "git_blob_sha": "0325461c0181c2f2a4fabf6d1df8b42aad1a40a6",
+      "sha256": "a57bdf03f38950f89f55278422d6919a64c0589bb0b7b18de46a3ded8bfdc496"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/megatron-tp-sp-mlp/qa.md",
+      "new": "runs/2026-10-01-codex-imagegen-v1/cases/megatron-tp-sp-mlp/arms/imagegen/qa.md",
+      "sha256": "b70dddba28192c7617678725a7416c799e82e964eee22e27059556ae12b300f5"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/megatron-tp-sp-mlp/src/LICENSE",
+      "canonical": "evals/megatron-tp-sp-mlp/src/LICENSE",
+      "git_blob_sha": "1f1ee0241bd19498200861f96279f7cf30cb864a",
+      "sha256": "9d70d3ebc699d4c78ebe3f78dfb94b6dbae3529aea3dbc912e65e34a9f17667e"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/megatron-tp-sp-mlp/src/PINNED.txt",
+      "canonical": "evals/megatron-tp-sp-mlp/src/PINNED.txt",
+      "git_blob_sha": "980a298e669d7a9be1cd1e20e3b83407ae8b98ec",
+      "sha256": "39756adeb24d830601e3737cfff4462e08f8f4dfd62ce9ebddd570cbfcdaf464"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/megatron-tp-sp-mlp/src/megatron/core/tensor_parallel/layers.py",
+      "canonical": "evals/megatron-tp-sp-mlp/src/megatron/core/tensor_parallel/layers.py",
+      "git_blob_sha": "38edd9c83b9e4ec3d822bf1729859a1be3a4b0c4",
+      "sha256": "ffb251015a294bd309ad9581d26145605eccb1f3204d34e18538c4b49d3c12d4"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/megatron-tp-sp-mlp/src/megatron/core/tensor_parallel/mappings.py",
+      "canonical": "evals/megatron-tp-sp-mlp/src/megatron/core/tensor_parallel/mappings.py",
+      "git_blob_sha": "846485ebae44fd5c26c8a16e3b72e6e343e5efe6",
+      "sha256": "9b84b2a3a0ff2e53620b15cf93438a8353eada04ddce7da02552d30782e38208"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/megatron-tp-sp-mlp/src/megatron/core/transformer/mlp.py",
+      "canonical": "evals/megatron-tp-sp-mlp/src/megatron/core/transformer/mlp.py",
+      "git_blob_sha": "f553cae27e29e4e57abd4fca09adcf446476f9f1",
+      "sha256": "3d085abadd572550c84e75ba98ee3ed314b5f3fffc2ae032bb22796eb34d1fee"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/redis-request-path/generation-prompt.md",
+      "new": "runs/2026-10-01-codex-imagegen-v1/cases/redis-request-path/arms/imagegen/generation-prompt.md",
+      "sha256": "8b3e7802505f5f710b667200150ccbb1fe824974a3395bc40f2d74114cb7b027"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/redis-request-path/grounding.md",
+      "new": "runs/2026-10-01-codex-imagegen-v1/cases/redis-request-path/arms/imagegen/grounding.md",
+      "sha256": "f38662448a22fb9864185d2be6e366615735bc05b77e5cd9854647422e2dc865"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/redis-request-path/out/request-path.png",
+      "new": "runs/2026-10-01-codex-imagegen-v1/cases/redis-request-path/arms/imagegen/request-path.png",
+      "sha256": "447cf2e99dbe71506063a1a5543725c2ef1905bddea69fd3241656b0d31905c3"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/redis-request-path/prompt.md",
+      "canonical": "evals/redis-request-path/prompt.md",
+      "git_blob_sha": "8eca6cdc10a6afa7740d03bef9f6e20c9450c2c8",
+      "sha256": "fd41b5ac29adb8a1b4f18258ff32ecee728a5b6d659028266621ab69e7d4eb71"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/redis-request-path/qa.md",
+      "new": "runs/2026-10-01-codex-imagegen-v1/cases/redis-request-path/arms/imagegen/qa.md",
+      "sha256": "ea4c36d8db95f533a7f915ef40b4eb5fb8e16552482c071be3bd464b09357d8d"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/redis-request-path/src/LICENSE.txt",
+      "canonical": "evals/redis-request-path/src/LICENSE.txt",
+      "git_blob_sha": "4657905cf699d1d5ac96a07d0969bc79e27c4eec",
+      "sha256": "4a0e416b9537688f30dfe69ddaceb2ca64d96b7df02a0a6760d376890ddc4e40"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/redis-request-path/src/PINNED.txt",
+      "canonical": "evals/redis-request-path/src/PINNED.txt",
+      "git_blob_sha": "ff8c47c70c21b471435373711fc2a8d79b616c9e",
+      "sha256": "cea0a51dbce1243fd15cb9dedf4a4afd8d4746e17505fdbeda206dc8bcad74e4"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/redis-request-path/src/src/ae.c",
+      "canonical": "evals/redis-request-path/src/src/ae.c",
+      "git_blob_sha": "c8604c9bf3da104c4c800a2a0dea62b05f758e0a",
+      "sha256": "c457bc85dcf7e7e36eb9347f79a75abc048845ab7924a32a4dbbc4729c205011"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/redis-request-path/src/src/ae.h",
+      "canonical": "evals/redis-request-path/src/src/ae.h",
+      "git_blob_sha": "4d6de8049a9e65172e408c62472477e9606121e2",
+      "sha256": "5e4fc9b4b33e10d171644d72698d85023e63c7abe933a1fb2a204276b698422a"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/redis-request-path/src/src/iothread.c",
+      "canonical": "evals/redis-request-path/src/src/iothread.c",
+      "git_blob_sha": "482648082e816898150405ed6aeabc1356d1a743",
+      "sha256": "23b65a31d04a5966553dc691ada03adda36da644325e38e515d852fad175f34c"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/redis-request-path/src/src/networking.c",
+      "canonical": "evals/redis-request-path/src/src/networking.c",
+      "git_blob_sha": "b9f4274459af399fb649badf55f00e4802b02768",
+      "sha256": "84bc0a5a7982b5e6cde7f32255b9753a15d4bc0daa6034b443d00e2ffc810e4b"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/redis-request-path/src/src/server.c",
+      "canonical": "evals/redis-request-path/src/src/server.c",
+      "git_blob_sha": "e8cd65f6e527d4864eb6fb7786dcbc13800e9f88",
+      "sha256": "ecdf2e32f3ff9a92214d068ead2a8a3fab3c7c5a875be775a84fabb03d8986e5"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/verl-ppo-step/generation-prompt.md",
+      "new": "runs/2026-10-01-codex-imagegen-v1/cases/verl-ppo-step/arms/imagegen/generation-prompt.md",
+      "sha256": "a9337c124f9db2a70d0048e66c1eb52a2798c8e0a5a71dc65d118f943f27953b"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/verl-ppo-step/grounding.md",
+      "new": "runs/2026-10-01-codex-imagegen-v1/cases/verl-ppo-step/arms/imagegen/grounding.md",
+      "sha256": "58be2bec7448b8d5b01810eb45bba40e3ca3368ac9fc5a274c3bcea755170fc3"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/verl-ppo-step/out/ppo-step.png",
+      "new": "runs/2026-10-01-codex-imagegen-v1/cases/verl-ppo-step/arms/imagegen/ppo-step.png",
+      "sha256": "974f955f4c74818e9ecff140b54d263c9cb66875655752d7ec88d5a1cc81edb1"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/verl-ppo-step/prompt.md",
+      "canonical": "evals/verl-ppo-step/prompt.md",
+      "git_blob_sha": "e80f0e63b619c43cf228d844dbde2223fe2944bb",
+      "sha256": "c04ca300d76e274ffe249787bf6dba81396f3744fb588d6b5921b028b00b1e08"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/verl-ppo-step/qa.md",
+      "new": "runs/2026-10-01-codex-imagegen-v1/cases/verl-ppo-step/arms/imagegen/qa.md",
+      "sha256": "ace1ba300702feb7fe254f1d571689e01a44ee6516063ed1b58d0273299de748"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/verl-ppo-step/src/LICENSE",
+      "canonical": "evals/verl-ppo-step/src/LICENSE",
+      "git_blob_sha": "d645695673349e3947e8e5ae42332d0ac3164cd7",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/verl-ppo-step/src/PINNED.txt",
+      "canonical": "evals/verl-ppo-step/src/PINNED.txt",
+      "git_blob_sha": "71bee8c3c90d95a88525ea413984018c9a292ad2",
+      "sha256": "06a7779b453d1bcc7f7a20f5124bbe6a209d67059739d48c9a9f6b9b3675bccb"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/verl-ppo-step/src/verl/checkpoint_engine/base.py",
+      "canonical": "evals/verl-ppo-step/src/verl/checkpoint_engine/base.py",
+      "git_blob_sha": "c47e51841714f36645982cad0f9595ee042d3fe3",
+      "sha256": "97b51131a5770892007b7fb07264a2657fe83255b085927acd08c952a5682f64"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/verl-ppo-step/src/verl/trainer/ppo/core_algos.py",
+      "canonical": "evals/verl-ppo-step/src/verl/trainer/ppo/core_algos.py",
+      "git_blob_sha": "9d08b8461a0f95d25f348c566358360bbfb72ece",
+      "sha256": "a54b6d812db4441e8b0989ae69d2c46b0a0a7b584296f73d8316f264462c37cb"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/verl-ppo-step/src/verl/trainer/ppo/ray_trainer.py",
+      "canonical": "evals/verl-ppo-step/src/verl/trainer/ppo/ray_trainer.py",
+      "git_blob_sha": "9352bcfa4d56bda8e70fc7df183e588a65afb43d",
+      "sha256": "eb41f99ccc66976eab14ebe35aa1aa5b7318e02469240ef1569ac4c884c94312"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/verl-ppo-step/src/verl/workers/engine_workers.py",
+      "canonical": "evals/verl-ppo-step/src/verl/workers/engine_workers.py",
+      "git_blob_sha": "b55d4ce637e4654f01e5956a0934e90116d909f9",
+      "sha256": "ff9a0ebd003e52a4c6d9c14d853df8d624dd6f5f514b456ca0ccc09510e31265"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/verl-resource-placement/generation-prompt.md",
+      "new": "runs/2026-10-01-codex-imagegen-v1/cases/verl-resource-placement/arms/imagegen/generation-prompt.md",
+      "sha256": "27729f1f9c716f87c126e682b7ef6bec39933bb4ed8ae38b9178beafc399f06a"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/verl-resource-placement/grounding.md",
+      "new": "runs/2026-10-01-codex-imagegen-v1/cases/verl-resource-placement/arms/imagegen/grounding.md",
+      "sha256": "df122bf642c8bd6066c56386b0584bae0dfc6d26ec30ae7ddcf362dcf30cb866"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/verl-resource-placement/out/resource-placement.png",
+      "new": "runs/2026-10-01-codex-imagegen-v1/cases/verl-resource-placement/arms/imagegen/resource-placement.png",
+      "sha256": "25de3364e09fbc34893cc8df624ad7cd5b0b8f9f10c0145530b0314ce9386fa7"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/verl-resource-placement/prompt.md",
+      "canonical": "evals/verl-resource-placement/prompt.md",
+      "git_blob_sha": "a8acd8a8434ba67fd13367e50e7332abda44415e",
+      "sha256": "6bca97fb8dd0db91a71d155db4eccdb85f62d5565da5c4d315c0081ce42a7e82"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/verl-resource-placement/qa.md",
+      "new": "runs/2026-10-01-codex-imagegen-v1/cases/verl-resource-placement/arms/imagegen/qa.md",
+      "sha256": "3004e384c30abe6cee7713ed2f65fbed43af0f5e394a2d5c3670d70efba7761a"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/verl-resource-placement/src/LICENSE",
+      "canonical": "evals/verl-resource-placement/src/LICENSE",
+      "git_blob_sha": "d645695673349e3947e8e5ae42332d0ac3164cd7",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/verl-resource-placement/src/PINNED.txt",
+      "canonical": "evals/verl-resource-placement/src/PINNED.txt",
+      "git_blob_sha": "eaf5cf0ff81d734d27ee8eca59c960e31135ab17",
+      "sha256": "895b873e0a07a698767c8464d0bd59329bc0c326e4b76a61c2a0fc643124a351"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/verl-resource-placement/src/verl/checkpoint_engine/base.py",
+      "canonical": "evals/verl-resource-placement/src/verl/checkpoint_engine/base.py",
+      "git_blob_sha": "c47e51841714f36645982cad0f9595ee042d3fe3",
+      "sha256": "97b51131a5770892007b7fb07264a2657fe83255b085927acd08c952a5682f64"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/verl-resource-placement/src/verl/single_controller/ray/base.py",
+      "canonical": "evals/verl-resource-placement/src/verl/single_controller/ray/base.py",
+      "git_blob_sha": "b2f1859b9a865f9cfa9f2b566da6b03371e3eadb",
+      "sha256": "3e034acf2d6bda5a50a211d30a7d7c07505aa46ca81b440ea081cac98a9647e3"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/verl-resource-placement/src/verl/trainer/main_ppo_v0.py",
+      "canonical": "evals/verl-resource-placement/src/verl/trainer/main_ppo_v0.py",
+      "git_blob_sha": "bf2a59ef22b8b8e6a2e3a192bb881d51fe7645e5",
+      "sha256": "52a22ac10fac9126fa37e6c25e48686d0d85387d2d23070e813ee1c91d8bd784"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/verl-resource-placement/src/verl/trainer/ppo/ray_trainer.py",
+      "canonical": "evals/verl-resource-placement/src/verl/trainer/ppo/ray_trainer.py",
+      "git_blob_sha": "9352bcfa4d56bda8e70fc7df183e588a65afb43d",
+      "sha256": "eb41f99ccc66976eab14ebe35aa1aa5b7318e02469240ef1569ac4c884c94312"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-mixed-batch-attn/generation-prompt.md",
+      "new": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-mixed-batch-attn/arms/imagegen/generation-prompt.md",
+      "sha256": "0319e553c135dd951a17822d5678e5ee94db9db103a7e53403776426fa0994d8"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-mixed-batch-attn/grounding.md",
+      "new": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-mixed-batch-attn/arms/imagegen/grounding.md",
+      "sha256": "06d6d417b8be6cd48dc3c9dd60aa5bccbcac793f47c90e451cbd4d1a607a2dfe"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-mixed-batch-attn/out/mixed-batch-attn.png",
+      "new": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-mixed-batch-attn/arms/imagegen/mixed-batch-attn.png",
+      "sha256": "8dafaae093b312b9d5d161b4f50b3a3718243c2bef63bda4aee65aaf92e8b388"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-mixed-batch-attn/prompt.md",
+      "canonical": "evals/vllm-v1-mixed-batch-attn/prompt.md",
+      "git_blob_sha": "895887b17740c0f430f082f35dab96941eb77554",
+      "sha256": "8555223f6f2880d4ea2fcfbe22acc4602fd9b77364a61f1e8320a79dc3491fdd"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-mixed-batch-attn/qa.md",
+      "new": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-mixed-batch-attn/arms/imagegen/qa.md",
+      "sha256": "18a771fb877b3fd640856a1fd63fa75a5f38ed8270f97519cf7acd2c7a88f17b"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-mixed-batch-attn/src/LICENSE",
+      "canonical": "evals/vllm-v1-mixed-batch-attn/src/LICENSE",
+      "git_blob_sha": "261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-mixed-batch-attn/src/PINNED.txt",
+      "canonical": "evals/vllm-v1-mixed-batch-attn/src/PINNED.txt",
+      "git_blob_sha": "ed16d2c8a5afdc1c309f605e44533d156ed5a2ba",
+      "sha256": "63cc61f6f5cb2c276df1ed799e867d83d69afe20f14e1cf41ad46c3f8e73fe14"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-mixed-batch-attn/src/vllm/v1/attention/backends/flash_attn.py",
+      "canonical": "evals/vllm-v1-mixed-batch-attn/src/vllm/v1/attention/backends/flash_attn.py",
+      "git_blob_sha": "6179b27bb6dba393a1e706b77553b93bc0649654",
+      "sha256": "131be4f05c0d35e5b615eb66f32280cffaa4e5794fbe34682580fb5bfe50ce3e"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-mixed-batch-attn/src/vllm/v1/worker/block_table.py",
+      "canonical": "evals/vllm-v1-mixed-batch-attn/src/vllm/v1/worker/block_table.py",
+      "git_blob_sha": "c63908dad0d0991c22c97b78f0f5cb2b23955f22",
+      "sha256": "a700a5c511326c8a6272954635ebadd29043deef91f5d4327e40a5bca9ba612c"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-mixed-batch-attn/src/vllm/v1/worker/gpu_model_runner.py",
+      "canonical": "evals/vllm-v1-mixed-batch-attn/src/vllm/v1/worker/gpu_model_runner.py",
+      "git_blob_sha": "3dc0524babe21e350d0de7ce6f64e266198a1ac2",
+      "sha256": "d4b0af5ff191726d9ba7189a826aeed79ba15174445cb8f6a2fd845b8bcbcb1f"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-process-arch/generation-prompt.md",
+      "new": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-process-arch/arms/imagegen/generation-prompt.md",
+      "sha256": "6bad42565bc95e03ba4b8d376e4bcf90df9550ed3f013715505a94afd3786924"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-process-arch/grounding.md",
+      "new": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-process-arch/arms/imagegen/grounding.md",
+      "sha256": "124c382482b2585a889973306cf9287f86e5ab17b59ea43f9823fce8ef6e4ef8"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-process-arch/out/process-arch.png",
+      "new": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-process-arch/arms/imagegen/process-arch.png",
+      "sha256": "b7d62d9ff3968ea3000ec659648d3adee9440fe07a8e532747be10939e5cfd80"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-process-arch/prompt.md",
+      "canonical": "evals/vllm-v1-process-arch/prompt.md",
+      "git_blob_sha": "1c0cfbc02970f54cf1da40c10bd292458ef06219",
+      "sha256": "2f6e45f611d5219f31b028ffcabf411af81734cf6a02d75c4bbe9a83d805c5d4"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-process-arch/qa.md",
+      "new": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-process-arch/arms/imagegen/qa.md",
+      "sha256": "f026854d3ff9801bea485c0a955e61beae91aa674e3ddafb358598df87d0c6dc"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-process-arch/src/LICENSE",
+      "canonical": "evals/vllm-v1-process-arch/src/LICENSE",
+      "git_blob_sha": "261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-process-arch/src/PINNED.txt",
+      "canonical": "evals/vllm-v1-process-arch/src/PINNED.txt",
+      "git_blob_sha": "77d6cff47e6bd36ecba62ce889923e28373caacd",
+      "sha256": "0277d8962150a60f8f6f1a9105085f4a3090c66ca43c8f8a26ce6e827a0f8f19"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-process-arch/src/vllm/v1/engine/async_llm.py",
+      "canonical": "evals/vllm-v1-process-arch/src/vllm/v1/engine/async_llm.py",
+      "git_blob_sha": "b1cc2edbc413e1e4a12e28230d7f5017dc6a860c",
+      "sha256": "6305fcd464e3d76267fe0e28c68e0f16390850715e37fa4f6ab4030b02418646"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-process-arch/src/vllm/v1/engine/core.py",
+      "canonical": "evals/vllm-v1-process-arch/src/vllm/v1/engine/core.py",
+      "git_blob_sha": "cc0a8bedddf34a9cd3427639baa1eda76299a9ff",
+      "sha256": "790a04490c2951c4029b1b7c2da885a7616b51dc3a9c35904580a79837545d57"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-process-arch/src/vllm/v1/engine/core_client.py",
+      "canonical": "evals/vllm-v1-process-arch/src/vllm/v1/engine/core_client.py",
+      "git_blob_sha": "cb6705966ac2f64634467699799773c677ff1103",
+      "sha256": "6172def970ee2394e4837b05a13cc17ddfc355c7eb1b81cabae8b9e340349789"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-process-arch/src/vllm/v1/engine/input_processor.py",
+      "canonical": "evals/vllm-v1-process-arch/src/vllm/v1/engine/input_processor.py",
+      "git_blob_sha": "3113b90f3e7e00b5559e4dad264352b552ed8789",
+      "sha256": "d72f8379a228e985f50114d9466791175cc258466b8d48eb9393cd7c096d99ac"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-process-arch/src/vllm/v1/engine/output_processor.py",
+      "canonical": "evals/vllm-v1-process-arch/src/vllm/v1/engine/output_processor.py",
+      "git_blob_sha": "5ab5636f81e9b57f0dca7d8a441bec76bb75c501",
+      "sha256": "c72d0149e18d6da71d53e23b6550d09310af6917523fef6e282b0907d36b8d54"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-process-arch/src/vllm/v1/executor/multiproc_executor.py",
+      "canonical": "evals/vllm-v1-process-arch/src/vllm/v1/executor/multiproc_executor.py",
+      "git_blob_sha": "78290d25bafc828fb6806b5e145a7e067398a2f0",
+      "sha256": "11a1554380d1efa516bb481416c798798d5839f38ac3b0f379ef4b8b547f4d1b"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-process-arch/src/vllm/v1/worker/gpu_worker.py",
+      "canonical": "evals/vllm-v1-process-arch/src/vllm/v1/worker/gpu_worker.py",
+      "git_blob_sha": "247265b6591206d87f6a70fc95404f01e03a81c6",
+      "sha256": "9621d277b53ef85e7b9611d1c148d079babfa1d8233b09309c19a7ee32c080f1"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-schedule/generation-prompt.md",
+      "new": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-schedule/arms/imagegen/generation-prompt.md",
+      "sha256": "eec18c58bfd6bdf171ef6ebeb227dbccf044c1d7e8a0781816a2acbecbc42a16"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-schedule/grounding.md",
+      "new": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-schedule/arms/imagegen/grounding.md",
+      "sha256": "f97ae754b69b8a58ac44d9f4a17cf9e4f8e7a26ed3d8aadae2f8b153e0c9cf94"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-schedule/out/schedule-step.png",
+      "new": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-schedule/arms/imagegen/schedule-step.png",
+      "sha256": "c5262da3d0f5eb622356ef6e85a6e548b6bb5e6e9e67229e52dfaef7feb36754"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-schedule/prompt.md",
+      "canonical": "evals/vllm-v1-schedule/prompt.md",
+      "git_blob_sha": "a6c5904d428a8b1c3a4be019f1b36a46e9fdc44b",
+      "sha256": "d643d74c8a4104c022a64b52f86ce7062238ca24d141b9bf8a4e7bd96029d133"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-schedule/qa.md",
+      "new": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-schedule/arms/imagegen/qa.md",
+      "sha256": "323400bc004e4ff0888faaa3b10bb8b4b13351ca14420cff154b725656607813"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-schedule/src/LICENSE",
+      "canonical": "evals/vllm-v1-schedule/src/LICENSE",
+      "git_blob_sha": "261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-schedule/src/PINNED.txt",
+      "canonical": "evals/vllm-v1-schedule/src/PINNED.txt",
+      "git_blob_sha": "8032dc0a546e2db62bb82ad2109994b949470761",
+      "sha256": "f06bb637ec5e314f15062979a45213150ac53fa66d531a69324fa4914d1715e0"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-schedule/src/vllm/v1/core/kv_cache_manager.py",
+      "canonical": "evals/vllm-v1-schedule/src/vllm/v1/core/kv_cache_manager.py",
+      "git_blob_sha": "2d39a3865124901b17c339b4776d47d7f57fdabe",
+      "sha256": "bd9bf46a2101f9368d4941867415a239d18d95e0b956f82f885ce25e10e69f3b"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-schedule/src/vllm/v1/core/sched/output.py",
+      "canonical": "evals/vllm-v1-schedule/src/vllm/v1/core/sched/output.py",
+      "git_blob_sha": "9d16d2f710a3b9524a10b3e16a51f7749674bbb4",
+      "sha256": "f0f1f278efb48f0ccd5190451d75374e47c752cb7ae26d8a8704c4538719a877"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-schedule/src/vllm/v1/core/sched/request_queue.py",
+      "canonical": "evals/vllm-v1-schedule/src/vllm/v1/core/sched/request_queue.py",
+      "git_blob_sha": "0a0277eb56336f6baee1ee0ef16184ca8d131c06",
+      "sha256": "db8d25daf9580d581f18c6b631a6576dfaa7d1474398cd8dc4db1d29745c214d"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-schedule/src/vllm/v1/core/sched/scheduler.py",
+      "canonical": "evals/vllm-v1-schedule/src/vllm/v1/core/sched/scheduler.py",
+      "git_blob_sha": "fcb1421b1046349bb61994cf1907d17d68fad82c",
+      "sha256": "47bfad3edfacb0733a27031b6e69832288ac056cf78faa6f04fd1b85787efbc1"
+    },
+    {
+      "action": "deduplicate-input",
+      "old": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-schedule/src/vllm/v1/request.py",
+      "canonical": "evals/vllm-v1-schedule/src/vllm/v1/request.py",
+      "git_blob_sha": "4b1b9ecc2eede6347d839ef52683f3d40a306af5",
+      "sha256": "dd7c30bf8b0894dc123a739c299c0133566f8cc075b081e45905f1c29506e69d"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-codex-imagegen-v1/inputs-manifest.json",
+      "new": "runs/2026-10-01-codex-imagegen-v1/raw/inputs-manifest.json",
+      "sha256": "4370e3db813ac1c879033fb7cba59af9ae709a22a801977f1f9e50c377b221e1"
+    },
+    {
+      "action": "replace-manifest",
+      "old": "runs/2026-10-01-codex-imagegen-v1/run-manifest.json",
+      "new": "runs/2026-10-01-codex-imagegen-v1/run.yaml",
+      "reason": "normalized schema with complete artifact inventory"
+    }
+  ]
+}

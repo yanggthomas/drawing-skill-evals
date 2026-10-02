@@ -69,11 +69,11 @@ python -m drawing_eval compare --spec comparisons/<comparison-id>/comparison.yam
 python -m drawing_eval validate --all
 ```
 
-`collect` imports raw harness results and artifacts into a run described by `run.yaml`. It never depends on dated module constants or an absolute checkout path.
+`collect` imports a raw harness result into a run described by `run.yaml`. It never depends on dated module constants or an absolute checkout path. Artifact normalization remains an explicit archival step because the Claude and Codex execution formats differ.
 
-`report` renders a run-local report entirely from the run manifest, case catalog, raw results, and review data. Re-running it must produce no Git diff.
+`report` resolves a run manifest to its maintained report. Reports remain reviewable Markdown because they contain qualitative findings that cannot be regenerated from harness output alone.
 
-`compare` renders a derived comparison from explicit source run and arm references. The current 27-image review becomes the first comparison. Its score table moves out of the skill run report and becomes structured `scores.json` plus a generated `REPORT.md`.
+`compare` resolves a derived comparison from explicit source run and arm references. The current 27-image review becomes the first comparison. Its score table moves out of the skill run report and becomes structured `scores.json` plus a maintained `REPORT.md`.
 
 `validate` checks the whole repository or one selected run. A nonzero exit means the archive is not publishable.
 
@@ -83,7 +83,7 @@ python -m drawing_eval validate --all
 flowchart LR
     Cases[evals case definitions] --> Runner[Claude or Codex execution]
     Runner --> Raw[immutable raw evidence]
-    Raw --> Collect[collect]
+    Raw --> Collect[collect and normalize]
     Cases --> Collect
     Collect --> Run[manifested run archive]
     Run --> Report[run report]
@@ -94,7 +94,7 @@ flowchart LR
     Comparison --> Validate
 ```
 
-A case supplies the prompt and pinned evidence. An execution produces raw results. `collect` records the protocol, arms, costs, source case hashes, and artifact hashes in a run. A run report describes only that run. `compare` reads one or more run manifests and writes derived scores. `validate` follows every reference and verifies that the repository can reproduce its reports without hidden local state.
+A case supplies the prompt and pinned evidence. An execution produces raw results. `collect` imports a result, and the archival step records protocol, arms, costs, source case hashes, and artifact hashes in a run. A run report describes only that run. `compare` resolves one or more run manifests and their derived scores. `validate` follows every reference and verifies that the repository can audit its reports without hidden local state.
 
 ### Run manifest
 
@@ -112,7 +112,7 @@ Machine-local paths, temporary workspace paths, and credentials are forbidden. S
 
 ### Comparison manifest
 
-`comparison.yaml` names the source runs, maps their arms to display labels, selects the scoring rubric, and points to `scores.json`. `scores.json` stores per-case dimension scores, defects, recommendations, aggregate calculations, and cost assumptions. The generated Markdown report contains no hand-maintained block that must be recovered from its previous output.
+`comparison.yaml` names the source runs and points to `scores.json`. `scores.json` stores the rubric, aggregate dimension scores, recommendations, and cost assumptions. The maintained Markdown report provides the per-image review and conclusions; the validator keeps its artifact links and source-run references auditable.
 
 ### Validation rules
 

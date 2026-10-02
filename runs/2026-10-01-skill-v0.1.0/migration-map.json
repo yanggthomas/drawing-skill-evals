@@ -1,0 +1,686 @@
+{
+  "schema_version": 1,
+  "base_commit": "c4cc022",
+  "entries": [
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/LIMITATIONS.md",
+      "new": "runs/2026-10-01-skill-v0.1.0/reviews/LIMITATIONS.md",
+      "sha256": "c9c0669f9f3e150523607641ea72b0a11900d73afbe5a4dbd386b224938d887c"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/SKILL-IMPROVEMENTS.md",
+      "new": "runs/2026-10-01-skill-v0.1.0/reviews/SKILL-IMPROVEMENTS.md",
+      "sha256": "96554bc1d94abb9b4632d176b0bf3c802253a9e133e4bf28380e10acda921d76",
+      "edited_after_move": true,
+      "sha256_after": "ce3a4b5954735e03cce89e8f78086b67a14a265164a962b3b36592643554ae10"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/ffmpeg-transcode-threads/artifacts/runs.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/ffmpeg-transcode-threads/metrics/runs.json",
+      "sha256": "838764065b61049d2b23abf37d95e7e2bf0fa935cde4150c6be3cf70539bf644"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/ffmpeg-transcode-threads/artifacts/summary.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/ffmpeg-transcode-threads/metrics/summary.json",
+      "sha256": "0ae3be8ce87b9ccececf9e7f791bfdad21bf24cf9b87dc7988c4210ec988b9a6"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/ffmpeg-transcode-threads/artifacts/with-1/trace.jsonl.gz",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/ffmpeg-transcode-threads/arms/with/trace.jsonl.gz",
+      "sha256": "96867ad7f54ab417cec59f9baa1334c0f52955222d1e7620fee8ea86b8f47540"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/ffmpeg-transcode-threads/artifacts/with-1/transcode-threads.dot",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/ffmpeg-transcode-threads/arms/with/transcode-threads.dot",
+      "sha256": "4571dd103b0ee18c4d0cd47386b318582bec14fe23457968bdd290b4f5f2a01b"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/ffmpeg-transcode-threads/artifacts/with-1/transcode-threads.png",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/ffmpeg-transcode-threads/arms/with/transcode-threads.png",
+      "sha256": "c43834ba17566ee9c92190298f645091a2f8a6e4fe7f446d66e75eb90c54e717"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/ffmpeg-transcode-threads/artifacts/without-1/trace.jsonl.gz",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/ffmpeg-transcode-threads/arms/without/trace.jsonl.gz",
+      "sha256": "cc042b2cbc6ec34b5e39decccecaeccad18b324915761d03947e2ce849555abb"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/ffmpeg-transcode-threads/artifacts/without-1/transcode-threads.dot",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/ffmpeg-transcode-threads/arms/without/transcode-threads.dot",
+      "sha256": "2b14faff453eb0386ec4c1e1a47d8de334d9da6c5cb6d13e24176a302b97def1"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/ffmpeg-transcode-threads/artifacts/without-1/transcode-threads.png",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/ffmpeg-transcode-threads/arms/without/transcode-threads.png",
+      "sha256": "9a29f4e59b37dcea1a1aa88e9257ce33900b5829a262da0ea46e052af0045c33"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/ffmpeg-transcode-threads/content-review.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/ffmpeg-transcode-threads/reviews/content-review.json",
+      "sha256": "342d3b747745db588a4fef1dfd71a57083b2b56fe84bd68af4215fe953982194"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/ffmpeg-transcode-threads/notes.md",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/ffmpeg-transcode-threads/reviews/notes.md",
+      "sha256": "9ed088df74c695ef5576cd71230af016a2ea25349043cdce3a48ef4cc9db9cab"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/ffmpeg-transcode-threads/review.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/ffmpeg-transcode-threads/reviews/review.json",
+      "sha256": "df7acb44f22b1233beff1fb859ef557e6e13314582230e45fd8ef3117db05a71"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/megatron-parallel-groups/artifacts/runs.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/megatron-parallel-groups/metrics/runs.json",
+      "sha256": "acc7dcf881e960049762d7f98be31afd3574363be520613b88f62157b4787b0b"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/megatron-parallel-groups/artifacts/summary.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/megatron-parallel-groups/metrics/summary.json",
+      "sha256": "ebd6a44c01349ff0304ecc445707294dfdb8b3ae7b09fee399b0586b55c673b3"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/megatron-parallel-groups/artifacts/with-1/gen_parallel_groups.py",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/megatron-parallel-groups/arms/with/gen_parallel_groups.py",
+      "sha256": "ff1bf718fa7f5d5915abb7857d8fb3a18e857ad7c78ea5191565656e1355958e"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/megatron-parallel-groups/artifacts/with-1/parallel-groups.dot",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/megatron-parallel-groups/arms/with/parallel-groups.dot",
+      "sha256": "84f9106946515110703ef204bf67a84a2e115c67b2d7a373231a35db8c21a56c"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/megatron-parallel-groups/artifacts/with-1/parallel-groups.png",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/megatron-parallel-groups/arms/with/parallel-groups.png",
+      "sha256": "80ce6e361dec0c0202012c6911d595d3f103b4c400b34614883871da9b1933ec"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/megatron-parallel-groups/artifacts/with-1/trace.jsonl.gz",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/megatron-parallel-groups/arms/with/trace.jsonl.gz",
+      "sha256": "49afa4dadd3a161dc5ecb55bf1ac8260f19782706824408932cc2fe4c4432be9"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/megatron-parallel-groups/artifacts/without-1/parallel-groups.png",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/megatron-parallel-groups/arms/without/parallel-groups.png",
+      "sha256": "0b2b6c2fe8067b02b631190d0683b66f0f425adf36d5f0150e4032dcae2cc787"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/megatron-parallel-groups/artifacts/without-1/trace.jsonl.gz",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/megatron-parallel-groups/arms/without/trace.jsonl.gz",
+      "sha256": "e459e658ff1145ccb4251690c8da1686501bfc62e5cd77249f5c4cb86ee1bb96"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/megatron-parallel-groups/content-review.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/megatron-parallel-groups/reviews/content-review.json",
+      "sha256": "b7388cf4845afc9e5b9940dc996e5bfbf40fb8841b38939ad979f4c79de102ec"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/megatron-parallel-groups/notes.md",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/megatron-parallel-groups/reviews/notes.md",
+      "sha256": "69d04345959cbce283ac7b66986e4161eaa1cabe188a91a2762a64bc57bd1e56"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/megatron-parallel-groups/review.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/megatron-parallel-groups/reviews/review.json",
+      "sha256": "268835a91abc156d229f495a29831e889625110eb1295e386688a335f1f0540e"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/megatron-tp-sp-mlp/artifacts/runs.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/megatron-tp-sp-mlp/metrics/runs.json",
+      "sha256": "6e6179c12194b9d925f0a4e51832c8a9707a6beab189b02f7b81a565430df453"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/megatron-tp-sp-mlp/artifacts/summary.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/megatron-tp-sp-mlp/metrics/summary.json",
+      "sha256": "c1f069e9cb238f8dcc86c802d18807683f3906e139bbc6aa985dffb1d3636b2d"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/megatron-tp-sp-mlp/artifacts/with-1/tp-sp-mlp.pdf",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/megatron-tp-sp-mlp/arms/with/tp-sp-mlp.pdf",
+      "sha256": "fc6d516107ad1eb547b94ce326421cacf991d7c17aec35ea061a3ae41178c66b"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/megatron-tp-sp-mlp/artifacts/with-1/tp-sp-mlp.png",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/megatron-tp-sp-mlp/arms/with/tp-sp-mlp.png",
+      "sha256": "f4e1ef7818f0eda0ce98996bcc8e81ae2a1c9b2b641a4547781aed71b1565154"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/megatron-tp-sp-mlp/artifacts/with-1/tp-sp-mlp.tex",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/megatron-tp-sp-mlp/arms/with/tp-sp-mlp.tex",
+      "sha256": "2838c52d0e84612561e7fb76d78003de42bb75a66268fe1bc7862cac064a5dcf"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/megatron-tp-sp-mlp/artifacts/with-1/trace.jsonl.gz",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/megatron-tp-sp-mlp/arms/with/trace.jsonl.gz",
+      "sha256": "6a6ab2f2308f3513f9dbbfe695314815c79eaae28e6c50c320be195cea5e1a70"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/megatron-tp-sp-mlp/artifacts/without-1/tp-sp-mlp.dot",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/megatron-tp-sp-mlp/arms/without/tp-sp-mlp.dot",
+      "sha256": "83e79816b75942e7bec5049c3a9c34ab8cc9dacc91d3623af3a211c1824baf58"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/megatron-tp-sp-mlp/artifacts/without-1/tp-sp-mlp.png",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/megatron-tp-sp-mlp/arms/without/tp-sp-mlp.png",
+      "sha256": "843841b2a60c7213fa171d2ede8583e6f073540be8fe1702d5ea9cba178426f3"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/megatron-tp-sp-mlp/artifacts/without-1/trace.jsonl.gz",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/megatron-tp-sp-mlp/arms/without/trace.jsonl.gz",
+      "sha256": "560ba713988e28eb6adafb42c245bb05a0f723634d40724981d7465c6bcadf42"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/megatron-tp-sp-mlp/content-review.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/megatron-tp-sp-mlp/reviews/content-review.json",
+      "sha256": "1322ac44334224eba3725233bce0ad43472c46500196c68942fb6b6ba29aba16"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/megatron-tp-sp-mlp/notes.md",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/megatron-tp-sp-mlp/reviews/notes.md",
+      "sha256": "bc5da985a94220d20d49a25fc248cd402a1f79d66fb740746031d97cbd9eb6f5"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/megatron-tp-sp-mlp/review.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/megatron-tp-sp-mlp/reviews/review.json",
+      "sha256": "305bf53091e653434b3b758180d60ad1236b0cdae4611f2d66faa31a3f75fde8"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/redis-request-path/artifacts/runs.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/redis-request-path/metrics/runs.json",
+      "sha256": "e46ca6c08c4061764ec02c1169a4f5a58adc99db35a48f8748f27ca35838d4c4"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/redis-request-path/artifacts/summary.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/redis-request-path/metrics/summary.json",
+      "sha256": "431aeeccddcbb26e6f6a551a70c08319f806fae8e6a272ab21778b4e1763de00"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/redis-request-path/artifacts/with-1/request-path.dot",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/redis-request-path/arms/with/request-path.dot",
+      "sha256": "d4861fe2dfd06bc280acce63154a72dbe15c351cd14b9f1269af2df95aa3fa7d"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/redis-request-path/artifacts/with-1/request-path.png",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/redis-request-path/arms/with/request-path.png",
+      "sha256": "981136b03b9776f4a382a1da5d0d5205013bc24e2ffca1c979ef4ef2b17718e6"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/redis-request-path/artifacts/with-1/trace.jsonl.gz",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/redis-request-path/arms/with/trace.jsonl.gz",
+      "sha256": "3e106b3008b40ee3511bc2eb1022cf1240565f82deba91545505c367b045e1b8"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/redis-request-path/artifacts/without-1/request-path.png",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/redis-request-path/arms/without/request-path.png",
+      "sha256": "e3fe6a53c31a7a1542130d7c0dcc992825bae453180433bb79bf23ab100074be"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/redis-request-path/artifacts/without-1/trace.jsonl.gz",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/redis-request-path/arms/without/trace.jsonl.gz",
+      "sha256": "20f0bbbec1aede65b2557df2862532471a06b1d3d9e98e29d486e39304ad301f"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/redis-request-path/content-review.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/redis-request-path/reviews/content-review.json",
+      "sha256": "2dc602a0b42a9eb02cf6e56718010567b3ed72ffe51c1fea50e481f090525972"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/redis-request-path/notes.md",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/redis-request-path/reviews/notes.md",
+      "sha256": "94e72c6bdc9f55996dbdbf9283fcc606ce35a3dd7dcb2c54c1d6937c6298a418"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/redis-request-path/review.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/redis-request-path/reviews/review.json",
+      "sha256": "19077914b91264924ff38a9b59d4119e411c3e948fc69f3e6eddc27a7948a41a"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/verl-ppo-step/artifacts/runs.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/verl-ppo-step/metrics/runs.json",
+      "sha256": "108a707ebbdc7fc89bf372e5329a02bec691d8f430e2058e9426f1f9cbdd31a1"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/verl-ppo-step/artifacts/summary.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/verl-ppo-step/metrics/summary.json",
+      "sha256": "66145bb035cbe47ec7fcc64cd88752aa2c32104eb2b3c5e0a6fb5e4cd532e882"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/verl-ppo-step/artifacts/with-1/ppo-step.dot",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/verl-ppo-step/arms/with/ppo-step.dot",
+      "sha256": "b5640de63ba47369dbbf4a93fbac7b9a7d25a6ffe5d04af063aa97802b5fe861"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/verl-ppo-step/artifacts/with-1/ppo-step.png",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/verl-ppo-step/arms/with/ppo-step.png",
+      "sha256": "541374519b6b2b77690d5a5ccab86b6444b7971c4b8a12f70d72d391ada08c6e"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/verl-ppo-step/artifacts/with-1/trace.jsonl.gz",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/verl-ppo-step/arms/with/trace.jsonl.gz",
+      "sha256": "19851af5b54a6188fe39aad1bcb8cb7441698a8561e0c325a84b4f8818d4e08c"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/verl-ppo-step/artifacts/without-1/draw_ppo_step.py",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/verl-ppo-step/arms/without/draw_ppo_step.py",
+      "sha256": "d29ef03c11e6f65566253d1e418a52ae4e1a2164e54b52a929c9f70b63e68b05"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/verl-ppo-step/artifacts/without-1/ppo-step.png",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/verl-ppo-step/arms/without/ppo-step.png",
+      "sha256": "702ab46089b0b1d7e1d0905d2bbe21a998937e7d4489fbdab149d6b3caa53eea"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/verl-ppo-step/artifacts/without-1/trace.jsonl.gz",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/verl-ppo-step/arms/without/trace.jsonl.gz",
+      "sha256": "1790a1c529d21457defd22e225570839fd7581f7180710b05e8b4b973bb5cf1f"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/verl-ppo-step/content-review.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/verl-ppo-step/reviews/content-review.json",
+      "sha256": "b58825926f56295115f15bf07418a20786414c842915103a14a1cbedf2ff40d4"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/verl-ppo-step/notes.md",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/verl-ppo-step/reviews/notes.md",
+      "sha256": "bd90626599ea262c60777b373ace7898be0130ad231803943e5e24bdf4769028"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/verl-ppo-step/review.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/verl-ppo-step/reviews/review.json",
+      "sha256": "99f52186f7f188469e7943723f92d797af5002f15632ee75fd2b6a57a6059867"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/verl-resource-placement/artifacts/runs.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/verl-resource-placement/metrics/runs.json",
+      "sha256": "4b4a1555138bce47816ad1a18717574b33aa24f3ebd27ab1931c27f3753fc05f"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/verl-resource-placement/artifacts/summary.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/verl-resource-placement/metrics/summary.json",
+      "sha256": "35d11b6749e986f2cbab078178d89c18b80f6dbf67b7d4d6d0cf0fb3b9b073b0"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/verl-resource-placement/artifacts/with-1/resource-placement.dot",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/verl-resource-placement/arms/with/resource-placement.dot",
+      "sha256": "c21aa074d29a7618b1faa5947bbd75e074cdf9158576ab991b0d301181547bbf"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/verl-resource-placement/artifacts/with-1/resource-placement.png",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/verl-resource-placement/arms/with/resource-placement.png",
+      "sha256": "9145755713dc4bb5902634a6af4f662660b0a838a423c740573e7bdc61311186"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/verl-resource-placement/artifacts/with-1/trace.jsonl.gz",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/verl-resource-placement/arms/with/trace.jsonl.gz",
+      "sha256": "d8e90a9a7ec85a1af0458603356f116fc413575bd9f0bb9a7328d1ee6e203dac"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/verl-resource-placement/artifacts/without-1/resource-placement.dot",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/verl-resource-placement/arms/without/resource-placement.dot",
+      "sha256": "d9340097a242852bc7c6a91607a796e322e5e5b54352981c54ff3d9426cd0816"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/verl-resource-placement/artifacts/without-1/resource-placement.png",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/verl-resource-placement/arms/without/resource-placement.png",
+      "sha256": "738c3787ab7ea1f0468e1d82bba9cee295ba55ce9ae1d11efb9f93bb271b1273"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/verl-resource-placement/artifacts/without-1/trace.jsonl.gz",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/verl-resource-placement/arms/without/trace.jsonl.gz",
+      "sha256": "6b1a710f4fdbf0f0c61ddc0897761bd2ac07c54b6caea30e37c2ebfe27751bdb"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/verl-resource-placement/content-review.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/verl-resource-placement/reviews/content-review.json",
+      "sha256": "b667d1b56be4de8492ef669ccf629d5c461c8bac97dbc8baa7170a87261d3153"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/verl-resource-placement/notes.md",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/verl-resource-placement/reviews/notes.md",
+      "sha256": "cc8e001648afee8c92d8a1d8cb675dd357ce72bffd8db05a2ae0c634b6700ffe"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/verl-resource-placement/review.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/verl-resource-placement/reviews/review.json",
+      "sha256": "84bf41861f7ee1ef696d7ac8ea54000f121dcac1f088687977fecbb42056a58e"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-mixed-batch-attn/artifacts/runs.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-mixed-batch-attn/metrics/runs.json",
+      "sha256": "c2caf34c854e13f29d30acdcc73f0b39271ee04e14b86db3a1b3b48935e5ba40"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-mixed-batch-attn/artifacts/summary.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-mixed-batch-attn/metrics/summary.json",
+      "sha256": "80a5993e815ec7107b8d0221ff3885e3baf15e334dfa8a8c37dacc5a91994f80"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-mixed-batch-attn/artifacts/with-1/mixed-batch-attn.pdf",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-mixed-batch-attn/arms/with/mixed-batch-attn.pdf",
+      "sha256": "a5f731480a94478a76dbf08fafbf03d4f83566610ab775383aaafd1a2a342b55"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-mixed-batch-attn/artifacts/with-1/mixed-batch-attn.png",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-mixed-batch-attn/arms/with/mixed-batch-attn.png",
+      "sha256": "94334638c7d7bca52e6b27bcd28153c1b3dbc7338d85fa2c61afa227c86ee0f2"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-mixed-batch-attn/artifacts/with-1/mixed-batch-attn.tex",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-mixed-batch-attn/arms/with/mixed-batch-attn.tex",
+      "sha256": "96cbac58f7bcab132f441ab9ee70d90abe93e696e16ab2a3300db74ec96bb47d"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-mixed-batch-attn/artifacts/with-1/trace.jsonl.gz",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-mixed-batch-attn/arms/with/trace.jsonl.gz",
+      "sha256": "4453c40372653bba7bff7388409a048955764c433a99fa57d409adb0a5496447"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-mixed-batch-attn/artifacts/without-1/draw_mixed_batch.py",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-mixed-batch-attn/arms/without/draw_mixed_batch.py",
+      "sha256": "c77148413f678f498a1eed624efd7cd175eafa07e2d7d9006139dc49f6c04ff1"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-mixed-batch-attn/artifacts/without-1/mixed-batch-attn.png",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-mixed-batch-attn/arms/without/mixed-batch-attn.png",
+      "sha256": "3ee55c79d25fe3340533d9bd27fe5129e9498ed7d828be67aa2b6568b804455e"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-mixed-batch-attn/artifacts/without-1/trace.jsonl.gz",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-mixed-batch-attn/arms/without/trace.jsonl.gz",
+      "sha256": "f39e766c4b5ae0edebc67b1f8e91b4d219ea7f106020d72b9ede5514202eeda0"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-mixed-batch-attn/content-review.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-mixed-batch-attn/reviews/content-review.json",
+      "sha256": "e32718b26f4d39ff1ea0759db50609e9ca2a825928b869822291efc7b8e59a79"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-mixed-batch-attn/notes.md",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-mixed-batch-attn/reviews/notes.md",
+      "sha256": "336ab5a541daf65c7c50ab6a147cc3c7dda32e3042e4c36497e48ee6d281368b"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-mixed-batch-attn/review.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-mixed-batch-attn/reviews/review.json",
+      "sha256": "268835a91abc156d229f495a29831e889625110eb1295e386688a335f1f0540e"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-process-arch/artifacts/runs.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-process-arch/metrics/runs.json",
+      "sha256": "73d13f4b1c549932aec5a871ccf81fbdeebe8e280c3f432ca8becea5c1edca27"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-process-arch/artifacts/summary.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-process-arch/metrics/summary.json",
+      "sha256": "18c9461f8e5a0c4d826c205211ca1fb84e43e8736c6a3d0ead98484e3ae769cc"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-process-arch/artifacts/with-1/process-arch.dot",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-process-arch/arms/with/process-arch.dot",
+      "sha256": "d7e03dee5c3db876ceea9fec0e54f4a23f68b9a0697fd314272e1a9ec08f54ca"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-process-arch/artifacts/with-1/process-arch.png",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-process-arch/arms/with/process-arch.png",
+      "sha256": "983b948148f9d11ced9bacdd2e65ddfb26ce20fcf823946a6b950e1a0a8da0cc"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-process-arch/artifacts/with-1/trace.jsonl.gz",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-process-arch/arms/with/trace.jsonl.gz",
+      "sha256": "b9a9e155cd7205ace3b6f4effe3a89427369c6282f158be44ed68cc8da8c01a4"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-process-arch/artifacts/without-1/draw_process_arch.py",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-process-arch/arms/without/draw_process_arch.py",
+      "sha256": "94e5670697cb62c39324d4784152455f13de057e62cf99511d91eebcca37c49d"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-process-arch/artifacts/without-1/process-arch.png",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-process-arch/arms/without/process-arch.png",
+      "sha256": "839d62a0b9ca40584a704a8ec4a90697d666ca0fc98a25e2f31a369a4a51e5ee"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-process-arch/artifacts/without-1/trace.jsonl.gz",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-process-arch/arms/without/trace.jsonl.gz",
+      "sha256": "66e6220cab03e44e50901ebfb7f217b798fc9edb2a564eb852597b79b870e327"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-process-arch/content-review.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-process-arch/reviews/content-review.json",
+      "sha256": "ad69ca7cac9bd07a1702e248d762887ebd4412dab057f6f88bcf6d91a4aac14c"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-process-arch/notes.md",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-process-arch/reviews/notes.md",
+      "sha256": "5d4d1f17c18809c7a136fe531417a966ddfdbcc0bd68ca73a4617b9ccbc42727"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-process-arch/review.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-process-arch/reviews/review.json",
+      "sha256": "99f52186f7f188469e7943723f92d797af5002f15632ee75fd2b6a57a6059867"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-schedule/artifacts/runs.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-schedule/metrics/runs.json",
+      "sha256": "f6752ade33a3abc52376b2acdeefe9ba06154e2b4233dd54aa1e897e0067af4a"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-schedule/artifacts/summary.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-schedule/metrics/summary.json",
+      "sha256": "f848490302d6317bc87cb3539179c724a118e8404bc7b7cb34bcf0af1830ca54"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-schedule/artifacts/with-1/schedule-step.dot",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-schedule/arms/with/schedule-step.dot",
+      "sha256": "c3601af52a8745c04f2be2663295d608e35632e3df5bf24c52036d21b72991f7"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-schedule/artifacts/with-1/schedule-step.png",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-schedule/arms/with/schedule-step.png",
+      "sha256": "acea8fe2add2bc91f463ec67744e14bae23d2426c4da331397c31264a941e26c"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-schedule/artifacts/with-1/trace.jsonl.gz",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-schedule/arms/with/trace.jsonl.gz",
+      "sha256": "820c7e2cfd0c799c7fd19fb8b4a9b3c472a186c5b5e1408f07a0c176a5ebcf4c"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-schedule/artifacts/without-1/schedule-step.dot",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-schedule/arms/without/schedule-step.dot",
+      "sha256": "8d4be7bcc624c3f36b5c26c0d2ae3b16e1318fb0aee854105370f844746ee284"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-schedule/artifacts/without-1/schedule-step.png",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-schedule/arms/without/schedule-step.png",
+      "sha256": "c67ec395eab3446a15a9e73b8586dee2ddc80f4b6b3e190369361feafcc0a272"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-schedule/artifacts/without-1/trace.jsonl.gz",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-schedule/arms/without/trace.jsonl.gz",
+      "sha256": "75820902110cb947fa207c1710fbe242bae67508008e77eb3e5ffc91c5cff999"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-schedule/content-review.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-schedule/reviews/content-review.json",
+      "sha256": "de2bca16b2b09d01083f6bb9999c40c02d6b2c6fa911aabf1c5c4347725d681e"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-schedule/notes.md",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-schedule/reviews/notes.md",
+      "sha256": "118fdc02ef7ae7f2263434b23a89feb6efb7ddc8ff9a85824703a9b9f15962fb"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-schedule/review.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-schedule/reviews/review.json",
+      "sha256": "16386f68046d09e2558a991ea834824dafe41d087ff96a218077bf2ca366a104"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/html/round1-g1.html",
+      "new": "runs/2026-10-01-skill-v0.1.0/raw/html/round1-g1.html",
+      "sha256": "9177c947e59007d9c4add64f1bfde7d28692f02d21d670ce6f26cc7e66ca0fa2"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/html/round2.html",
+      "new": "runs/2026-10-01-skill-v0.1.0/raw/html/round2.html",
+      "sha256": "c9a62e2f9cfec93bf82905e5fd4de17c69ca96cc520b8bc142c0d94dc916e27e"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/html/round3-arch.html",
+      "new": "runs/2026-10-01-skill-v0.1.0/raw/html/round3-arch.html",
+      "sha256": "782e2a785eed6f5b8754ec4428d3616ca2e285b68e3bacfc298329e78dd25320"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/html/smoke1-g1.html",
+      "new": "runs/2026-10-01-skill-v0.1.0/raw/html/smoke1-g1.html",
+      "sha256": "683620f745d6de5ae61823c21fe748966299a03b3296f90c3cd15dc0e5de76a3"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/html/smoke2-g1.html",
+      "new": "runs/2026-10-01-skill-v0.1.0/raw/html/smoke2-g1.html",
+      "sha256": "e9532a3df9325a4e8694977854406dea4d147820292ecca97d144397defdc782"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/notes.md",
+      "new": "runs/2026-10-01-skill-v0.1.0/reviews/notes.md",
+      "sha256": "bbc08be0d41541e9ee96ef30049c5efc4abf2878ff4a0fba49c3441f9583b198"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/results/round1-g1.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/raw/results/round1-g1.json",
+      "sha256": "4c9c175d7139ce41b874f84b5d3ef70495d411743c3c252d87e18ed314f97449"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/results/round2.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/raw/results/round2.json",
+      "sha256": "9b18d07e372c7b23e73b1eefb635ce19c533bbb591f4f9028a3ccbb1a4e50423"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/results/round3-arch.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/raw/results/round3-arch.json",
+      "sha256": "4d60f9c333ddb0985cc447354da11e1264c44335ef6a68a7ff38751a9940f982"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/results/smoke1-g1-with-only.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/raw/results/smoke1-g1-with-only.json",
+      "sha256": "8266c1b109154df1a0ce9d12ff7a94ed1f31dd18b6b3a0fa3ac495980f7334f2"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-01-skill-v0.1.0/results/smoke2-g1.json",
+      "new": "runs/2026-10-01-skill-v0.1.0/raw/results/smoke2-g1.json",
+      "sha256": "818dd29c5318154021a48df26a214828f0d8300f1d9d4906518239995859009b"
+    }
+  ]
+}
