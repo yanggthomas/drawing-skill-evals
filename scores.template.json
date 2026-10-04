@@ -1,0 +1,761 @@
+{
+  "rubric": "results/RUBRIC-FINAL.md",
+  "images": {
+    "0feeb41d": {
+      "case": "A1",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "2e3e34c4": {
+      "case": "A1",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "44dce42a": {
+      "case": "A1",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "9c82de56": {
+      "case": "A1",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "bba2c896": {
+      "case": "A1",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "fd86cbc4": {
+      "case": "A1",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "208d31f6": {
+      "case": "A2",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "3223b16a": {
+      "case": "A2",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "49f8027c": {
+      "case": "A2",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "6eed9fef": {
+      "case": "A2",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "89ec0612": {
+      "case": "A2",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "cbd1fa32": {
+      "case": "A2",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "1daf798b": {
+      "case": "A3",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "73c5e8d6": {
+      "case": "A3",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "a00afc4a": {
+      "case": "A3",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "c8fcd33b": {
+      "case": "A3",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "cabeeecb": {
+      "case": "A3",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "cca705dc": {
+      "case": "A3",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "1eba22c4": {
+      "case": "G1",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "28f89ba6": {
+      "case": "G1",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "3f2ea037": {
+      "case": "G1",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "599e7123": {
+      "case": "G1",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "6e033b2b": {
+      "case": "G1",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "db0db3ff": {
+      "case": "G1",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "43118728": {
+      "case": "G2",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "b22ede75": {
+      "case": "G2",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "c320d4b7": {
+      "case": "G2",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "d46ecf7c": {
+      "case": "G2",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "e125d79e": {
+      "case": "G2",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "f5a313af": {
+      "case": "G2",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "1bdb9dba": {
+      "case": "G3",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "77c4b51b": {
+      "case": "G3",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "8c4c4637": {
+      "case": "G3",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "d2237ccb": {
+      "case": "G3",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "d8edd397": {
+      "case": "G3",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "d9dc767f": {
+      "case": "G3",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "02d4d074": {
+      "case": "G4",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "7bd02c74": {
+      "case": "G4",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "7d98c63e": {
+      "case": "G4",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "8555a918": {
+      "case": "G4",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "a99b55ec": {
+      "case": "G4",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "b638523b": {
+      "case": "G4",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "04eed4f3": {
+      "case": "M1",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "1a297a07": {
+      "case": "M1",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "4a7c14b4": {
+      "case": "M1",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "54a5fbd7": {
+      "case": "M1",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "c87e8342": {
+      "case": "M1",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "e0edfc5a": {
+      "case": "M1",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "61583ee3": {
+      "case": "M2",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "6fe5779e": {
+      "case": "M2",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "85ac7bde": {
+      "case": "M2",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "8ff5963f": {
+      "case": "M2",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "a58a7a4d": {
+      "case": "M2",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    },
+    "b9950cf1": {
+      "case": "M2",
+      "scores": {
+        "fidelity": null,
+        "coverage": null,
+        "flow": null,
+        "legibility": null,
+        "visual_encoding": null
+      },
+      "total_25": null,
+      "technical_30": null,
+      "defects": [],
+      "rationale": ""
+    }
+  }
+}

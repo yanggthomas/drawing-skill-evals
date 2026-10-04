@@ -1,0 +1,11 @@
+repo:   https://github.com/NVIDIA/Megatron-LM
+ref:    default branch
+commit: e998be072d22ff57b4b49899819a1a153f4f3dc9
+date:   2026-09-30T21:55:31+00:00 (commit date)
+vendored: 2026-10-01, verbatim copies (line numbers match upstream at this commit)
+license: see LICENSE
+
+files:
+  megatron/core/tensor_parallel/layers.py
+  megatron/core/tensor_parallel/mappings.py
+  megatron/core/transformer/mlp.py
