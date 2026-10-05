@@ -1,0 +1,127 @@
+{
+  "case_id": "A3",
+  "case": "megatron-parallel-groups",
+  "arm": "with",
+  "model": "gpt-5.6-sol",
+  "reasoning_effort": "high",
+  "attempts": 1,
+  "prompt_file": "/Users/guangyang/Projects/drawing-skill-evals/evals/megatron-parallel-groups/prompt.md",
+  "prompt_sha256": "543773bd0f75887e636b485a73826cec06a19f1081e188cfeb18c5800bcb768f",
+  "prompt_suffix": null,
+  "source": "/Users/guangyang/Projects/drawing-skill-evals/evals/megatron-parallel-groups/src",
+  "output_png": "out/parallel-groups.png",
+  "catalog_expected_skill": "graphviz",
+  "expected_skills_visible": [
+    "graphviz",
+    "model-architecture"
+  ],
+  "image_generation_tool": false,
+  "isolation_args": [
+    "--config",
+    "skills.bundled.enabled=false",
+    "--disable",
+    "plugins",
+    "--disable",
+    "apps",
+    "--disable",
+    "image_generation"
+  ],
+  "proxy": "http://127.0.0.1:7890",
+  "isolated_home": true,
+  "target": "/Users/guangyang/Projects/drawing-skill-evals/runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-parallel-groups/arms/with",
+  "status": "complete",
+  "run": {
+    "cli_version": "codex-cli 0.160.0",
+    "started_at": "2026-10-04T09:46:57.608Z",
+    "ended_at": "2026-10-04T09:50:41.886Z",
+    "elapsed_seconds": 224.219,
+    "exit_code": 0,
+    "signal": null,
+    "process_error": null,
+    "timed_out": false,
+    "archived_attempt": null,
+    "temp_root": "/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-megatron-parallel-groups-with-NrXStI",
+    "skills_visible": [
+      "graphviz",
+      "model-architecture"
+    ],
+    "launcher": {
+      "command": "codex",
+      "args": [
+        "exec",
+        "--json",
+        "--ephemeral",
+        "--ignore-user-config",
+        "--ignore-rules",
+        "--skip-git-repo-check",
+        "--model",
+        "gpt-5.6-sol",
+        "--strict-config",
+        "--config",
+        "model_reasoning_effort=\"high\"",
+        "--config",
+        "approval_policy=\"never\"",
+        "--config",
+        "skills.bundled.enabled=false",
+        "--disable",
+        "plugins",
+        "--disable",
+        "apps",
+        "--disable",
+        "image_generation",
+        "--sandbox",
+        "workspace-write",
+        "--cd",
+        "/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-megatron-parallel-groups-with-NrXStI/workspace",
+        "--output-last-message",
+        "/Users/guangyang/Projects/drawing-skill-evals/runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-parallel-groups/arms/with/last-message.md",
+        "<PROMPT sha256=543773bd0f75887e636b485a73826cec06a19f1081e188cfeb18c5800bcb768f>"
+      ]
+    }
+  },
+  "usage": {
+    "input_tokens": 406069,
+    "cached_input_tokens": 358912,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 10720,
+    "reasoning_output_tokens": 4061
+  },
+  "estimated_cost_usd": 0.5465928000000001,
+  "image_output_cost_usd": null,
+  "skill_reads": [
+    "/bin/zsh -lc \"sed -n '1,240p' /private/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-megatron-parallel-groups-with-NrXStI/codex-home/skills/graphviz/SKILL.md\""
+  ],
+  "graphviz_read": true,
+  "model_architecture_read": false,
+  "imagegen_read": false,
+  "graphviz_workflow_verified": true,
+  "model_architecture_workflow_verified": false,
+  "image_generation_calls": 0,
+  "generated_images": [],
+  "png_from_image_tool": false,
+  "code_render_commands": [
+    "/bin/zsh -lc \"sed -n '1,260p' /private/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-megatron-parallel-groups-with-NrXStI/codex-home/skills/graphviz/references/style-template.dot && pwd && rg --files -g 'PINNED.txt' -g 'AGENTS.md' -g '\"'!out'\"' -g '\"'!*.png'\"' | sed -n '1,120p' && find .. -maxdepth 2 -type d -print | sed -n '1,120p'\"",
+    "/bin/zsh -lc \"sed -n '1,260p' /private/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-megatron-parallel-groups-with-NrXStI/codex-home/skills/graphviz/references/style-template.dot && pwd && rg --files -g 'PINNED.txt' -g 'AGENTS.md' -g '\"'!out'\"' -g '\"'!*.png'\"' | sed -n '1,120p' && find .. -maxdepth 2 -type d -print | sed -n '1,120p'\"",
+    "/bin/zsh -lc 'dot -Tpng -Gdpi=180 out/parallel-groups.dot -o out/parallel-groups.png && file out/parallel-groups.png && identify out/parallel-groups.png 2>/dev/null || sips -g pixelWidth -g pixelHeight out/parallel-groups.png'",
+    "/bin/zsh -lc 'dot -Tpng -Gdpi=180 out/parallel-groups.dot -o out/parallel-groups.png && file out/parallel-groups.png && identify out/parallel-groups.png 2>/dev/null || sips -g pixelWidth -g pixelHeight out/parallel-groups.png'"
+  ],
+  "subagents_spawned": 0,
+  "repo_references": [],
+  "route_verified": true,
+  "editable_dot_files": [
+    "parallel-groups.dot"
+  ],
+  "editable_tex_files": [],
+  "compiled_pdf_files": [],
+  "output_files": [
+    "parallel-groups.dot",
+    "parallel-groups.png"
+  ],
+  "png": {
+    "path": "/Users/guangyang/Projects/drawing-skill-evals/runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-parallel-groups/arms/with/out/parallel-groups.png",
+    "width": 2844,
+    "height": 2312,
+    "bytes": 469363,
+    "sha256": "cda858d58f2ecb5d0471665f19f45d2e1ead1b9bf9b6719795ab251577a4185d"
+  }
+}

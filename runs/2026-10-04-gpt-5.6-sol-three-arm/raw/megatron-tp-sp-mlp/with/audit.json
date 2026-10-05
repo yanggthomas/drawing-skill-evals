@@ -1,0 +1,132 @@
+{
+  "case_id": "M1",
+  "case": "megatron-tp-sp-mlp",
+  "arm": "with",
+  "model": "gpt-5.6-sol",
+  "reasoning_effort": "high",
+  "attempts": 1,
+  "prompt_file": "/Users/guangyang/Projects/drawing-skill-evals/evals/megatron-tp-sp-mlp/prompt.md",
+  "prompt_sha256": "d54e3e84549ff47e56726a9451057ba277f11222a622f1aa31cc8a886e1bc1c2",
+  "prompt_suffix": null,
+  "source": "/Users/guangyang/Projects/drawing-skill-evals/evals/megatron-tp-sp-mlp/src",
+  "output_png": "out/tp-sp-mlp.png",
+  "catalog_expected_skill": "model-architecture",
+  "expected_skills_visible": [
+    "graphviz",
+    "model-architecture"
+  ],
+  "image_generation_tool": false,
+  "isolation_args": [
+    "--config",
+    "skills.bundled.enabled=false",
+    "--disable",
+    "plugins",
+    "--disable",
+    "apps",
+    "--disable",
+    "image_generation"
+  ],
+  "proxy": "http://127.0.0.1:7890",
+  "isolated_home": true,
+  "target": "/Users/guangyang/Projects/drawing-skill-evals/runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-tp-sp-mlp/arms/with",
+  "status": "complete",
+  "run": {
+    "cli_version": "codex-cli 0.160.0",
+    "started_at": "2026-10-04T03:45:10.783Z",
+    "ended_at": "2026-10-04T03:53:38.826Z",
+    "elapsed_seconds": 508,
+    "exit_code": 0,
+    "signal": null,
+    "process_error": null,
+    "timed_out": false,
+    "archived_attempt": null,
+    "temp_root": "/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-megatron-tp-sp-mlp-with-K76Vnz",
+    "skills_visible": [
+      "graphviz",
+      "model-architecture"
+    ],
+    "launcher": {
+      "command": "codex",
+      "args": [
+        "exec",
+        "--json",
+        "--ephemeral",
+        "--ignore-user-config",
+        "--ignore-rules",
+        "--skip-git-repo-check",
+        "--model",
+        "gpt-5.6-sol",
+        "--strict-config",
+        "--config",
+        "model_reasoning_effort=\"high\"",
+        "--config",
+        "approval_policy=\"never\"",
+        "--config",
+        "skills.bundled.enabled=false",
+        "--disable",
+        "plugins",
+        "--disable",
+        "apps",
+        "--disable",
+        "image_generation",
+        "--sandbox",
+        "workspace-write",
+        "--cd",
+        "/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-megatron-tp-sp-mlp-with-K76Vnz/workspace",
+        "--output-last-message",
+        "/Users/guangyang/Projects/drawing-skill-evals/runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-tp-sp-mlp/arms/with/last-message.md",
+        "<PROMPT sha256=d54e3e84549ff47e56726a9451057ba277f11222a622f1aa31cc8a886e1bc1c2>"
+      ]
+    }
+  },
+  "usage": {
+    "input_tokens": 1554881,
+    "cached_input_tokens": 1463040,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 15429,
+    "reasoning_output_tokens": 3320
+  },
+  "estimated_cost_usd": 1.26116,
+  "skill_reads": [
+    "/bin/zsh -lc \"sed -n '1,240p' /private/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-megatron-tp-sp-mlp-with-K76Vnz/codex-home/skills/model-architecture/SKILL.md\""
+  ],
+  "graphviz_read": false,
+  "model_architecture_read": true,
+  "imagegen_read": false,
+  "graphviz_workflow_verified": false,
+  "model_architecture_workflow_verified": true,
+  "image_generation_calls": 0,
+  "generated_images": [],
+  "png_from_image_tool": false,
+  "code_render_commands": [
+    "/bin/zsh -lc 'ls -la out && command -v xelatex || true && command -v pdftoppm || true && command -v magick || true'",
+    "/bin/zsh -lc 'ls -la out && command -v xelatex || true && command -v pdftoppm || true && command -v magick || true'"
+  ],
+  "subagents_spawned": 0,
+  "repo_references": [],
+  "route_verified": true,
+  "editable_dot_files": [],
+  "editable_tex_files": [
+    "tp-sp-mlp.tex"
+  ],
+  "compiled_pdf_files": [
+    "tp-sp-mlp.pdf"
+  ],
+  "output_files": [
+    "tp-sp-mlp.aux",
+    "tp-sp-mlp.fdb_latexmk",
+    "tp-sp-mlp.fls",
+    "tp-sp-mlp.log",
+    "tp-sp-mlp.pdf",
+    "tp-sp-mlp.png",
+    "tp-sp-mlp.tex",
+    "tp-sp-mlp.xdv"
+  ],
+  "png": {
+    "path": "/Users/guangyang/Projects/drawing-skill-evals/runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-tp-sp-mlp/arms/with/out/tp-sp-mlp.png",
+    "width": 2576,
+    "height": 1427,
+    "bytes": 524615,
+    "sha256": "3f698fc9d78898a4cc2f874ff068a618e84598b33f33f98ccc2568b20d21a6d7"
+  }
+}

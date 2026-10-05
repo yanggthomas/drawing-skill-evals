@@ -1,0 +1,135 @@
+{
+  "case_id": "G2",
+  "case": "verl-ppo-step",
+  "arm": "imagegen",
+  "model": "gpt-5.6-sol",
+  "reasoning_effort": "high",
+  "attempts": 1,
+  "prompt_file": "/Users/guangyang/Projects/drawing-skill-evals/evals/verl-ppo-step/prompt.md",
+  "prompt_sha256": "a30f454330205172938e66976bc39f2d2e9a09c6cfb915d5285bcb5b0e536118",
+  "prompt_suffix": "Produce the diagram with image generation.",
+  "source": "/Users/guangyang/Projects/drawing-skill-evals/evals/verl-ppo-step/src",
+  "output_png": "out/ppo-step.png",
+  "catalog_expected_skill": "graphviz",
+  "expected_skills_visible": [
+    "imagegen"
+  ],
+  "image_generation_tool": true,
+  "isolation_args": [
+    "--config",
+    "skills.bundled.enabled=false",
+    "--disable",
+    "plugins",
+    "--disable",
+    "apps"
+  ],
+  "proxy": "http://127.0.0.1:7890",
+  "isolated_home": true,
+  "target": "/Users/guangyang/Projects/drawing-skill-evals/runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-ppo-step/arms/imagegen",
+  "status": "complete",
+  "run": {
+    "cli_version": "codex-cli 0.160.0",
+    "started_at": "2026-10-04T03:21:02.560Z",
+    "ended_at": "2026-10-04T03:26:46.550Z",
+    "elapsed_seconds": 343.978,
+    "exit_code": 0,
+    "signal": null,
+    "process_error": null,
+    "timed_out": false,
+    "archived_attempt": null,
+    "temp_root": "/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-verl-ppo-step-imagegen-Z3ttnR",
+    "skills_visible": [
+      "imagegen"
+    ],
+    "launcher": {
+      "command": "codex",
+      "args": [
+        "exec",
+        "--json",
+        "--ephemeral",
+        "--ignore-user-config",
+        "--ignore-rules",
+        "--skip-git-repo-check",
+        "--model",
+        "gpt-5.6-sol",
+        "--strict-config",
+        "--config",
+        "model_reasoning_effort=\"high\"",
+        "--config",
+        "approval_policy=\"never\"",
+        "--config",
+        "skills.bundled.enabled=false",
+        "--disable",
+        "plugins",
+        "--disable",
+        "apps",
+        "--sandbox",
+        "workspace-write",
+        "--cd",
+        "/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-verl-ppo-step-imagegen-Z3ttnR/workspace",
+        "--output-last-message",
+        "/Users/guangyang/Projects/drawing-skill-evals/runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-ppo-step/arms/imagegen/last-message.md",
+        "<PROMPT sha256=a30f454330205172938e66976bc39f2d2e9a09c6cfb915d5285bcb5b0e536118>"
+      ]
+    }
+  },
+  "usage": {
+    "input_tokens": 701039,
+    "cached_input_tokens": 642816,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 6851,
+    "reasoning_output_tokens": 1904
+  },
+  "estimated_cost_usd": 0.6270384,
+  "image_output_cost_usd": {
+    "low": 0.0077,
+    "medium": 0.0695,
+    "high": 0.2779
+  },
+  "skill_reads": [
+    "/bin/zsh -lc \"sed -n '1,240p' /private/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-verl-ppo-step-imagegen-Z3ttnR/codex-home/skills/imagegen/SKILL.md\""
+  ],
+  "graphviz_read": false,
+  "model_architecture_read": false,
+  "imagegen_read": true,
+  "graphviz_workflow_verified": false,
+  "model_architecture_workflow_verified": false,
+  "image_generation_calls": 2,
+  "generated_images": [
+    {
+      "path": null,
+      "width": 1672,
+      "height": 941,
+      "bytes": 1798452,
+      "sha256": "13088a90bc97be4c2bff7facd9222524099405df1adb5a1b87f434dbf610b0ec",
+      "recovered": true
+    },
+    {
+      "path": null,
+      "width": 1672,
+      "height": 941,
+      "bytes": null,
+      "sha256": null,
+      "recovered": true
+    }
+  ],
+  "png_from_image_tool": true,
+  "code_render_commands": [],
+  "subagents_spawned": 0,
+  "repo_references": [],
+  "route_verified": true,
+  "editable_dot_files": [],
+  "editable_tex_files": [],
+  "compiled_pdf_files": [],
+  "output_files": [
+    "ppo-step.png"
+  ],
+  "png": {
+    "path": "/Users/guangyang/Projects/drawing-skill-evals/runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-ppo-step/arms/imagegen/out/ppo-step.png",
+    "width": 1672,
+    "height": 941,
+    "bytes": 1798452,
+    "sha256": "13088a90bc97be4c2bff7facd9222524099405df1adb5a1b87f434dbf610b0ec"
+  },
+  "audit_recovery": "generated_images, image_generation_calls, png_from_image_tool and image_output_cost_usd restored from the 2026-10-04 12:04 audit, which read the arm's temp CODEX_HOME/generated_images before the temp root was removed; that audit found the output PNG byte-identical to one generated image (kept image sha256 = png.sha256). Discarded images' hashes were not retained."
+}

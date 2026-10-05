@@ -1,0 +1,4 @@
+Reading additional input from stdin...
+2026-10-04T03:50:22.442707Z ERROR codex_core::tools::router: error=apply_patch verification failed: Failed to find expected lines in /var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-megatron-tp-sp-mlp-with-K76Vnz/workspace/out/tp-sp-mlp.tex:
+\node[tensor] (xlocal) at (1.7,8.85)
+  {$X_r$\\[-1pt]\\small $[s/p,\\,b,\\,h]$\\[-1pt]\\nodepart{below}};

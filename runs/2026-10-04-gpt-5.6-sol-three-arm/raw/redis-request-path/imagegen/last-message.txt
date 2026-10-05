@@ -1,0 +1,5 @@
+Created the code-grounded Redis 8 request lifecycle diagram:
+
+[Download request-path.png](/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-redis-request-path-imagegen-zQB16B/workspace/out/request-path.png)
+
+It is a 1672×941 PNG generated with the built-in image tool. The prompt specified a two-lane sequence diagram covering main-thread accept/execution, I/O-thread read/parse/write, queue/notifier handoffs, exact function names, and source-line citations from the pinned Redis 8.10.2 commit.

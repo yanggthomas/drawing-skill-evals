@@ -1,0 +1,252 @@
+digraph verl_resource_placement {
+  graph [
+    rankdir=LR,
+    bgcolor="white",
+    fontname="Helvetica",
+    fontsize=18,
+    pad="0.35",
+    nodesep=0.38,
+    ranksep=0.95,
+    splines=spline,
+    compound=true,
+    newrank=true,
+    labelloc=t,
+    label="verl PPO / GRPO on Ray — resource placement and process topology\nPinned commit fbb4b3a8bf636f290c9c59fc346f756849e9c241 (2026-09-30) • structure/placement, not training-step order"
+  ];
+
+  node [
+    shape=ellipse,
+    style=filled,
+    fillcolor="#E8F4FD",
+    color="#2E86AB",
+    penwidth=1.4,
+    fontname="Helvetica",
+    fontsize=11,
+    margin="0.11,0.08"
+  ];
+
+  edge [
+    color="#555555",
+    penwidth=1.25,
+    arrowsize=0.75,
+    fontname="Helvetica",
+    fontsize=9,
+    fontcolor="#333333"
+  ];
+
+  subgraph cluster_driver {
+    label="RAY DRIVER / CONTROL PLANE";
+    color="#E76F51";
+    fillcolor="#FFF8F2";
+    style="rounded,filled";
+    penwidth=1.7;
+    margin=16;
+
+    driver [
+      shape=hexagon,
+      fillcolor="#F4A261",
+      color="#E76F51",
+      fontsize=12,
+      label="TaskRunner Ray actor\ncontains RayPPOTrainer driver\nconstructs workers, then orchestrates RPC\nadvantages remain on the driver\n[M 136–151, 217–234; T 285–312, 1405–1410]"
+    ];
+
+    rpm [
+      shape=box,
+      style="rounded,filled",
+      fillcolor="#E1BEE7",
+      color="#6A1B9A",
+      label="ResourcePoolManager\npool specs + role→pool map\n[M 67–100; R 189–250]"
+    ];
+
+    llm_mgr [
+      shape=box,
+      style="rounded,filled",
+      fillcolor="#E1BEE7",
+      color="#6A1B9A",
+      label="LLMServerManager\nactor WG + rollout pool\n→ replicas and LLM client\n[T 951–953]"
+    ];
+
+    agent_mgr [
+      shape=box,
+      style="rounded,filled",
+      fillcolor="#E1BEE7",
+      color="#6A1B9A",
+      label="AgentLoopManager\nuses LLM client; optional teacher client\nand streaming reward-worker handles\n[T 939–965]"
+    ];
+
+    reward_mgr [
+      shape=box,
+      style="rounded,filled",
+      fillcolor="#E1BEE7",
+      color="#6A1B9A",
+      label="RewardLoopManager\nrm_resource_pool = selected pool or None\n[T 909–919]"
+    ];
+
+    teacher_mgr [
+      shape=box,
+      style="rounded,filled",
+      fillcolor="#E1BEE7",
+      color="#6A1B9A",
+      label="MultiTeacherModelManager\nteacher_pool → teacher client\n[T 925–936]"
+    ];
+
+    sync_mgr [
+      shape=box,
+      style="rounded,filled",
+      fillcolor="#E1BEE7",
+      color="#6A1B9A",
+      label="CheckpointEngineManager\nactor_wg + rollout replicas\nweight-sync coordinator\n[T 967–978; C 380–447]"
+    ];
+
+    code_key [
+      shape=ellipse,
+      fillcolor="#F5F5F5",
+      color="#CCCCCC",
+      style="filled,dashed",
+      fontsize=9.2,
+      label="CODE KEY\nM main_ppo_v0.py • T ray_trainer.py\nR single_controller/ray/base.py\nC checkpoint_engine/base.py"
+    ];
+
+    { rank=same; rpm; llm_mgr; agent_mgr; reward_mgr; teacher_mgr; sync_mgr; code_key; }
+
+    driver -> rpm [label="creates/passes"];
+    driver -> llm_mgr [label="creates"];
+    driver -> agent_mgr [label="creates"];
+    driver -> reward_mgr [label="creates"];
+    driver -> teacher_mgr [label="if distillation", style=dashed];
+    driver -> sync_mgr [label="creates"];
+    llm_mgr -> agent_mgr [label="get_client()\n[T 960–963]", constraint=false];
+    reward_mgr -> agent_mgr [label="handles only if no RM or\ndedicated RM pool [T 946–965]", style=dashed, constraint=false];
+    teacher_mgr -> agent_mgr [label="get_client() [T 957–964]", style=dashed, constraint=false];
+  }
+
+  subgraph cluster_ray {
+    label="RAY CLUSTER — logical pools become GPU placement groups";
+    color="#2E86AB";
+    fillcolor="#F8FBFE";
+    style="rounded,filled";
+    penwidth=1.8;
+    margin=18;
+
+    global_pool [
+      shape=plain,
+      label=<
+        <TABLE BORDER="2" CELLBORDER="1" CELLSPACING="0" CELLPADDING="8" COLOR="#B8860B" BGCOLOR="#FFFDF3">
+          <TR>
+            <TD COLSPAN="4" BGCOLOR="#FFF2B2">
+              <FONT POINT-SIZE="15"><B>global_pool — always present</B></FONT><BR/>
+              actor • rollout • reference • critic; optionally reward model
+            </TD>
+          </TR>
+          <TR>
+            <TD COLSPAN="4" PORT="coverage">
+              <B>GPU coverage:</B> trainer.nnodes × trainer.n_gpus_per_node<BR/>
+              One STRICT_PACK placement group per node; one 1-GPU bundle per requested slot<BR/>
+              <FONT POINT-SIZE="9">[M 70–73; R 135–166, 204–223]</FONT>
+            </TD>
+          </TR>
+          <TR>
+            <TD COLSPAN="4" BGCOLOR="#FFF9E7">
+              <B>ONE GPU SLOT — repeated for every global-pool bundle</B><BR/>
+              Boxes below share the GPU; only the actor/ref/critic roles share the same OS process
+            </TD>
+          </TR>
+          <TR>
+            <TD PORT="actor" BGCOLOR="#FFF0F1" WIDTH="290">
+              <FONT COLOR="#B71C1C"><B>RAY WORKERDICT PROCESS</B></FONT><BR/>
+              <FONT COLOR="#B71C1C"><B>ActorRolloutRefWorker object</B></FONT><BR/>
+              ACTOR + optional REFERENCE role views<BR/>
+              <FONT POINT-SIZE="9">Role.ActorRollout or ActorRolloutRef → global_pool<BR/>when used, ref_policy_wg resolves to the same handles<BR/>[M 35–55, 123–130; T 783–793, 893–907]</FONT><BR/><BR/>
+              <FONT COLOR="#2E86AB"><B>TrainingWorker object</B></FONT><BR/>
+              CRITIC role view (when need_critic)<BR/>
+              <FONT POINT-SIZE="9">instantiated only when need_critic(config)<BR/>[M 57–65; T 797–835, 882–891]</FONT><BR/><BR/>
+              <FONT POINT-SIZE="9">create_colocated_worker_cls instantiates both objects in-process;<BR/>prefixed WorkerGroups reuse the same Ray actor handles.<BR/>[T 870–880; R 738–771, 1008–1049]</FONT>
+            </TD>
+            <TD PORT="rollout" BGCOLOR="#FFCDD2" WIDTH="210">
+              <FONT COLOR="#B71C1C"><B>ROLLOUT SERVER</B></FONT><BR/>
+              vLLM / SGLang inference<BR/>WorkerProc / replica process(es)<BR/>
+              <FONT POINT-SIZE="9">built using actor_rollout_resource_pool<BR/>[T 74, 951–953; C 327–349]</FONT>
+            </TD>
+            <TD PORT="sync" BGCOLOR="#E1BEE7" WIDTH="230">
+              <FONT COLOR="#6A1B9A"><B>ROLLOUT-SIDE CE WORKER</B></FONT><BR/>
+              CheckpointEngineWorker + server adapter<BR/>same GPU, separate from rollout WorkerProc<BR/>
+              <FONT POINT-SIZE="9">[C 304–377, 380–400]</FONT>
+            </TD>
+            <TD PORT="rm" BGCOLOR="#FFCDD2" WIDTH="220">
+              <FONT COLOR="#B71C1C"><B>OPTIONAL REWARD PROCESS</B></FONT><BR/>
+              reward-loop / RM worker(s)<BR/>when enable_resource_pool=false<BR/>
+              <FONT POINT-SIZE="9">Role.RewardModel → global_pool<BR/>[M 102–112; T 909–919]</FONT>
+            </TD>
+          </TR>
+          <TR>
+            <TD COLSPAN="4" BGCOLOR="#F1E2F4">
+              <B>Weight path:</B> actor model engine + sender CE (same actor process)
+              → NCCL / NIXL / other backend → rollout CE worker
+              → CUDA IPC / server adapter → rollout server weights<BR/>
+              <FONT POINT-SIZE="9">[C 116–128, 353–360, 380–400, 510–560]</FONT>
+            </TD>
+          </TR>
+          <TR>
+            <TD COLSPAN="4">
+              Default max_colocate_count=3; each Ray WorkerGroup actor requests 1/3 GPU scheduling resource.
+              The rollout backend may additionally own a separate WorkerProc.<BR/>
+              <FONT POINT-SIZE="9">[R 189–220, 631–701]</FONT>
+            </TD>
+          </TR>
+        </TABLE>
+      >
+    ];
+
+    reward_pool [
+      shape=plain,
+      label=<
+        <TABLE BORDER="2" CELLBORDER="1" CELLSPACING="0" CELLPADDING="8" COLOR="#B8860B" BGCOLOR="#FFFDF3">
+          <TR><TD BGCOLOR="#FFF2B2"><FONT POINT-SIZE="14"><B>reward_pool — optional, dedicated</B></FONT></TD></TR>
+          <TR><TD PORT="coverage"><B>GPU coverage:</B> reward_model.nnodes × reward_model.n_gpus_per_node<BR/><FONT POINT-SIZE="9">created only when enable_resource_pool=true [M 75–82]</FONT></TD></TR>
+          <TR><TD PORT="rm" BGCOLOR="#FFCDD2"><FONT COLOR="#B71C1C"><B>Reward-loop / REWARD MODEL worker process(es)</B></FONT><BR/>Role.RewardModel → reward_pool<BR/><FONT POINT-SIZE="9">[M 102–112; T 909–919]</FONT></TD></TR>
+        </TABLE>
+      >
+    ];
+
+    teacher_pool [
+      shape=plain,
+      label=<
+        <TABLE BORDER="2" CELLBORDER="1" CELLSPACING="0" CELLPADDING="8" COLOR="#B8860B" BGCOLOR="#FFFDF3">
+          <TR><TD BGCOLOR="#FFF2B2"><FONT POINT-SIZE="14"><B>teacher_pool — optional, dedicated</B></FONT></TD></TR>
+          <TR><TD PORT="coverage"><B>GPU coverage:</B> distillation.nnodes × distillation.n_gpus_per_node<BR/><FONT POINT-SIZE="9">created only when distillation is enabled [M 87–95]</FONT></TD></TR>
+          <TR><TD PORT="teacher" BGCOLOR="#FFCDD2"><FONT COLOR="#B71C1C"><B>TEACHER model worker process(es)</B></FONT><BR/>Role.TeacherModel → teacher_pool<BR/><FONT POINT-SIZE="9">[M 114–121; T 925–936]</FONT></TD></TR>
+        </TABLE>
+      >
+    ];
+
+    capacity_note [
+      shape=ellipse,
+      fillcolor="#F5F5F5",
+      color="#CCCCCC",
+      style="filled,dashed",
+      fontsize=9.5,
+      label="Ray chooses physical GPU IDs. Required cluster GPUs are the sum of configured pools;\nthe manager rejects insufficient accelerator capacity. [R 231–250]"
+    ];
+
+    { rank=same; global_pool; reward_pool; teacher_pool; capacity_note; }
+  }
+
+  rpm -> global_pool:w [label="creates placement groups", color="#6A1B9A"];
+  rpm -> reward_pool:w [label="if configured", style=dashed, color="#6A1B9A"];
+  rpm -> teacher_pool:w [label="if distillation", style=dashed, color="#6A1B9A"];
+
+  driver -> global_pool:w [label="actor/ref RPC [T 902–907, 1266–1279, 1369]", color="#E76F51", penwidth=1.6];
+  driver -> global_pool:w [label="critic RPC if enabled [T 1258, 1378–1396]", style=dashed, color="#E76F51"];
+
+  llm_mgr -> global_pool:w [label="create/manage replicas", color="#6A1B9A"];
+  agent_mgr -> global_pool:w [label="generation via LLM client\n[T 960–965, 1510–1514]", color="#6A1B9A", penwidth=1.6];
+
+  sync_mgr -> global_pool:w [label="coordinates sender + receivers\n[C 422–447, 525–560]", color="#6A1B9A", penwidth=1.6];
+
+  reward_mgr -> global_pool:w [label="colocated-RM mode: compute_rm_score\n[T 588–594, 1561–1568]", style=dashed, color="#6A1B9A"];
+  reward_mgr -> reward_pool:w [label="owns reward-loop workers", color="#6A1B9A"];
+  agent_mgr -> reward_pool:w [label="streaming worker handles\nwhen dedicated pool [T 946–965]", style=dashed, color="#6A1B9A"];
+
+  teacher_mgr -> teacher_pool:w [label="owns workers / supplies client", color="#6A1B9A"];
+  agent_mgr -> teacher_pool:w [label="teacher requests through client\n[T 957–964]", style=dashed, color="#6A1B9A"];
+}

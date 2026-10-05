@@ -1,0 +1,127 @@
+{
+  "case_id": "G1",
+  "case": "vllm-v1-schedule",
+  "arm": "imagegen",
+  "model": "gpt-5.6-sol",
+  "reasoning_effort": "high",
+  "attempts": 1,
+  "prompt_file": "/Users/guangyang/Projects/drawing-skill-evals/evals/vllm-v1-schedule/prompt.md",
+  "prompt_sha256": "f799efd81778dcc88f2f53a4bef2f67119609cb690ddfdd3e6af7494ab0084e8",
+  "prompt_suffix": "Produce the diagram with image generation.",
+  "source": "/Users/guangyang/Projects/drawing-skill-evals/evals/vllm-v1-schedule/src",
+  "output_png": "out/schedule-step.png",
+  "catalog_expected_skill": "graphviz",
+  "expected_skills_visible": [
+    "imagegen"
+  ],
+  "image_generation_tool": true,
+  "isolation_args": [
+    "--config",
+    "skills.bundled.enabled=false",
+    "--disable",
+    "plugins",
+    "--disable",
+    "apps"
+  ],
+  "proxy": "http://127.0.0.1:7890",
+  "isolated_home": true,
+  "target": "/Users/guangyang/Projects/drawing-skill-evals/runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-schedule/arms/imagegen",
+  "status": "complete",
+  "run": {
+    "cli_version": "codex-cli 0.160.0",
+    "started_at": "2026-10-04T03:14:54.729Z",
+    "ended_at": "2026-10-04T03:19:27.735Z",
+    "elapsed_seconds": 272.986,
+    "exit_code": 0,
+    "signal": null,
+    "process_error": null,
+    "timed_out": false,
+    "archived_attempt": null,
+    "temp_root": "/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-vllm-v1-schedule-imagegen-LhC1Wr",
+    "skills_visible": [
+      "imagegen"
+    ],
+    "launcher": {
+      "command": "codex",
+      "args": [
+        "exec",
+        "--json",
+        "--ephemeral",
+        "--ignore-user-config",
+        "--ignore-rules",
+        "--skip-git-repo-check",
+        "--model",
+        "gpt-5.6-sol",
+        "--strict-config",
+        "--config",
+        "model_reasoning_effort=\"high\"",
+        "--config",
+        "approval_policy=\"never\"",
+        "--config",
+        "skills.bundled.enabled=false",
+        "--disable",
+        "plugins",
+        "--disable",
+        "apps",
+        "--sandbox",
+        "workspace-write",
+        "--cd",
+        "/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-vllm-v1-schedule-imagegen-LhC1Wr/workspace",
+        "--output-last-message",
+        "/Users/guangyang/Projects/drawing-skill-evals/runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-schedule/arms/imagegen/last-message.md",
+        "<PROMPT sha256=f799efd81778dcc88f2f53a4bef2f67119609cb690ddfdd3e6af7494ab0084e8>"
+      ]
+    }
+  },
+  "usage": {
+    "input_tokens": 401372,
+    "cached_input_tokens": 263680,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 5233,
+    "reasoning_output_tokens": 1968
+  },
+  "estimated_cost_usd": 0.7609,
+  "image_output_cost_usd": {
+    "low": 0.0039,
+    "medium": 0.0347,
+    "high": 0.139
+  },
+  "skill_reads": [
+    "/bin/zsh -lc \"sed -n '1,240p' /private/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-vllm-v1-schedule-imagegen-LhC1Wr/codex-home/skills/imagegen/SKILL.md && printf '\\\\n---FILES---\\\\n' && pwd && rg --files -g 'PINNED.txt' -g 'AGENTS.md' -g '*scheduler*' . .. 2>/dev/null | head -200\""
+  ],
+  "graphviz_read": false,
+  "model_architecture_read": false,
+  "imagegen_read": true,
+  "graphviz_workflow_verified": false,
+  "model_architecture_workflow_verified": false,
+  "image_generation_calls": 1,
+  "generated_images": [
+    {
+      "path": null,
+      "width": 1672,
+      "height": 941,
+      "bytes": 1797968,
+      "sha256": "60bb4991cfad2ccd572b92fb4aeedb10d230864050743e3513a58d4ec36ebcf4",
+      "recovered": true
+    }
+  ],
+  "png_from_image_tool": true,
+  "code_render_commands": [],
+  "subagents_spawned": 0,
+  "repo_references": [],
+  "route_verified": true,
+  "editable_dot_files": [],
+  "editable_tex_files": [],
+  "compiled_pdf_files": [],
+  "output_files": [
+    "schedule-step.png"
+  ],
+  "png": {
+    "path": "/Users/guangyang/Projects/drawing-skill-evals/runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-schedule/arms/imagegen/out/schedule-step.png",
+    "width": 1672,
+    "height": 941,
+    "bytes": 1797968,
+    "sha256": "60bb4991cfad2ccd572b92fb4aeedb10d230864050743e3513a58d4ec36ebcf4"
+  },
+  "audit_recovery": "generated_images, image_generation_calls, png_from_image_tool and image_output_cost_usd restored from the 2026-10-04 12:04 audit, which read the arm's temp CODEX_HOME/generated_images before the temp root was removed; that audit found the output PNG byte-identical to one generated image (kept image sha256 = png.sha256). Discarded images' hashes were not retained."
+}

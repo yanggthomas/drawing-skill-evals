@@ -1,0 +1,130 @@
+{
+  "case_id": "M2",
+  "case": "vllm-v1-mixed-batch-attn",
+  "arm": "with",
+  "model": "gpt-5.6-sol",
+  "reasoning_effort": "high",
+  "attempts": 1,
+  "prompt_file": "/Users/guangyang/Projects/drawing-skill-evals/evals/vllm-v1-mixed-batch-attn/prompt.md",
+  "prompt_sha256": "4ef2f3690a79ce5a675bcd0574231064f76aac51a54655ab8fcd1532c7d11790",
+  "prompt_suffix": null,
+  "source": "/Users/guangyang/Projects/drawing-skill-evals/evals/vllm-v1-mixed-batch-attn/src",
+  "output_png": "out/mixed-batch-attn.png",
+  "catalog_expected_skill": "model-architecture",
+  "expected_skills_visible": [
+    "graphviz",
+    "model-architecture"
+  ],
+  "image_generation_tool": false,
+  "isolation_args": [
+    "--config",
+    "skills.bundled.enabled=false",
+    "--disable",
+    "plugins",
+    "--disable",
+    "apps",
+    "--disable",
+    "image_generation"
+  ],
+  "proxy": "http://127.0.0.1:7890",
+  "isolated_home": true,
+  "target": "/Users/guangyang/Projects/drawing-skill-evals/runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-mixed-batch-attn/arms/with",
+  "status": "complete",
+  "run": {
+    "cli_version": "codex-cli 0.160.0",
+    "started_at": "2026-10-04T09:22:34.437Z",
+    "ended_at": "2026-10-04T09:29:16.462Z",
+    "elapsed_seconds": 401.985,
+    "exit_code": 0,
+    "signal": null,
+    "process_error": null,
+    "timed_out": false,
+    "archived_attempt": "/Users/guangyang/Projects/drawing-skill-evals/runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-mixed-batch-attn/arms/with/attempts/2026-10-04T09-22-27.887Z",
+    "temp_root": "/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-vllm-v1-mixed-batch-attn-with-LDsQ2H",
+    "skills_visible": [
+      "graphviz",
+      "model-architecture"
+    ],
+    "launcher": {
+      "command": "codex",
+      "args": [
+        "exec",
+        "--json",
+        "--ephemeral",
+        "--ignore-user-config",
+        "--ignore-rules",
+        "--skip-git-repo-check",
+        "--model",
+        "gpt-5.6-sol",
+        "--strict-config",
+        "--config",
+        "model_reasoning_effort=\"high\"",
+        "--config",
+        "approval_policy=\"never\"",
+        "--config",
+        "skills.bundled.enabled=false",
+        "--disable",
+        "plugins",
+        "--disable",
+        "apps",
+        "--disable",
+        "image_generation",
+        "--sandbox",
+        "workspace-write",
+        "--cd",
+        "/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-vllm-v1-mixed-batch-attn-with-LDsQ2H/workspace",
+        "--output-last-message",
+        "/Users/guangyang/Projects/drawing-skill-evals/runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-mixed-batch-attn/arms/with/last-message.md",
+        "<PROMPT sha256=4ef2f3690a79ce5a675bcd0574231064f76aac51a54655ab8fcd1532c7d11790>"
+      ]
+    }
+  },
+  "usage": {
+    "input_tokens": 1524375,
+    "cached_input_tokens": 1415808,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 18514,
+    "reasoning_output_tokens": 6230
+  },
+  "estimated_cost_usd": 1.3708712000000003,
+  "image_output_cost_usd": null,
+  "skill_reads": [
+    "/bin/zsh -lc \"sed -n '1,240p' /private/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-vllm-v1-mixed-batch-attn-with-LDsQ2H/codex-home/skills/model-architecture/SKILL.md\""
+  ],
+  "graphviz_read": false,
+  "model_architecture_read": true,
+  "imagegen_read": false,
+  "graphviz_workflow_verified": false,
+  "model_architecture_workflow_verified": true,
+  "image_generation_calls": 0,
+  "generated_images": [],
+  "png_from_image_tool": false,
+  "code_render_commands": [],
+  "subagents_spawned": 0,
+  "repo_references": [],
+  "route_verified": true,
+  "editable_dot_files": [],
+  "editable_tex_files": [
+    "mixed-batch-attn.tex"
+  ],
+  "compiled_pdf_files": [
+    "mixed-batch-attn.pdf"
+  ],
+  "output_files": [
+    "mixed-batch-attn.aux",
+    "mixed-batch-attn.fdb_latexmk",
+    "mixed-batch-attn.fls",
+    "mixed-batch-attn.log",
+    "mixed-batch-attn.pdf",
+    "mixed-batch-attn.png",
+    "mixed-batch-attn.tex",
+    "mixed-batch-attn.xdv"
+  ],
+  "png": {
+    "path": "/Users/guangyang/Projects/drawing-skill-evals/runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-mixed-batch-attn/arms/with/out/mixed-batch-attn.png",
+    "width": 2745,
+    "height": 1670,
+    "bytes": 670624,
+    "sha256": "1e2b9078b42d1f16f7c138a3bbb12691b72547d4c92925fa524d6e71bccc2318"
+  }
+}

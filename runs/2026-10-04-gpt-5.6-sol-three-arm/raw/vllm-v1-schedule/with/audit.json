@@ -1,0 +1,128 @@
+{
+  "case_id": "G1",
+  "case": "vllm-v1-schedule",
+  "arm": "with",
+  "model": "gpt-5.6-sol",
+  "reasoning_effort": "high",
+  "attempts": 1,
+  "prompt_file": "/Users/guangyang/Projects/drawing-skill-evals/evals/vllm-v1-schedule/prompt.md",
+  "prompt_sha256": "876aa6823207dccd800b67858b86a0cd4a2a65cd4ff945031aac7b36b7e3d818",
+  "prompt_suffix": null,
+  "source": "/Users/guangyang/Projects/drawing-skill-evals/evals/vllm-v1-schedule/src",
+  "output_png": "out/schedule-step.png",
+  "catalog_expected_skill": "graphviz",
+  "expected_skills_visible": [
+    "graphviz",
+    "model-architecture"
+  ],
+  "image_generation_tool": false,
+  "isolation_args": [
+    "--config",
+    "skills.bundled.enabled=false",
+    "--disable",
+    "plugins",
+    "--disable",
+    "apps",
+    "--disable",
+    "image_generation"
+  ],
+  "proxy": "http://127.0.0.1:7890",
+  "isolated_home": true,
+  "target": "/Users/guangyang/Projects/drawing-skill-evals/runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-schedule/arms/with",
+  "status": "complete",
+  "run": {
+    "cli_version": "codex-cli 0.160.0",
+    "started_at": "2026-10-04T03:14:53.549Z",
+    "ended_at": "2026-10-04T03:20:44.857Z",
+    "elapsed_seconds": 351.29,
+    "exit_code": 0,
+    "signal": null,
+    "process_error": null,
+    "timed_out": false,
+    "archived_attempt": null,
+    "temp_root": "/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-vllm-v1-schedule-with-eV33Aw",
+    "skills_visible": [
+      "graphviz",
+      "model-architecture"
+    ],
+    "launcher": {
+      "command": "codex",
+      "args": [
+        "exec",
+        "--json",
+        "--ephemeral",
+        "--ignore-user-config",
+        "--ignore-rules",
+        "--skip-git-repo-check",
+        "--model",
+        "gpt-5.6-sol",
+        "--strict-config",
+        "--config",
+        "model_reasoning_effort=\"high\"",
+        "--config",
+        "approval_policy=\"never\"",
+        "--config",
+        "skills.bundled.enabled=false",
+        "--disable",
+        "plugins",
+        "--disable",
+        "apps",
+        "--disable",
+        "image_generation",
+        "--sandbox",
+        "workspace-write",
+        "--cd",
+        "/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-vllm-v1-schedule-with-eV33Aw/workspace",
+        "--output-last-message",
+        "/Users/guangyang/Projects/drawing-skill-evals/runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-schedule/arms/with/last-message.md",
+        "<PROMPT sha256=876aa6823207dccd800b67858b86a0cd4a2a65cd4ff945031aac7b36b7e3d818>"
+      ]
+    }
+  },
+  "usage": {
+    "input_tokens": 818932,
+    "cached_input_tokens": 685440,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 12693,
+    "reasoning_output_tokens": 4321
+  },
+  "estimated_cost_usd": 1.062004,
+  "skill_reads": [
+    "/bin/zsh -lc \"sed -n '1,240p' /private/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-vllm-v1-schedule-with-eV33Aw/codex-home/skills/graphviz/SKILL.md\""
+  ],
+  "graphviz_read": true,
+  "model_architecture_read": false,
+  "imagegen_read": false,
+  "graphviz_workflow_verified": true,
+  "model_architecture_workflow_verified": false,
+  "image_generation_calls": 0,
+  "generated_images": [],
+  "png_from_image_tool": false,
+  "code_render_commands": [
+    "/bin/zsh -lc 'dot -Tpng -Gdpi=170 out/schedule-step.dot -o out/schedule-step.png && file out/schedule-step.png && identify out/schedule-step.png 2>/dev/null || sips -g pixelWidth -g pixelHeight out/schedule-step.png'",
+    "/bin/zsh -lc 'dot -Tpng -Gdpi=170 out/schedule-step.dot -o out/schedule-step.png && file out/schedule-step.png && identify out/schedule-step.png 2>/dev/null || sips -g pixelWidth -g pixelHeight out/schedule-step.png'",
+    "/bin/zsh -lc 'dot -Tpng -Gdpi=170 out/schedule-step.dot -o out/schedule-step.png && file out/schedule-step.png && sips -g pixelWidth -g pixelHeight out/schedule-step.png'",
+    "/bin/zsh -lc 'dot -Tpng -Gdpi=170 out/schedule-step.dot -o out/schedule-step.png && file out/schedule-step.png && sips -g pixelWidth -g pixelHeight out/schedule-step.png'",
+    "/bin/zsh -lc 'ls -lh out/schedule-step.png out/schedule-step.dot && dot -Tsvg out/schedule-step.dot -o /tmp/schedule-step-check.svg && rg -n \"PINNED|SchedulerOutput|allocate_slots|preempt|chunk\" out/schedule-step.dot | head -40'",
+    "/bin/zsh -lc 'ls -lh out/schedule-step.png out/schedule-step.dot && dot -Tsvg out/schedule-step.dot -o /tmp/schedule-step-check.svg && rg -n \"PINNED|SchedulerOutput|allocate_slots|preempt|chunk\" out/schedule-step.dot | head -40'"
+  ],
+  "subagents_spawned": 0,
+  "repo_references": [],
+  "route_verified": true,
+  "editable_dot_files": [
+    "schedule-step.dot"
+  ],
+  "editable_tex_files": [],
+  "compiled_pdf_files": [],
+  "output_files": [
+    "schedule-step.dot",
+    "schedule-step.png"
+  ],
+  "png": {
+    "path": "/Users/guangyang/Projects/drawing-skill-evals/runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-schedule/arms/with/out/schedule-step.png",
+    "width": 7957,
+    "height": 4595,
+    "bytes": 1230930,
+    "sha256": "2985f4ec7f92edcd4619190c76886bbb1a4ce88f649f461fb0927ccb5e1fe555"
+  }
+}

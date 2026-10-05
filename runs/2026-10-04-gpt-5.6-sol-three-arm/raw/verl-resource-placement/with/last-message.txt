@@ -1,0 +1,5 @@
+Created and visually verified the architecture diagram against pinned commit `fbb4b3a8…`.
+
+[Open resource-placement.png](/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-verl-resource-placement-with-5OuvF5/workspace/out/resource-placement.png)
+
+The editable Graphviz source is [resource-placement.dot](/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-verl-resource-placement-with-5OuvF5/workspace/out/resource-placement.dot).

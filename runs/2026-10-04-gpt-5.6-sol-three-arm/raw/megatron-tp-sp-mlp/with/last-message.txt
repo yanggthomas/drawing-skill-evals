@@ -1,0 +1,11 @@
+Created and visually verified the code-grounded diagram.
+
+![TP + SP MLP diagram](/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-megatron-tp-sp-mlp-with-K76Vnz/workspace/out/tp-sp-mlp.png)
+
+Artifacts:
+
+- [PNG](/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-megatron-tp-sp-mlp-with-K76Vnz/workspace/out/tp-sp-mlp.png)
+- [PDF](/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-megatron-tp-sp-mlp-with-K76Vnz/workspace/out/tp-sp-mlp.pdf)
+- [Editable TikZ source](/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-megatron-tp-sp-mlp-with-K76Vnz/workspace/out/tp-sp-mlp.tex)
+
+The figure includes per-rank shapes, both backward all-gathers, both reduce-scatters, weight-gradient paths, GLU and bias notes, and line-level references to pinned commit `e998be072d22ff57b4b49899819a1a153f4f3dc9`.

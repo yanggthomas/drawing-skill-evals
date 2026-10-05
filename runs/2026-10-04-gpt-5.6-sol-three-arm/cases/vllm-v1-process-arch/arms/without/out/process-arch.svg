@@ -1,0 +1,333 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="1560" viewBox="0 0 2400 1560">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#07111f"/>
+      <stop offset="1" stop-color="#0b1728"/>
+    </linearGradient>
+    <linearGradient id="frontHead" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#0e7490"/>
+      <stop offset="1" stop-color="#0891b2"/>
+    </linearGradient>
+    <linearGradient id="coreHead" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#6d28d9"/>
+      <stop offset="1" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <linearGradient id="workerHead" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#a16207"/>
+      <stop offset="1" stop-color="#d97706"/>
+    </linearGradient>
+    <linearGradient id="gpu" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#123d35"/>
+      <stop offset="1" stop-color="#0c2926"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#000000" flood-opacity="0.32"/>
+    </filter>
+    <marker id="arrowCyan" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrowAmber" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#fbbf24"/>
+    </marker>
+    <marker id="arrowTeal" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#2dd4bf"/>
+    </marker>
+    <marker id="arrowPurple" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#c084fc"/>
+    </marker>
+    <marker id="arrowRed" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#fb7185"/>
+    </marker>
+    <style>
+      .title { font: 700 43px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #f8fafc; }
+      .subtitle { font: 400 20px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #94a3b8; }
+      .scope { font: 600 17px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #cbd5e1; letter-spacing: .3px; }
+      .nodeLabel { font: 700 15px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #64748b; letter-spacing: 1.8px; }
+      .procTitle { font: 700 23px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #ffffff; }
+      .procSub { font: 500 15px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #dbeafe; }
+      .pid { font: 700 14px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #e2e8f0; }
+      .boxTitle { font: 700 19px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #f1f5f9; }
+      .boxText { font: 400 16px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #cbd5e1; }
+      .boxMono { font: 500 15px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #cbd5e1; }
+      .tiny { font: 500 14px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #94a3b8; }
+      .edgeTitle { font: 700 15px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .edgeText { font: 500 13.5px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #dbeafe; }
+      .evidence { font: 500 13.5px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #aebbcf; }
+      .evidenceHead { font: 700 17px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #e2e8f0; }
+      .ref { font: 700 13px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #07111f; }
+    </style>
+  </defs>
+
+  <rect width="2400" height="1560" fill="url(#bg)"/>
+  <circle cx="2150" cy="40" r="330" fill="#0e7490" opacity="0.06"/>
+  <circle cx="100" cy="1450" r="360" fill="#7c3aed" opacity="0.05"/>
+
+  <text x="64" y="66" class="title">vLLM V1 · single-node tensor-parallel serving</text>
+  <text x="64" y="101" class="subtitle">OS process architecture with the multiprocess executor — structural view, not execution order</text>
+  <rect x="64" y="122" width="1070" height="42" rx="21" fill="#111f33" stroke="#263a55"/>
+  <text x="84" y="149" class="scope">PINNED commit 4c2d277643e2  ·  DP=1  ·  PP=1  ·  TP=N  ·  one GPU per worker rank</text>
+  <rect x="1772" y="122" width="564" height="42" rx="21" fill="#111f33" stroke="#263a55"/>
+  <text x="1794" y="149" class="scope">3 process roles  ·  N+2 OS processes total</text>
+
+  <rect x="44" y="190" width="2312" height="1070" rx="28" fill="#0b1626" stroke="#314158" stroke-width="2" stroke-dasharray="9 9"/>
+  <text x="76" y="222" class="nodeLabel">ONE HOST / OS NODE</text>
+
+  <!-- Frontend process -->
+  <g filter="url(#shadow)">
+    <rect x="82" y="250" width="500" height="800" rx="22" fill="#0e1b2e" stroke="#155e75" stroke-width="2"/>
+    <path d="M104 250 H560 Q582 250 582 272 V340 H82 V272 Q82 250 104 250 Z" fill="url(#frontHead)"/>
+  </g>
+  <text x="108" y="287" class="procTitle">Frontend process</text>
+  <text x="108" y="316" class="procSub">Async serving client / API-server host</text>
+  <rect x="477" y="271" width="78" height="34" rx="17" fill="#073b4c" stroke="#67e8f9"/>
+  <text x="496" y="293" class="pid">PID A</text>
+
+  <rect x="112" y="372" width="440" height="94" rx="14" fill="#11253a" stroke="#1e7490"/>
+  <text x="136" y="405" class="boxTitle">AsyncLLM</text>
+  <text x="136" y="433" class="boxText">async request streams + output-handler task</text>
+  <circle cx="524" cy="398" r="15" fill="#67e8f9"/><text x="518" y="403" class="ref">1</text>
+
+  <rect x="112" y="493" width="205" height="154" rx="14" fill="#101f33" stroke="#36506e"/>
+  <text x="136" y="526" class="boxTitle">InputProcessor</text>
+  <text x="136" y="555" class="boxText">prompt / params</text>
+  <text x="136" y="579" class="boxText">→ EngineCoreRequest</text>
+  <text x="136" y="609" class="tiny">token IDs, embeds, MM</text>
+  <circle cx="289" cy="518" r="15" fill="#67e8f9"/><text x="283" y="523" class="ref">1</text>
+
+  <rect x="347" y="493" width="205" height="154" rx="14" fill="#101f33" stroke="#36506e"/>
+  <text x="371" y="526" class="boxTitle">OutputProcessor</text>
+  <text x="371" y="555" class="boxText">EngineCoreOutputs</text>
+  <text x="371" y="579" class="boxText">→ RequestOutput</text>
+  <text x="371" y="609" class="tiny">text, token IDs, finish</text>
+  <circle cx="524" cy="518" r="15" fill="#67e8f9"/><text x="518" y="523" class="ref">1</text>
+
+  <path d="M214 466 V493" stroke="#5e7c9e" stroke-width="2" marker-end="url(#arrowCyan)"/>
+  <path d="M449 493 V466" stroke="#5e7c9e" stroke-width="2" marker-end="url(#arrowCyan)"/>
+
+  <rect x="112" y="676" width="440" height="188" rx="14" fill="#0c2b39" stroke="#22d3ee" stroke-width="2"/>
+  <text x="136" y="713" class="boxTitle">AsyncMPClient / EngineCoreClient</text>
+  <text x="136" y="743" class="boxText">ZeroMQ context + ROUTER input socket</text>
+  <text x="136" y="769" class="boxText">PULL output socket + msgpack codec</text>
+  <text x="136" y="795" class="boxText">launches &amp; monitors EngineCore process</text>
+  <text x="136" y="827" class="tiny">optional torch_shm tensor IPC for MM payloads</text>
+  <circle cx="524" cy="702" r="15" fill="#67e8f9"/><text x="518" y="707" class="ref">2</text>
+
+  <path d="M214 647 V676" stroke="#5e7c9e" stroke-width="2" marker-end="url(#arrowCyan)"/>
+  <path d="M449 676 V647" stroke="#5e7c9e" stroke-width="2" marker-end="url(#arrowCyan)"/>
+
+  <rect x="112" y="896" width="440" height="112" rx="14" fill="#0b1728" stroke="#2e415c"/>
+  <text x="136" y="930" class="boxTitle">Frontend-owned state</text>
+  <text x="136" y="958" class="boxText">tokenizer / renderer · request collectors</text>
+  <text x="136" y="983" class="boxText">per-request asyncio queues · stats/logging</text>
+
+  <!-- EngineCore process -->
+  <g filter="url(#shadow)">
+    <rect x="748" y="250" width="632" height="800" rx="22" fill="#12182d" stroke="#7c3aed" stroke-width="2"/>
+    <path d="M770 250 H1358 Q1380 250 1380 272 V340 H748 V272 Q748 250 770 250 Z" fill="url(#coreHead)"/>
+  </g>
+  <text x="776" y="287" class="procTitle">EngineCore process</text>
+  <text x="776" y="316" class="procSub">CPU control plane + scheduler + executor</text>
+  <rect x="1274" y="271" width="78" height="34" rx="17" fill="#3b176e" stroke="#ddd6fe"/>
+  <text x="1293" y="293" class="pid">PID B</text>
+
+  <rect x="778" y="372" width="270" height="122" rx="14" fill="#201c3e" stroke="#8b5cf6"/>
+  <text x="802" y="405" class="boxTitle">Input I/O thread</text>
+  <text x="802" y="434" class="boxText">DEALER socket · msgpack decode</text>
+  <text x="802" y="461" class="boxText">→ in-process input_queue</text>
+  <circle cx="1020" cy="397" r="15" fill="#c4b5fd"/><text x="1014" y="402" class="ref">3</text>
+
+  <rect x="1080" y="372" width="270" height="122" rx="14" fill="#201c3e" stroke="#8b5cf6"/>
+  <text x="1104" y="405" class="boxTitle">Output I/O thread</text>
+  <text x="1104" y="434" class="boxText">in-process output_queue</text>
+  <text x="1104" y="461" class="boxText">→ msgpack · PUSH socket</text>
+  <circle cx="1322" cy="397" r="15" fill="#c4b5fd"/><text x="1316" y="402" class="ref">3</text>
+
+  <rect x="778" y="523" width="572" height="209" rx="16" fill="#181b35" stroke="#a78bfa" stroke-width="2"/>
+  <text x="806" y="560" class="boxTitle">EngineCore busy loop</text>
+  <text x="806" y="589" class="boxText">owns request lifecycle and CPU scheduling state</text>
+  <rect x="806" y="613" width="242" height="84" rx="12" fill="#252148" stroke="#7c66c2"/>
+  <text x="828" y="646" class="boxTitle">Scheduler</text>
+  <text x="828" y="673" class="tiny">KV block manager · request queues</text>
+  <rect x="1074" y="613" width="248" height="84" rx="12" fill="#252148" stroke="#7c66c2"/>
+  <text x="1096" y="646" class="boxTitle">Structured outputs</text>
+  <text x="1096" y="673" class="tiny">grammar manager / constraints</text>
+  <circle cx="1322" cy="550" r="15" fill="#c4b5fd"/><text x="1316" y="555" class="ref">4</text>
+
+  <path d="M913 494 V523" stroke="#8b7fc1" stroke-width="2" marker-end="url(#arrowPurple)"/>
+  <path d="M1215 523 V494" stroke="#8b7fc1" stroke-width="2" marker-end="url(#arrowPurple)"/>
+
+  <rect x="778" y="762" width="572" height="197" rx="16" fill="#221b34" stroke="#c084fc" stroke-width="2"/>
+  <text x="806" y="799" class="boxTitle">MultiprocExecutor</text>
+  <text x="806" y="828" class="boxText">spawns N × WorkerProc (local_world_size = TP size)</text>
+  <text x="806" y="855" class="boxText">broadcast RPC MessageQueue + per-worker response MQs</text>
+  <text x="806" y="882" class="boxText">worker-health monitor thread · futures / aggregation</text>
+  <text x="806" y="914" class="boxMono">execute_model(SchedulerOutput) → ModelRunnerOutput</text>
+  <circle cx="1322" cy="790" r="15" fill="#e9d5ff"/><text x="1316" y="795" class="ref">5</text>
+  <path d="M1064 732 V762" stroke="#a78bfa" stroke-width="3" marker-end="url(#arrowPurple)"/>
+
+  <rect x="778" y="986" width="572" height="42" rx="12" fill="#0b1728" stroke="#35435a"/>
+  <text x="806" y="1013" class="tiny">No model weights or GPU KV cache live here; those are worker-owned.</text>
+
+  <!-- Frontend / EngineCore transport labels -->
+  <path d="M582 447 H748" stroke="#22d3ee" stroke-width="5" marker-end="url(#arrowCyan)"/>
+  <rect x="594" y="354" width="144" height="82" rx="10" fill="#0b2030" stroke="#1f6f82"/>
+  <text x="607" y="377" class="edgeTitle" fill="#67e8f9">ZeroMQ input</text>
+  <text x="607" y="399" class="edgeText">ROUTER → DEALER</text>
+  <text x="607" y="419" class="edgeText">msgpack multipart</text>
+  <text x="608" y="454" class="tiny">type + request / abort / utility</text>
+
+  <path d="M748 741 H582" stroke="#fbbf24" stroke-width="5" marker-end="url(#arrowAmber)"/>
+  <rect x="594" y="649" width="144" height="78" rx="10" fill="#2a2110" stroke="#9a7015"/>
+  <text x="607" y="672" class="edgeTitle" fill="#fde68a">ZeroMQ output</text>
+  <text x="607" y="694" class="edgeText">PUSH → PULL</text>
+  <text x="607" y="714" class="edgeText">msgpack multipart</text>
+  <text x="608" y="760" class="tiny">EngineCoreOutputs · stats · utility</text>
+
+  <!-- Worker process group -->
+  <rect x="1558" y="224" width="748" height="868" rx="24" fill="#141a24" stroke="#8a5b12" stroke-width="2"/>
+  <text x="1588" y="260" class="nodeLabel" fill="#d6a94d">N INDEPENDENT OS PROCESSES · ONE PER TP RANK / GPU</text>
+
+  <!-- worker 0 -->
+  <g filter="url(#shadow)">
+    <rect x="1584" y="283" width="696" height="224" rx="18" fill="#161e2b" stroke="#b7791f" stroke-width="2"/>
+    <path d="M1602 283 H2262 Q2280 283 2280 301 V335 H1584 V301 Q1584 283 1602 283 Z" fill="url(#workerHead)"/>
+  </g>
+  <text x="1608" y="317" class="procTitle">Worker process · TP rank 0</text>
+  <rect x="2172" y="294" width="82" height="30" rx="15" fill="#5c3505" stroke="#fde68a"/>
+  <text x="2190" y="314" class="pid">PID W0</text>
+  <rect x="1608" y="356" width="226" height="122" rx="12" fill="#202838" stroke="#a9772d"/>
+  <text x="1628" y="387" class="boxTitle">WorkerProc</text>
+  <text x="1628" y="414" class="boxText">RPC busy loop</text>
+  <text x="1628" y="439" class="boxText">WorkerWrapperBase</text>
+  <text x="1628" y="464" class="tiny">MQ reader / result writer</text>
+  <rect x="1853" y="356" width="245" height="122" rx="12" fill="#202838" stroke="#a9772d"/>
+  <text x="1873" y="387" class="boxTitle">GPU Worker</text>
+  <text x="1873" y="414" class="boxText">GPUModelRunner</text>
+  <text x="1873" y="439" class="boxText">model shard + KV cache</text>
+  <text x="1873" y="464" class="tiny">executes SchedulerOutput</text>
+  <rect x="2118" y="356" width="136" height="122" rx="12" fill="url(#gpu)" stroke="#34d399"/>
+  <text x="2153" y="393" class="boxTitle">GPU 0</text>
+  <text x="2140" y="422" class="boxText">CUDA ctx</text>
+  <text x="2138" y="449" class="tiny">weights · KV</text>
+  <circle cx="1810" cy="375" r="15" fill="#fde68a"/><text x="1804" y="380" class="ref">6</text>
+  <circle cx="2075" cy="375" r="15" fill="#fde68a"/><text x="2069" y="380" class="ref">7</text>
+
+  <!-- worker 1 -->
+  <g filter="url(#shadow)">
+    <rect x="1584" y="530" width="696" height="224" rx="18" fill="#161e2b" stroke="#b7791f" stroke-width="2"/>
+    <path d="M1602 530 H2262 Q2280 530 2280 548 V582 H1584 V548 Q1584 530 1602 530 Z" fill="url(#workerHead)"/>
+  </g>
+  <text x="1608" y="564" class="procTitle">Worker process · TP rank 1</text>
+  <rect x="2172" y="541" width="82" height="30" rx="15" fill="#5c3505" stroke="#fde68a"/>
+  <text x="2190" y="561" class="pid">PID W1</text>
+  <rect x="1608" y="603" width="226" height="122" rx="12" fill="#202838" stroke="#a9772d"/>
+  <text x="1628" y="634" class="boxTitle">WorkerProc</text>
+  <text x="1628" y="661" class="boxText">RPC busy loop</text>
+  <text x="1628" y="686" class="boxText">WorkerWrapperBase</text>
+  <text x="1628" y="711" class="tiny">MQ reader / result writer</text>
+  <rect x="1853" y="603" width="245" height="122" rx="12" fill="#202838" stroke="#a9772d"/>
+  <text x="1873" y="634" class="boxTitle">GPU Worker</text>
+  <text x="1873" y="661" class="boxText">GPUModelRunner</text>
+  <text x="1873" y="686" class="boxText">model shard + KV cache</text>
+  <text x="1873" y="711" class="tiny">executes SchedulerOutput</text>
+  <rect x="2118" y="603" width="136" height="122" rx="12" fill="url(#gpu)" stroke="#34d399"/>
+  <text x="2153" y="640" class="boxTitle">GPU 1</text>
+  <text x="2140" y="669" class="boxText">CUDA ctx</text>
+  <text x="2138" y="696" class="tiny">weights · KV</text>
+
+  <circle cx="1932" cy="777" r="5" fill="#64748b"/>
+  <circle cx="1932" cy="795" r="5" fill="#64748b"/>
+  <circle cx="1932" cy="813" r="5" fill="#64748b"/>
+
+  <!-- worker N-1 -->
+  <g filter="url(#shadow)">
+    <rect x="1584" y="835" width="696" height="224" rx="18" fill="#161e2b" stroke="#b7791f" stroke-width="2"/>
+    <path d="M1602 835 H2262 Q2280 835 2280 853 V887 H1584 V853 Q1584 835 1602 835 Z" fill="url(#workerHead)"/>
+  </g>
+  <text x="1608" y="869" class="procTitle">Worker process · TP rank N−1</text>
+  <rect x="2151" y="846" width="103" height="30" rx="15" fill="#5c3505" stroke="#fde68a"/>
+  <text x="2167" y="866" class="pid">PID WN−1</text>
+  <rect x="1608" y="908" width="226" height="122" rx="12" fill="#202838" stroke="#a9772d"/>
+  <text x="1628" y="939" class="boxTitle">WorkerProc</text>
+  <text x="1628" y="966" class="boxText">RPC busy loop</text>
+  <text x="1628" y="991" class="boxText">WorkerWrapperBase</text>
+  <text x="1628" y="1016" class="tiny">MQ reader / result writer</text>
+  <rect x="1853" y="908" width="245" height="122" rx="12" fill="#202838" stroke="#a9772d"/>
+  <text x="1873" y="939" class="boxTitle">GPU Worker</text>
+  <text x="1873" y="966" class="boxText">GPUModelRunner</text>
+  <text x="1873" y="991" class="boxText">model shard + KV cache</text>
+  <text x="1873" y="1016" class="tiny">executes SchedulerOutput</text>
+  <rect x="2118" y="908" width="136" height="122" rx="12" fill="url(#gpu)" stroke="#34d399"/>
+  <text x="2134" y="945" class="boxTitle">GPU N−1</text>
+  <text x="2140" y="974" class="boxText">CUDA ctx</text>
+  <text x="2138" y="1001" class="tiny">weights · KV</text>
+
+  <!-- Executor / worker MQ transport -->
+  <path d="M1380 820 H1495 V401 H1584" fill="none" stroke="#2dd4bf" stroke-width="5" marker-end="url(#arrowTeal)"/>
+  <path d="M1495 401 V648 H1584" fill="none" stroke="#2dd4bf" stroke-width="4" marker-end="url(#arrowTeal)"/>
+  <path d="M1495 648 V953 H1584" fill="none" stroke="#2dd4bf" stroke-width="4" marker-end="url(#arrowTeal)"/>
+  <rect x="1396" y="496" width="182" height="151" rx="12" fill="#0b2b2a" stroke="#287c73"/>
+  <text x="1410" y="520" class="edgeTitle" fill="#5eead4">Broadcast RPC MQ</text>
+  <text x="1410" y="543" class="edgeText">shm_broadcast</text>
+  <text x="1410" y="564" class="edgeText">MessageQueue</text>
+  <text x="1410" y="590" class="tiny">(method, args,</text>
+  <text x="1410" y="610" class="tiny"> kwargs, output_rank)</text>
+  <text x="1410" y="632" class="tiny">incl. SchedulerOutput</text>
+
+  <path d="M1584 473 H1520 V930 H1380" fill="none" stroke="#c084fc" stroke-width="4" marker-end="url(#arrowPurple)"/>
+  <path d="M1584 720 H1520" fill="none" stroke="#c084fc" stroke-width="4"/>
+  <path d="M1584 1025 H1520" fill="none" stroke="#c084fc" stroke-width="4"/>
+  <rect x="1396" y="722" width="182" height="142" rx="12" fill="#281b3d" stroke="#8351a8"/>
+  <text x="1410" y="746" class="edgeTitle" fill="#e9d5ff">Response MQs</text>
+  <text x="1410" y="769" class="edgeText">one per worker</text>
+  <text x="1410" y="795" class="tiny">(SUCCESS | FAILURE,</text>
+  <text x="1410" y="815" class="tiny"> result)</text>
+  <text x="1410" y="839" class="tiny">ModelRunnerOutput / RPC</text>
+
+  <path d="M1380 1020 H1433 V1068 H1584" fill="none" stroke="#64748b" stroke-width="2.5" stroke-dasharray="7 7"/>
+  <text x="1394" y="1055" class="tiny">multiprocessing Pipes: READY + MQ handle · parent-death EOF</text>
+
+  <!-- TP group -->
+  <path d="M2254 417 H2322 V969 H2254" fill="none" stroke="#fb7185" stroke-width="4" marker-end="url(#arrowRed)"/>
+  <path d="M2254 664 H2322" fill="none" stroke="#fb7185" stroke-width="4"/>
+  <circle cx="2322" cy="664" r="9" fill="#fb7185"/>
+  <rect x="1878" y="1108" width="428" height="115" rx="14" fill="#351925" stroke="#a83850"/>
+  <text x="1900" y="1136" class="edgeTitle" fill="#fda4af">TP process group · worker ↔ worker</text>
+  <text x="1900" y="1161" class="edgeText">backend = current_platform.dist_backend (NCCL on CUDA)</text>
+  <text x="1900" y="1185" class="edgeText">GPU tensor collectives for tensor-parallel model shards</text>
+  <text x="1900" y="1207" class="tiny">rendezvous: file store; loopback TCP store when required</text>
+  <circle cx="2278" cy="1129" r="15" fill="#fda4af"/><text x="2272" y="1134" class="ref">8</text>
+
+  <!-- Small scope note -->
+  <rect x="82" y="1084" width="1298" height="139" rx="16" fill="#0d1a2b" stroke="#314158"/>
+  <text x="108" y="1117" class="boxTitle">What crosses each boundary</text>
+  <text x="108" y="1148" class="boxText">Frontend → core: EngineCoreRequest / abort / utility control, msgpack-encoded; optional out-of-band torch shared-memory tensors for multimodal data.</text>
+  <text x="108" y="1177" class="boxText">Core → workers: collective RPCs; inference carries SchedulerOutput. Workers → core: status + result; the selected output rank returns ModelRunnerOutput.</text>
+  <text x="108" y="1206" class="boxText">Worker ↔ worker: device tensors only through the initialized TP distributed group; frontend and EngineCore do not join that GPU collective group.</text>
+
+  <!-- Evidence footer -->
+  <rect x="44" y="1292" width="2312" height="224" rx="22" fill="#091321" stroke="#27364b"/>
+  <text x="72" y="1325" class="evidenceHead">Code anchors · vendored files at the pinned commit</text>
+  <text x="72" y="1354" class="evidence">[1] async_llm.py:154–180, 793–835; output_processor.py:469–489</text>
+  <text x="72" y="1380" class="evidence">[2] core_client.py:562–590, 653–706, 1230–1237</text>
+  <text x="72" y="1406" class="evidence">[3] core.py:1088–1122, 1172–1199, 1764–1879</text>
+  <text x="72" y="1432" class="evidence">[4] core.py:111–176, 640–659</text>
+  <text x="72" y="1458" class="evidence">[5] multiproc_executor.py:125–214, 707–750</text>
+
+  <text x="1210" y="1354" class="evidence">[6] multiproc_executor.py:377–450, 602–700, 986–1053</text>
+  <text x="1210" y="1380" class="evidence">[7] gpu_worker.py:417–536, 1238–1306</text>
+  <text x="1210" y="1406" class="evidence">[8] gpu_worker.py:1586–1624; multiproc_executor.py:138–143</text>
+  <text x="1210" y="1432" class="evidence">MQ class import: vllm.distributed.device_communicators.shm_broadcast</text>
+  <text x="1210" y="1458" class="evidence">Scope excludes DP coordinator / Ray / multi-node paths (DP=1, one-node case).</text>
+
+  <line x1="72" y1="1480" x2="2328" y2="1480" stroke="#27364b"/>
+  <line x1="86" y1="1498" x2="126" y2="1498" stroke="#22d3ee" stroke-width="4"/>
+  <text x="138" y="1504" class="tiny">frontend/core transport</text>
+  <line x1="350" y1="1498" x2="390" y2="1498" stroke="#2dd4bf" stroke-width="4"/>
+  <text x="402" y="1504" class="tiny">shared-memory RPC</text>
+  <line x1="610" y1="1498" x2="650" y2="1498" stroke="#fb7185" stroke-width="4"/>
+  <text x="662" y="1504" class="tiny">GPU collective</text>
+  <line x1="844" y1="1498" x2="884" y2="1498" stroke="#64748b" stroke-width="2" stroke-dasharray="7 7"/>
+  <text x="896" y="1504" class="tiny">lifecycle / setup</text>
+  <text x="2282" y="1504" text-anchor="end" class="tiny">Architecture, not chronology</text>
+</svg>

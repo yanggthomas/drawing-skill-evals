@@ -1,0 +1,5 @@
+Completed and visually verified the code-grounded diagram.
+
+![Mixed-batch attention diagram](/private/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-vllm-v1-mixed-batch-attn-with-LDsQ2H/workspace/out/mixed-batch-attn.png)
+
+Artifacts: [PNG](/private/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-vllm-v1-mixed-batch-attn-with-LDsQ2H/workspace/out/mixed-batch-attn.png) · [PDF](/private/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-vllm-v1-mixed-batch-attn-with-LDsQ2H/workspace/out/mixed-batch-attn.pdf) · [TikZ source](/private/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-vllm-v1-mixed-batch-attn-with-LDsQ2H/workspace/out/mixed-batch-attn.tex)

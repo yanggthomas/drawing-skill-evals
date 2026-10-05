@@ -1,0 +1,133 @@
+{
+  "case_id": "A1",
+  "case": "vllm-v1-process-arch",
+  "arm": "with",
+  "model": "gpt-5.6-sol",
+  "reasoning_effort": "high",
+  "attempts": 1,
+  "prompt_file": "/Users/guangyang/Projects/drawing-skill-evals/evals/vllm-v1-process-arch/prompt.md",
+  "prompt_sha256": "6799804592be1da4a4ede34b33cd1611371bbe395f59c0751cd28014446e42f5",
+  "prompt_suffix": null,
+  "source": "/Users/guangyang/Projects/drawing-skill-evals/evals/vllm-v1-process-arch/src",
+  "output_png": "out/process-arch.png",
+  "catalog_expected_skill": "graphviz",
+  "expected_skills_visible": [
+    "graphviz",
+    "model-architecture"
+  ],
+  "image_generation_tool": false,
+  "isolation_args": [
+    "--config",
+    "skills.bundled.enabled=false",
+    "--disable",
+    "plugins",
+    "--disable",
+    "apps",
+    "--disable",
+    "image_generation"
+  ],
+  "proxy": "http://127.0.0.1:7890",
+  "isolated_home": true,
+  "target": "/Users/guangyang/Projects/drawing-skill-evals/runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-process-arch/arms/with",
+  "status": "complete",
+  "run": {
+    "cli_version": "codex-cli 0.160.0",
+    "started_at": "2026-10-04T09:29:20.828Z",
+    "ended_at": "2026-10-04T09:35:43.670Z",
+    "elapsed_seconds": 382.88,
+    "exit_code": 0,
+    "signal": null,
+    "process_error": null,
+    "timed_out": false,
+    "archived_attempt": null,
+    "temp_root": "/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-vllm-v1-process-arch-with-vqm7GQ",
+    "skills_visible": [
+      "graphviz",
+      "model-architecture"
+    ],
+    "launcher": {
+      "command": "codex",
+      "args": [
+        "exec",
+        "--json",
+        "--ephemeral",
+        "--ignore-user-config",
+        "--ignore-rules",
+        "--skip-git-repo-check",
+        "--model",
+        "gpt-5.6-sol",
+        "--strict-config",
+        "--config",
+        "model_reasoning_effort=\"high\"",
+        "--config",
+        "approval_policy=\"never\"",
+        "--config",
+        "skills.bundled.enabled=false",
+        "--disable",
+        "plugins",
+        "--disable",
+        "apps",
+        "--disable",
+        "image_generation",
+        "--sandbox",
+        "workspace-write",
+        "--cd",
+        "/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-vllm-v1-process-arch-with-vqm7GQ/workspace",
+        "--output-last-message",
+        "/Users/guangyang/Projects/drawing-skill-evals/runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-process-arch/arms/with/last-message.md",
+        "<PROMPT sha256=6799804592be1da4a4ede34b33cd1611371bbe395f59c0751cd28014446e42f5>"
+      ]
+    }
+  },
+  "usage": {
+    "input_tokens": 2049080,
+    "cached_input_tokens": 1930112,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 17431,
+    "reasoning_output_tokens": 6378
+  },
+  "estimated_cost_usd": 1.5965368,
+  "image_output_cost_usd": null,
+  "skill_reads": [
+    "/bin/zsh -lc \"sed -n '1,240p' /private/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-vllm-v1-process-arch-with-vqm7GQ/codex-home/skills/graphviz/SKILL.md && pwd && rg --files -g 'PINNED.txt' -g 'AGENTS.md' -g '\"'!out'\"' .. /private/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T 2>/dev/null | head -80\""
+  ],
+  "graphviz_read": true,
+  "model_architecture_read": false,
+  "imagegen_read": false,
+  "graphviz_workflow_verified": true,
+  "model_architecture_workflow_verified": false,
+  "image_generation_calls": 0,
+  "generated_images": [],
+  "png_from_image_tool": false,
+  "code_render_commands": [
+    "/bin/zsh -lc \"sed -n '1,260p' /private/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-vllm-v1-process-arch-with-vqm7GQ/codex-home/skills/graphviz/references/style-template.dot && printf '\\\\nFILES\\\\n' && find . -maxdepth 3 -type f -print | sort && printf '\\\\nPINNED\\\\n' && cat src/PINNED.txt && printf '\\\\nSRC DIR\\\\n' && ls -la src\"",
+    "/bin/zsh -lc \"sed -n '1,260p' /private/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-vllm-v1-process-arch-with-vqm7GQ/codex-home/skills/graphviz/references/style-template.dot && printf '\\\\nFILES\\\\n' && find . -maxdepth 3 -type f -print | sort && printf '\\\\nPINNED\\\\n' && cat src/PINNED.txt && printf '\\\\nSRC DIR\\\\n' && ls -la src\"",
+    "/bin/zsh -lc 'dot -Tpng out/process-arch.dot -o out/process-arch.png && file out/process-arch.png && identify out/process-arch.png 2>/dev/null || true'",
+    "/bin/zsh -lc 'dot -Tpng out/process-arch.dot -o out/process-arch.png && file out/process-arch.png && identify out/process-arch.png 2>/dev/null || true'",
+    "/bin/zsh -lc 'dot -Tpng out/process-arch.dot -o out/process-arch.png && file out/process-arch.png && identify out/process-arch.png 2>/dev/null || true'",
+    "/bin/zsh -lc 'dot -Tpng out/process-arch.dot -o out/process-arch.png && file out/process-arch.png && identify out/process-arch.png 2>/dev/null || true'",
+    "/bin/zsh -lc 'dot -Tpng out/process-arch.dot -o out/process-arch.png && identify out/process-arch.png'",
+    "/bin/zsh -lc 'dot -Tpng out/process-arch.dot -o out/process-arch.png && identify out/process-arch.png'",
+    "/bin/zsh -lc \"dot -Tpng out/process-arch.dot -o out/process-arch.png\nfile out/process-arch.png\nsips -g pixelWidth -g pixelHeight out/process-arch.png 2>/dev/null\nshasum -a 256 out/process-arch.png\nrg -n \\\"4c2d277|N\\\\+2|ZeroMQ ROUTER|shared-memory MessageQueue|NCCL on CUDA|local_rank\\\" out/process-arch.dot\ngit status --short -- out\"",
+    "/bin/zsh -lc \"dot -Tpng out/process-arch.dot -o out/process-arch.png\nfile out/process-arch.png\nsips -g pixelWidth -g pixelHeight out/process-arch.png 2>/dev/null\nshasum -a 256 out/process-arch.png\nrg -n \\\"4c2d277|N\\\\+2|ZeroMQ ROUTER|shared-memory MessageQueue|NCCL on CUDA|local_rank\\\" out/process-arch.dot\ngit status --short -- out\""
+  ],
+  "subagents_spawned": 0,
+  "repo_references": [],
+  "route_verified": true,
+  "editable_dot_files": [
+    "process-arch.dot"
+  ],
+  "editable_tex_files": [],
+  "compiled_pdf_files": [],
+  "output_files": [
+    "process-arch.dot",
+    "process-arch.png"
+  ],
+  "png": {
+    "path": "/Users/guangyang/Projects/drawing-skill-evals/runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-process-arch/arms/with/out/process-arch.png",
+    "width": 2682,
+    "height": 4944,
+    "bytes": 894450,
+    "sha256": "e2300668026cd07607cd3a87f76cb6d32bff8d93d0ad45f58a60e4146e04ecea"
+  }
+}

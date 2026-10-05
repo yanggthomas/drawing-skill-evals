@@ -1,0 +1,5 @@
+Created the code-grounded threaded transcoding diagram:
+
+[Open transcode-threads.png](/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-ffmpeg-transcode-threads-with-AKqBSA/workspace/out/transcode-threads.png)
+
+The editable Graphviz source is also available at [transcode-threads.dot](/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-ffmpeg-transcode-threads-with-AKqBSA/workspace/out/transcode-threads.dot).

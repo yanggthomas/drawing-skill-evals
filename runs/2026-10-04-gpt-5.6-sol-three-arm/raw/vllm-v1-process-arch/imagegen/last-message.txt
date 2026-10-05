@@ -1,0 +1,5 @@
+Created the architecture diagram with built-in image generation and saved it here:
+
+[Download process-arch.png](/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-vllm-v1-process-arch-imagegen-1WCYDP/workspace/out/process-arch.png)
+
+PNG, 1672 × 941. The prompt specified the pinned process topology, component containment, ZMQ links, shared-memory queues, lifecycle pipes, TP collectives, and code anchors; a second targeted prompt added the omitted `multiprocessing.Pipe` connection.

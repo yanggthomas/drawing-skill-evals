@@ -1,0 +1,5 @@
+Created the code-grounded diagram for pinned commit `a344f097`:
+
+[Download transcode-threads.png](/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-ffmpeg-transcode-threads-without-6zphTZ/workspace/out/transcode-threads.png)
+
+PNG verified at 4814 × 2379 pixels.

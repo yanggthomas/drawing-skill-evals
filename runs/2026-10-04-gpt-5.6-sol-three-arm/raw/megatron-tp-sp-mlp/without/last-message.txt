@@ -1,0 +1,5 @@
+Created the code-grounded diagram:
+
+[Open tp-sp-mlp.png](/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-megatron-tp-sp-mlp-without-3PSqC1/workspace/out/tp-sp-mlp.png)
+
+PNG verified at 2400×1800.

@@ -1,0 +1,5 @@
+Created and visually verified the code-grounded diagram:
+
+[Open ppo-step.png](/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-verl-ppo-step-with-7kdCNy/workspace/out/ppo-step.png)
+
+The editable Graphviz source is also available at [ppo-step.dot](/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-verl-ppo-step-with-7kdCNy/workspace/out/ppo-step.dot). Every stage includes pinned source-line references.

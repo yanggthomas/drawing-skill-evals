@@ -1,0 +1,5 @@
+Created the code-grounded diagram:
+
+[View schedule-step.png](/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-vllm-v1-schedule-without-cdZjED/workspace/out/schedule-step.png)
+
+PNG dimensions: 2800 × 2100. The diagram embeds pinned source-file and line references throughout.

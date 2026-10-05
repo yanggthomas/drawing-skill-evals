@@ -1,0 +1,325 @@
+digraph ppo_step {
+  graph [
+    rankdir=TB,
+    bgcolor="white",
+    fontname="Helvetica",
+    pad="0.35",
+    nodesep="0.46",
+    ranksep="0.54",
+    splines=polyline,
+    compound=true,
+    newrank=true,
+    labelloc="t",
+    labeljust="l",
+    label=<<FONT POINT-SIZE="25"><B>One PPO / GRPO step in verl's single-controller trainer</B></FONT><BR/><FONT POINT-SIZE="13">The driver builds one evolving DataProto and orchestrates heavyweight work by RPC.  Order runs top to bottom.</FONT><BR/><FONT POINT-SIZE="10" COLOR="#666666">Pinned commit fbb4b3a8bf636f290c9c59fc346f756849e9c241 (2026-09-30)</FONT>>
+  ];
+
+  node [
+    shape=ellipse,
+    style=filled,
+    fillcolor="#E8F4FD",
+    color="#2E86AB",
+    fontname="Helvetica",
+    fontsize=11,
+    margin="0.12,0.08",
+    penwidth=1.25
+  ];
+  edge [
+    color="#555555",
+    fontname="Helvetica",
+    fontsize=9,
+    arrowsize=0.75,
+    penwidth=1.15
+  ];
+
+  h_driver [
+    shape=hexagon,
+    fillcolor="#F4A261",
+    color="#E76F51",
+    fontsize=15,
+    label=<<B>DRIVER PROCESS</B><BR/><FONT POINT-SIZE="10">RayPPOTrainer.fit()</FONT>>
+  ];
+  h_ray [
+    shape=folder,
+    fillcolor="#FFCDD2",
+    color="#B71C1C",
+    fontsize=15,
+    label=<<B>RAY WORKERS / ROLLOUT REPLICAS</B><BR/><FONT POINT-SIZE="10">distributed GPU compute</FONT>>
+  ];
+  h_batch [
+    shape=cylinder,
+    fillcolor="#FFF2B2",
+    color="#B8860B",
+    fontsize=15,
+    label=<<B>EVOLVING DataProto</B><BR/><FONT POINT-SIZE="10">keys accumulated on driver</FONT>>
+  ];
+  { rank=same; h_driver; h_ray; h_batch; }
+  h_driver -> h_ray -> h_batch [style=invis, weight=80];
+
+  d0 [
+    shape=box,
+    style="rounded,filled",
+    fillcolor="#E1BEE7",
+    color="#6A1B9A",
+    width=4.2,
+    label=<<B>1  Prepare generation batch</B><BR ALIGN="LEFT"/>DataLoader batch -&gt; DataProto; add one <B>uid</B> per prompt<BR ALIGN="LEFT"/>repeat each prompt <B>n</B> times for rollout<BR/><FONT POINT-SIZE="9" COLOR="#666666">RT 1478-1505; RT 572-586</FONT>>
+  ];
+  b0 [
+    shape=cylinder,
+    fillcolor="#FFF2B2",
+    color="#B8860B",
+    width=4.0,
+    label=<<B>Prompt-side batch</B><BR ALIGN="LEFT"/>tensor prompt fields + source metadata<BR ALIGN="LEFT"/><B>non_tensor:</B> uid, reward_model / extra_info if present<BR/><FONT POINT-SIZE="9" COLOR="#666666">RT 1478-1491; RT 572-586</FONT>>
+  ];
+  { rank=same; d0; b0; }
+  d0 -> b0 [color="#B8860B", style=dotted, label="creates / selects"];
+
+  d_roll [
+    shape=box,
+    style="rounded,filled",
+    fillcolor="#E1BEE7",
+    color="#6A1B9A",
+    width=4.2,
+    label=<<B>2  Request rollout</B><BR ALIGN="LEFT"/>async_rollout_manager.generate_sequences(combined_gen_batch)<BR ALIGN="LEFT"/>then sleep rollout replicas to free weights + KV cache<BR/><FONT POINT-SIZE="9" COLOR="#666666">RT 1510-1519; CE 466-469</FONT>>
+  ];
+  r_roll [
+    shape=folder,
+    fillcolor="#FFCDD2",
+    color="#B71C1C",
+    width=4.5,
+    label=<<B>Rollout engine replicas</B><BR ALIGN="LEFT"/>AgentLoopManager -&gt; LLMServerManager client -&gt; vLLM / SGLang<BR ALIGN="LEFT"/>generate n responses per prompt using rollout weights <B>theta_t</B><BR/><FONT POINT-SIZE="9" COLOR="#666666">RT 951-965; RT 1510-1516</FONT>>
+  ];
+  { rank=same; d_roll; r_roll; }
+  d0 -> d_roll [color="#6A1B9A", penwidth=2.0];
+  d_roll -> r_roll [color="#2E86AB", penwidth=1.7, label="request"];
+
+  d_merge [
+    shape=box,
+    style="rounded,filled",
+    fillcolor="#E1BEE7",
+    color="#6A1B9A",
+    width=4.2,
+    label=<<B>3  Merge rollout result</B><BR ALIGN="LEFT"/>repeat original batch n times; union generated output<BR ALIGN="LEFT"/>derive response_mask; optionally rebalance by sequence length<BR/><FONT POINT-SIZE="9" COLOR="#666666">RT 1521-1560; RT 120-125</FONT>>
+  ];
+  b_roll [
+    shape=cylinder,
+    fillcolor="#FFF2B2",
+    color="#B8860B",
+    width=4.0,
+    label=<<B>+ rollout fields</B><BR ALIGN="LEFT"/><B>responses, attention_mask, response_mask</B><BR ALIGN="LEFT"/>and, when emitted: rollout_log_probs / rm_scores<BR ALIGN="LEFT"/>prompt uid is repeated, preserving response groups<BR/><FONT POINT-SIZE="9" COLOR="#666666">RT 1521-1565; RT 1540-1547</FONT>>
+  ];
+  { rank=same; d_merge; b_roll; }
+  r_roll -> d_merge [color="#2E86AB", penwidth=1.7, label="generated DataProto"];
+  d_merge -> b_roll [color="#B8860B", style=dotted, label="union"];
+
+  d_reward [
+    shape=box,
+    style="rounded,filled",
+    fillcolor="#E1BEE7",
+    color="#6A1B9A",
+    width=4.2,
+    label=<<B>4  Score and extract reward</B><BR ALIGN="LEFT"/>if use_rm and rm_scores absent: compute_rm_score(batch)<BR ALIGN="LEFT"/>extract_reward(batch) returns reward tensor + extra info<BR/><FONT POINT-SIZE="9" COLOR="#666666">RT 588-594; RT 1561-1568</FONT>>
+  ];
+  r_reward [
+    shape=folder,
+    fillcolor="#FFCDD2",
+    color="#B71C1C",
+    style="filled,dashed",
+    width=4.5,
+    label=<<B>RewardLoop workers  [conditional]</B><BR ALIGN="LEFT"/>may stream beside rollout when worker handles are supplied;<BR ALIGN="LEFT"/>otherwise RewardLoopManager computes missing rm_scores<BR/><FONT POINT-SIZE="9" COLOR="#666666">RT 912-919; RT 946-965; RT 1563-1565</FONT>>
+  ];
+  b_reward [
+    shape=cylinder,
+    fillcolor="#FFF2B2",
+    color="#B8860B",
+    width=4.0,
+    label=<<B>+ reward result</B><BR ALIGN="LEFT"/>rm_scores when a reward model is used<BR ALIGN="LEFT"/>reward_tensor and reward_extra_infos held by driver<BR/><FONT POINT-SIZE="9" COLOR="#666666">RT 1561-1568</FONT>>
+  ];
+  { rank=same; d_reward; r_reward; b_reward; }
+  d_merge -> d_reward [color="#6A1B9A", penwidth=2.0];
+  d_reward -> r_reward [dir=both, style=dashed, color="#2E86AB", label="RPC / result", constraint=false];
+  d_reward -> b_reward [color="#B8860B", style=dotted];
+
+  d_old [
+    shape=hexagon,
+    style=filled,
+    fillcolor="#F4D35E",
+    color="#D68A1A",
+    width=4.2,
+    label=<<B>5  Establish π_old log-probs</B><BR ALIGN="LEFT"/><B>default / decoupled:</B> recompute once before updates<BR ALIGN="LEFT"/><B>bypass mode:</B> old_log_probs ← rollout_log_probs<BR/><FONT POINT-SIZE="9" COLOR="#666666">RT 1570-1617; RT 1290-1325</FONT>>
+  ];
+  r_old [
+    shape=folder,
+    fillcolor="#FFCDD2",
+    color="#B71C1C",
+    width=4.5,
+    label=<<B>ActorRollout Ray worker group</B><BR ALIGN="LEFT"/>actor inference: compute_log_prob(batch)<BR ALIGN="LEFT"/>returns old_log_probs (+ entropy; optional sum_pi_squared)<BR/><FONT POINT-SIZE="9" COLOR="#666666">EW 700-706; RT 1297-1325</FONT>>
+  ];
+  { rank=same; d_old; r_old; }
+  d_reward -> d_old [color="#6A1B9A", penwidth=2.0];
+  d_old -> r_old [dir=both, style=dashed, color="#2E86AB", label="RPC / tensors", constraint=false];
+
+  d_ref [
+    shape=box,
+    style="rounded,filled,dashed",
+    fillcolor="#E1BEE7",
+    color="#6A1B9A",
+    width=4.2,
+    label=<<B>6a  Reference log-probs  [conditional]</B><BR ALIGN="LEFT"/>compute only when a reference policy is needed<BR ALIGN="LEFT"/>union <B>ref_log_prob</B> into batch<BR/><FONT POINT-SIZE="9" COLOR="#666666">RT 1618-1622; RT 1266-1288</FONT>>
+  ];
+  r_ref [
+    shape=folder,
+    fillcolor="#FFCDD2",
+    color="#B71C1C",
+    style="filled,dashed",
+    width=4.5,
+    label=<<B>Reference-policy compute</B><BR ALIGN="LEFT"/>RefPolicy WG; or ActorRollout WG with LoRA adapter disabled<BR ALIGN="LEFT"/>returns ref_log_prob<BR/><FONT POINT-SIZE="9" COLOR="#666666">RT 1266-1288; EW 693-706</FONT>>
+  ];
+  { rank=same; d_ref; r_ref; }
+  d_old -> d_ref [color="#6A1B9A", penwidth=2.0];
+  d_ref -> r_ref [dir=both, style=dashed, color="#2E86AB", label="RPC / tensor", constraint=false];
+
+  d_value [
+    shape=box,
+    style="rounded,filled,dashed",
+    fillcolor="#E1BEE7",
+    color="#6A1B9A",
+    width=4.2,
+    label=<<B>6b  Values  [PPO/GAE; conditional]</B><BR ALIGN="LEFT"/>critic_wg.infer_batch(batch); union <B>values</B><BR ALIGN="LEFT"/>skipped when use_critic is false (typical GRPO)<BR/><FONT POINT-SIZE="9" COLOR="#666666">RT 1624-1628; RT 1252-1264</FONT>>
+  ];
+  r_value [
+    shape=folder,
+    fillcolor="#FFCDD2",
+    color="#B71C1C",
+    style="filled,dashed",
+    width=4.5,
+    label=<<B>Critic Ray worker group</B><BR ALIGN="LEFT"/>forward-only infer_batch -&gt; token values<BR/><FONT POINT-SIZE="9" COLOR="#666666">RT 1252-1264; EW 398-433</FONT>>
+  ];
+  b_stats [
+    shape=cylinder,
+    fillcolor="#FFF2B2",
+    color="#B8860B",
+    width=4.0,
+    label=<<B>+ frozen statistics for this batch</B><BR ALIGN="LEFT"/><B>old_log_probs</B><BR ALIGN="LEFT"/>+ ref_log_prob (if enabled)<BR ALIGN="LEFT"/>+ values (if critic enabled)<BR/><FONT POINT-SIZE="9" COLOR="#666666">RT 1610-1628</FONT>>
+  ];
+  { rank=same; d_value; r_value; b_stats; }
+  d_ref -> d_value [color="#6A1B9A", penwidth=2.0];
+  d_value -> r_value [dir=both, style=dashed, color="#2E86AB", label="RPC / tensor", constraint=false];
+  d_value -> b_stats [color="#B8860B", style=dotted];
+  d_old -> b_stats [color="#B8860B", style=dotted, constraint=false];
+  d_ref -> b_stats [color="#B8860B", style=dotted, constraint=false];
+
+  d_adv [
+    shape=box,
+    style="rounded,filled",
+    fillcolor="#E1BEE7",
+    color="#6A1B9A",
+    width=4.2,
+    label=<<B>7  Shape rewards + compute advantages</B><BR ALIGN="LEFT"/><B>DRIVER CPU:</B> token_level_scores ← reward_tensor<BR ALIGN="LEFT"/>rewards = scores, or scores − β·KL(old || ref)<BR ALIGN="LEFT"/><B>PPO/GAE:</B> rewards + values + mask → A, returns<BR ALIGN="LEFT"/><B>GRPO:</B> sum outcome reward; normalize within uid group<BR/><FONT POINT-SIZE="9" COLOR="#666666">RT 1630-1675; RT 78-117; RT 187-247; CA 216-263, 268-331</FONT>>
+  ];
+  b_learn [
+    shape=cylinder,
+    fillcolor="#FFF2B2",
+    color="#B8860B",
+    width=4.0,
+    label=<<B>Final learning batch</B><BR ALIGN="LEFT"/>all prior prompt / response / mask fields<BR ALIGN="LEFT"/>+ <B>token_level_scores, token_level_rewards</B><BR ALIGN="LEFT"/>+ reward extras + <B>advantages, returns</B><BR ALIGN="LEFT"/>+ optional rollout-correction weights / masks<BR/><FONT POINT-SIZE="9" COLOR="#666666">RT 1630-1675</FONT>>
+  ];
+  { rank=same; d_adv; b_learn; }
+  d_value -> d_adv [color="#6A1B9A", penwidth=2.0];
+  d_adv -> b_learn [color="#B8860B", style=dotted, label="append targets"];
+
+  d_critic [
+    shape=box,
+    style="rounded,filled,dashed",
+    fillcolor="#E1BEE7",
+    color="#6A1B9A",
+    width=4.2,
+    label=<<B>8  Update critic first  [if use_critic]</B><BR ALIGN="LEFT"/>send final batch; collect only critic metrics<BR/><FONT POINT-SIZE="9" COLOR="#666666">RT 1676-1681; RT 1378-1403</FONT>>
+  ];
+  r_critic [
+    shape=folder,
+    fillcolor="#FFCDD2",
+    color="#B71C1C",
+    style="filled,dashed",
+    width=4.5,
+    label=<<B>Critic Ray worker group</B><BR ALIGN="LEFT"/>train_mini_batch for configured PPO epochs / mini-batches<BR/><FONT POINT-SIZE="9" COLOR="#666666">RT 1378-1403; EW 242-314</FONT>>
+  ];
+  { rank=same; d_critic; r_critic; }
+  d_adv -> d_critic [color="#6A1B9A", penwidth=2.0];
+  d_critic -> r_critic [dir=both, style=dashed, color="#2E86AB", label="RPC / metrics", constraint=false];
+
+  d_actor [
+    shape=box,
+    style="rounded,filled",
+    fillcolor="#E1BEE7",
+    color="#6A1B9A",
+    width=4.2,
+    label=<<B>9  Update actor second</B><BR ALIGN="LEFT"/>after critic_warmup: send final batch to update_actor<BR ALIGN="LEFT"/>collect actor metrics; actor parameters become <B>theta_(t+1)</B><BR/><FONT POINT-SIZE="9" COLOR="#666666">RT 1683-1690; RT 1327-1376</FONT>>
+  ];
+  r_actor [
+    shape=folder,
+    fillcolor="#FFCDD2",
+    color="#B71C1C",
+    width=4.5,
+    label=<<B>ActorRollout Ray worker group</B><BR ALIGN="LEFT"/>actor.train_mini_batch: PPO epochs / shuffled mini-batches<BR ALIGN="LEFT"/>policy loss consumes old_log_probs + advantages + masks<BR/><FONT POINT-SIZE="9" COLOR="#666666">EW 708-715; EW 242-314; RT 1352-1369</FONT>>
+  ];
+  { rank=same; d_actor; r_actor; }
+  d_critic -> d_actor [color="#6A1B9A", penwidth=2.0];
+  d_actor -> r_actor [dir=both, style=dashed, color="#2E86AB", label="RPC / metrics", constraint=false];
+
+  d_sync [
+    shape=box,
+    style="rounded,filled",
+    fillcolor="#E1BEE7",
+    color="#6A1B9A",
+    width=4.2,
+    label=<<B>10  Publish new actor weights</B><BR ALIGN="LEFT"/>CheckpointEngineManager.update_weights(global_step)<BR ALIGN="LEFT"/>the next rollout uses the newly trained policy<BR/><FONT POINT-SIZE="9" COLOR="#666666">RT 1714-1716; CE 509-562</FONT>>
+  ];
+  r_ckpt [
+    shape=cylinder,
+    fillcolor="#FFF2B2",
+    color="#B8860B",
+    width=4.5,
+    label=<<B>Checkpoint-engine transfer</B><BR ALIGN="LEFT"/>actor engine exports / sends tensors → rollout workers receive<BR ALIGN="LEFT"/>server_adapter.update_weights; restore KV cache; resume generation<BR ALIGN="LEFT"/>naive colocated backend updates in process<BR/><FONT POINT-SIZE="9" COLOR="#666666">EW 727-766; CE 304-360; CE 517-560</FONT>>
+  ];
+  { rank=same; d_sync; r_ckpt; }
+  d_actor -> d_sync [color="#6A1B9A", penwidth=2.0];
+  d_sync -> r_ckpt [color="#E76F51", penwidth=3.0, label="orchestrate sync"];
+  r_actor -> r_ckpt [color="#E76F51", penwidth=3.2, label="trainer weights  theta_(t+1)"];
+  r_ckpt -> r_roll [color="#E76F51", penwidth=3.2, label="load into rollout engine", constraint=false, minlen=3];
+
+  warmup [
+    fillcolor="#F5F5F5",
+    color="#CCCCCC",
+    style="filled,dashed",
+    fontsize=10,
+    label=<<B>Critic warmup branch</B><BR/>skip actor update; still call update_weights<BR/>to wake rollout replicas<BR/><FONT POINT-SIZE="9" COLOR="#666666">RT 1683-1686</FONT>>
+  ];
+  { rank=same; warmup; d_actor; r_actor; }
+  d_critic -> warmup [style=dashed, color="#999999", label="warmup active", constraint=false];
+  warmup -> d_sync [style=dashed, color="#999999", constraint=false];
+
+  d_end [
+    shape=hexagon,
+    fillcolor="#F4A261",
+    color="#E76F51",
+    width=4.2,
+    label=<<B>Step complete</B><BR/>metrics / timing are reduced and logged;<BR/>advance global_steps and take next batch<BR/><FONT POINT-SIZE="9" COLOR="#666666">RT 1738-1789</FONT>>
+  ];
+  d_sync -> d_end [color="#6A1B9A", penwidth=2.0];
+
+  // Keep the three conceptual columns stable.
+  h_driver -> d0 [style=invis, weight=70];
+  h_ray -> r_roll [style=invis, weight=70];
+  h_batch -> b0 [style=invis, weight=70];
+  b0 -> b_roll -> b_reward -> b_stats -> b_learn [style=invis, weight=40];
+  r_roll -> r_reward -> r_old -> r_ref -> r_value -> r_critic -> r_actor [style=invis, weight=15];
+
+  legend [
+    shape=plaintext,
+    fontsize=9,
+    label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="2" CELLPADDING="2"><TR><TD ALIGN="LEFT"><B>How to read it</B></TD><TD ALIGN="LEFT">solid purple = driver order · dashed blue = RPC · dotted gold = batch accumulation · thick coral = weight movement · dashed boxes = conditional</TD></TR><TR><TD ALIGN="LEFT"><B>Source key</B></TD><TD ALIGN="LEFT">RT = verl/trainer/ppo/ray_trainer.py · CA = verl/trainer/ppo/core_algos.py · EW = verl/workers/engine_workers.py · CE = verl/checkpoint_engine/base.py</TD></TR><TR><TD ALIGN="LEFT"><B>Single controller</B></TD><TD ALIGN="LEFT">The trainer itself states that the driver calls worker-group compute via RPC and computes lightweight advantages locally (RT 1405-1411).</TD></TR></TABLE>>
+  ];
+  { rank=same; d_end; legend; }
+  d_end -> legend [style=invis, weight=10];
+}

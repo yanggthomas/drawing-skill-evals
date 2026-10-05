@@ -1,0 +1,5 @@
+Created the code-grounded diagram using the built-in image-generation workflow.
+
+[Open `out/ppo-step.png`](/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-verl-ppo-step-imagegen-Z3ttnR/workspace/out/ppo-step.png)
+
+PNG: 1672 × 941. The prompt specified the three execution lanes, exact training-step order, evolving `DataProto` fields, PPO/GRPO branches, weight synchronization, and pinned source-line anchors.

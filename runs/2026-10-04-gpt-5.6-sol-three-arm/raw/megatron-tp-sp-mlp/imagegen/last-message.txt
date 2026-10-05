@@ -1,0 +1,10 @@
+Created the code-grounded diagram using the built-in image-generation tool.
+
+[Download tp-sp-mlp.png](/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-megatron-tp-sp-mlp-imagegen-ACvghq/workspace/out/tp-sp-mlp.png)
+
+- Resolution: 1672 × 941
+- Scope: dense, non-gated MLP; biases omitted
+- Grounded in pinned commit `e998be072d22ff57b4b49899819a1a153f4f3dc9`
+- Sources: [mlp.py](/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-megatron-tp-sp-mlp-imagegen-ACvghq/workspace/src/megatron/core/transformer/mlp.py:221), [layers.py](/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-megatron-tp-sp-mlp-imagegen-ACvghq/workspace/src/megatron/core/tensor_parallel/layers.py:724), [mappings.py](/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-megatron-tp-sp-mlp-imagegen-ACvghq/workspace/src/megatron/core/tensor_parallel/mappings.py:304)
+
+Final prompt specified a two-lane forward/backward technical infographic for rank \(r\) of \(p\), with exact activation, gradient and weight shapes; all TP all-gather/reduce-scatter sites; saved-input communication for \(dW_1\); and pinned-source line anchors.

@@ -1,0 +1,5 @@
+Created the code-grounded diagram with the built-in image-generation tool.
+
+[Download mixed-batch-attn.png](/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-vllm-v1-mixed-batch-attn-imagegen-3mcLoA/workspace/out/mixed-batch-attn.png)
+
+Final prompt: a precise four-stage engineering infographic showing scheduler rows, token flattening, metadata/page-slot construction, and FlashAttention’s separate paged-KV write/read paths, using the pinned source’s formulas, APIs, line references, and commit. Resolution: 1672×941 PNG.

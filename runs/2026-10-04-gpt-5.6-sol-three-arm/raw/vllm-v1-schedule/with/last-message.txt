@@ -1,0 +1,5 @@
+Created and visually verified the code-grounded diagram:
+
+[Open schedule-step.png](/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-vllm-v1-schedule-with-eV33Aw/workspace/out/schedule-step.png)
+
+Editable Graphviz source: [schedule-step.dot](/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-vllm-v1-schedule-with-eV33Aw/workspace/out/schedule-step.dot)

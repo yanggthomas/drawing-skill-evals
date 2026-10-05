@@ -1,0 +1,5 @@
+Completed and validated against the pinned rank-generator implementation.
+
+[Open parallel-groups.png](/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-megatron-parallel-groups-with-NrXStI/workspace/out/parallel-groups.png)
+
+Editable source: [parallel-groups.dot](/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-megatron-parallel-groups-with-NrXStI/workspace/out/parallel-groups.dot)

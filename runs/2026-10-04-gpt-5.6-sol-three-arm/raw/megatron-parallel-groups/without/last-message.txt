@@ -1,0 +1,5 @@
+Created and verified the 2400×1800 architecture diagram:
+
+[Download parallel-groups.png](/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-megatron-parallel-groups-without-afWw4H/workspace/out/parallel-groups.png)
+
+It is grounded in the pinned `parallel_state.py` and includes all ranks, nodes, group memberships, exhaustive rosters, rank-assignment rule, and code line references. The editable SVG is also available in `out/parallel-groups.svg`.

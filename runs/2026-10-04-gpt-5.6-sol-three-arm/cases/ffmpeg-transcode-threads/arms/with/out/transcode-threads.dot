@@ -1,0 +1,281 @@
+digraph ffmpeg_transcode_threads {
+  graph [
+    rankdir=TB,
+    bgcolor="white",
+    fontname="Helvetica",
+    pad="0.35",
+    nodesep="0.42",
+    ranksep="0.46",
+    splines=spline,
+    compound=true,
+    newrank=true,
+    dpi=180,
+    labelloc=t,
+    labeljust=l,
+    label=<<FONT POINT-SIZE="25"><B>ffmpeg threaded transcoding pipeline</B></FONT><BR/><FONT POINT-SIZE="13">fftools scheduler at commit a344f0976c5d0fc736715b3a63b0128f90c56377 (2026-10-01) &#8226; one representative output; instances multiply per input / stream / filtergraph / output</FONT>>
+  ];
+
+  node [
+    shape=ellipse,
+    style=filled,
+    fillcolor="#E8F4FD",
+    color="#2E86AB",
+    penwidth=1.5,
+    fontname="Helvetica",
+    fontsize=11,
+    margin="0.10,0.07"
+  ];
+
+  edge [
+    color="#555555",
+    penwidth=1.5,
+    arrowsize=0.75,
+    fontname="Helvetica",
+    fontsize=9,
+    fontcolor="#333333"
+  ];
+
+  subgraph cluster_pipeline {
+    label=<<B>DATA PLANE</B>  <FONT POINT-SIZE="10">arrows = data / EOF; dashed gray = optional bypass</FONT>>;
+    color="#D7DEE8";
+    fillcolor="#FAFBFD";
+    style="rounded,filled";
+    penwidth=1.2;
+    margin=18;
+
+    input [
+      shape=cylinder,
+      fillcolor="#F5F5F5",
+      color="#CCCCCC",
+      style="filled,dashed",
+      label=<<B>Input media</B><BR/><FONT POINT-SIZE="9">AVFormatContext</FONT>>
+    ];
+
+    demux [
+      shape=box,
+      style="rounded,filled",
+      fillcolor="#E1BEE7",
+      color="#6A1B9A",
+      label=<<B>DEMUX THREAD</B><BR/><FONT POINT-SIZE="10">one per input file</FONT><BR/><FONT POINT-SIZE="9">av_read_frame() &#8594; sch_demux_send()</FONT><BR/><FONT POINT-SIZE="8">[T1]</FONT>>
+    ];
+
+    dec_q [
+      shape=cylinder,
+      fillcolor="#FFF2B2",
+      color="#B8860B",
+      label=<<B>Decoder input ThreadQueue</B><BR/><FONT POINT-SIZE="9">AVPacket &#8226; 1 stream &#8226; capacity 2</FONT><BR/><FONT POINT-SIZE="8">[Q1]</FONT>>
+    ];
+
+    decode [
+      shape=box,
+      style="rounded,filled",
+      fillcolor="#E1BEE7",
+      color="#6A1B9A",
+      label=<<B>DECODE THREAD</B><BR/><FONT POINT-SIZE="10">one per decoded input stream</FONT><BR/><FONT POINT-SIZE="9">sch_dec_receive() &#8594; packet_decode()</FONT><BR/><FONT POINT-SIZE="9">sch_dec_send(AVFrame)</FONT><BR/><FONT POINT-SIZE="8">[T2]</FONT>>
+    ];
+
+    filter_q [
+      shape=cylinder,
+      fillcolor="#FFF2B2",
+      color="#B8860B",
+      label=<<B>Filter input ThreadQueue</B><BR/><FONT POINT-SIZE="9">AVFrame &#8226; N inputs + control</FONT><BR/><FONT POINT-SIZE="9">capacity 2 per stream</FONT><BR/><FONT POINT-SIZE="8">[Q2]</FONT>>
+    ];
+
+    filter [
+      shape=box,
+      style="rounded,filled",
+      fillcolor="#E1BEE7",
+      color="#6A1B9A",
+      label=<<B>FILTERGRAPH THREAD</B><BR/><FONT POINT-SIZE="10">one per filtergraph</FONT><BR/><FONT POINT-SIZE="9">sch_filter_receive(desired input)</FONT><BR/><FONT POINT-SIZE="9">&#8594; libavfilter &#8594; sch_filter_send()</FONT><BR/><FONT POINT-SIZE="8">[T3]</FONT>>
+    ];
+
+    enc_sync [
+      shape=cylinder,
+      fillcolor="#FFF2B2",
+      color="#B8860B",
+      label=<<B>Optional pre-encode SyncQueue</B><BR/><FONT POINT-SIZE="9">AVFrame &#8226; mutex-protected; no thread</FONT><BR/><FONT POINT-SIZE="9">aligns limiting streams / frame limits;</FONT><BR/><FONT POINT-SIZE="9">rechunks fixed-size audio frames</FONT><BR/><FONT POINT-SIZE="8">[Q3]</FONT>>
+    ];
+
+    enc_q [
+      shape=cylinder,
+      fillcolor="#FFF2B2",
+      color="#B8860B",
+      label=<<B>Encoder input ThreadQueue</B><BR/><FONT POINT-SIZE="9">AVFrame &#8226; 1 stream &#8226; capacity 2</FONT><BR/><FONT POINT-SIZE="8">[Q4]</FONT>>
+    ];
+
+    encode [
+      shape=box,
+      style="rounded,filled",
+      fillcolor="#E1BEE7",
+      color="#6A1B9A",
+      label=<<B>ENCODE THREAD</B><BR/><FONT POINT-SIZE="10">one per encoded output stream</FONT><BR/><FONT POINT-SIZE="9">sch_enc_receive() &#8594; frame_encode()</FONT><BR/><FONT POINT-SIZE="9">sch_enc_send(AVPacket)</FONT><BR/><FONT POINT-SIZE="8">[T4]</FONT>>
+    ];
+
+    streamcopy [
+      shape=box,
+      style="rounded,filled,dashed",
+      fillcolor="#F5F5F5",
+      color="#9AA3AD",
+      label=<<B>STREAM COPY</B><BR/><FONT POINT-SIZE="9">no decode / filter / encode</FONT><BR/><FONT POINT-SIZE="9">demuxed AVPacket goes directly</FONT><BR/><FONT POINT-SIZE="9">to the output stream</FONT><BR/><FONT POINT-SIZE="8">[P1]</FONT>>
+    ];
+
+    mux_gate [
+      shape=hexagon,
+      fillcolor="#F4D35E",
+      color="#D68A1A",
+      label=<<B>send_to_mux()</B><BR/><FONT POINT-SIZE="9">encoded and copied packets converge</FONT><BR/><FONT POINT-SIZE="9">records dts + duration / EOF</FONT><BR/><FONT POINT-SIZE="8">[P2]</FONT>>
+    ];
+
+    premux_q [
+      shape=cylinder,
+      fillcolor="#FFF2B2",
+      color="#B8860B",
+      label=<<B>PreMuxQueue (per stream)</B><BR/><FONT POINT-SIZE="9">AVFifo of AVPacket* before mux starts</FONT><BR/><FONT POINT-SIZE="9">starts at 8; grows, then errors at cap;</FONT><BR/><FONT POINT-SIZE="9">flushed in earliest-DTS order</FONT><BR/><FONT POINT-SIZE="8">[Q5]</FONT>>
+    ];
+
+    mux_q [
+      shape=cylinder,
+      fillcolor="#FFF2B2",
+      color="#B8860B",
+      label=<<B>Mux input ThreadQueue</B><BR/><FONT POINT-SIZE="9">shared AVPacket FIFO; stream-index tagged</FONT><BR/><FONT POINT-SIZE="9">capacity 2 per stream by default</FONT><BR/><FONT POINT-SIZE="9">-thread_queue_size overrides mux capacity</FONT><BR/><FONT POINT-SIZE="8">[Q6]</FONT>>
+    ];
+
+    mux [
+      shape=box,
+      style="rounded,filled",
+      fillcolor="#E1BEE7",
+      color="#6A1B9A",
+      label=<<B>MUX THREAD</B><BR/><FONT POINT-SIZE="10">one per output file; starts after streams/header ready</FONT><BR/><FONT POINT-SIZE="9">sch_mux_receive() &#8594; stream-copy timestamp fixup</FONT><BR/><FONT POINT-SIZE="9">&#8594; output BSF &#8594; optional packet SyncQueue (-shortest)</FONT><BR/><FONT POINT-SIZE="9">&#8594; av_interleaved_write_frame()</FONT><BR/><FONT POINT-SIZE="8">[T5] [Q7]</FONT>>
+    ];
+
+    output [
+      shape=cylinder,
+      fillcolor="#E8F4FD",
+      color="#2E86AB",
+      label=<<B>Output media</B><BR/><FONT POINT-SIZE="9">interleaved packets</FONT>>
+    ];
+
+    input -> demux [label="bytes"];
+    demux -> dec_q [label="AVPacket"];
+    dec_q -> decode [label="sch_dec_receive"];
+    decode -> filter_q [label="AVFrame"];
+    filter_q -> filter [label="sch_filter_receive"];
+    filter -> enc_sync [label="AVFrame (when enabled)"];
+    enc_sync -> enc_q [label="balanced / rechunked frame"];
+    filter -> enc_q [style=dashed, color="#777777", label="bypass if no SyncQueue"];
+    decode -> enc_q [style=dashed, color="#777777", label="simple path: no filter"];
+    enc_q -> encode [label="sch_enc_receive"];
+    encode -> mux_gate [label="encoded AVPacket"];
+
+    demux -> streamcopy [color="#E76F51", penwidth=2.1, label="demuxed AVPacket"];
+    streamcopy -> mux_gate [color="#E76F51", penwidth=2.1, label="packet ref / EOF"];
+
+    mux_gate -> premux_q [label="mux not started"];
+    premux_q -> mux_q [label="startup flush"];
+    mux_gate -> mux_q [label="mux started"];
+    mux_q -> mux [label="sch_mux_receive"];
+    mux -> output [label="container bytes"];
+
+    { rank=same; input; demux; streamcopy; }
+    { rank=same; dec_q; decode; }
+    { rank=same; filter_q; filter; }
+    { rank=same; enc_sync; enc_q; encode; mux_gate; }
+    { rank=same; premux_q; mux_q; mux; output; }
+  }
+
+  subgraph cluster_control {
+    label=<<B>CONTROL PLANE: OUTPUT SYNCHRONIZATION</B>  <FONT POINT-SIZE="10">timestamp feedback and producer gating; not media data</FONT>>;
+    color="#E6D58C";
+    fillcolor="#FFFDF4";
+    style="rounded,filled";
+    penwidth=1.2;
+    margin=16;
+
+    scheduler [
+      shape=hexagon,
+      fillcolor="#F4D35E",
+      color="#D68A1A",
+      label=<<B>Scheduler &#8212; not its own thread</B><BR/><FONT POINT-SIZE="9">runs in the calling task under schedule_lock</FONT><BR/><FONT POINT-SIZE="9">per mux stream: last_dts = packet dts + duration;</FONT><BR/><FONT POINT-SIZE="9">source_finished on EOF</FONT><BR/><FONT POINT-SIZE="8">[S1]</FONT>>
+    ];
+
+    clock [
+      shape=hexagon,
+      fillcolor="#F4A261",
+      color="#E76F51",
+      label=<<B>Global progress window</B><BR/><FONT POINT-SIZE="9">trailing = MIN(last_dts of unfinished mux streams)</FONT><BR/><FONT POINT-SIZE="9">reported progress = MAX(last_dts)</FONT><BR/><FONT POINT-SIZE="9">eligible if not &#8805; 100 ms ahead of trailing;</FONT><BR/><FONT POINT-SIZE="9">an unknown laggard gates streams that already have DTS;</FONT><BR/><FONT POINT-SIZE="9">always unchoke at least one live source</FONT><BR/><FONT POINT-SIZE="8">[S2]</FONT>>
+    ];
+
+    resolve [
+      shape=hexagon,
+      fillcolor="#F4D35E",
+      color="#D68A1A",
+      label=<<B>Resolve each eligible output upstream</B><BR/><FONT POINT-SIZE="9">mux stream src &#8594; encoder &#8594; filter output</FONT><BR/><FONT POINT-SIZE="9">&#8594; filter's best_input &#8594; decoder &#8594; demuxer</FONT><BR/><FONT POINT-SIZE="8">[S3]</FONT>>
+    ];
+
+    waiters [
+      shape=box,
+      style="rounded,filled",
+      fillcolor="#E1BEE7",
+      color="#6A1B9A",
+      label=<<B>Choke / unchoke producers</B><BR/><FONT POINT-SIZE="9">demux and source-only filtergraph waiters sleep on condvars;</FONT><BR/><FONT POINT-SIZE="9">choking a demux also tq_choke()s immediate downstream</FONT><BR/><FONT POINT-SIZE="9">queues so consumers cannot drain hidden lead</FONT><BR/><FONT POINT-SIZE="8">[S4]</FONT>>
+    ];
+
+    scheduler -> clock [label="schedule_update_locked()"];
+    clock -> resolve [label="eligible output streams"];
+    resolve -> waiters [label="waiter_set() / tq_choke()"];
+
+    { rank=same; scheduler; clock; resolve; waiters; }
+  }
+
+  backpressure [
+    shape=box,
+    style="rounded,filled",
+    fillcolor="#E8F4FD",
+    color="#2E86AB",
+    label=<<B>LOCAL QUEUE BACKPRESSURE</B><BR/><FONT POINT-SIZE="9">ThreadQueue has one capacity counter + writer condvar per stream.</FONT><BR/><FONT POINT-SIZE="9">tq_send() blocks while that stream is full; tq_receive() blocks while empty.</FONT><BR/><FONT POINT-SIZE="9">A read wakes the blocked writer; send/receive-finish propagates EOF and wakes peers.</FONT><BR/><FONT POINT-SIZE="8">[B1]</FONT>>
+  ];
+
+  thread_model [
+    shape=hexagon,
+    fillcolor="#F4A261",
+    color="#E76F51",
+    label=<<B>THREAD MODEL</B><BR/><FONT POINT-SIZE="9">task_start() calls pthread_create()</FONT><BR/><FONT POINT-SIZE="9">for each registered component instance.</FONT><BR/><FONT POINT-SIZE="9">sch_start(): encoders &#8594; filters &#8594; decoders &#8594; demuxers;</FONT><BR/><FONT POINT-SIZE="9">muxers start when streams/header (and SDP, if needed) are ready.</FONT><BR/><FONT POINT-SIZE="8">[M1]</FONT>>
+  ];
+
+  internals [
+    shape=ellipse,
+    fillcolor="#F5F5F5",
+    color="#CCCCCC",
+    style="filled,dashed",
+    label=<<B>Library-internal workers may add more threads</B><BR/><FONT POINT-SIZE="9">e.g. encoder thread_count defaults to auto; filtergraph has a threads option.</FONT><BR/><FONT POINT-SIZE="9">They run inside the task boxes above, not as scheduler nodes. [N1]</FONT>>
+  ];
+
+
+  sources [
+    shape=box,
+    style="rounded,filled",
+    fillcolor="#F7F8FA",
+    color="#BCC3CC",
+    penwidth=1.0,
+    margin="0.14,0.10",
+    label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1" CELLPADDING="2">
+      <TR><TD ALIGN="LEFT" COLSPAN="2"><B>CODE ANCHORS (all paths relative to src/fftools/; line numbers are pinned)</B></TD></TR>
+      <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="8"><B>[M1]</B> ffmpeg_sched.c:404&#8211;423, 1135&#8211;1232, 1741&#8211;1799</FONT></TD><TD ALIGN="LEFT"><FONT POINT-SIZE="8"><B>[T1]</B> ffmpeg_demux.c:843&#8211;930, 586&#8211;604</FONT></TD></TR>
+      <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="8"><B>[T2]</B> ffmpeg_dec.c:909&#8211;999</FONT></TD><TD ALIGN="LEFT"><FONT POINT-SIZE="8"><B>[T3]</B> ffmpeg_filter.c:3443&#8211;3529, 2853&#8211;2855</FONT></TD></TR>
+      <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="8"><B>[T4]</B> ffmpeg_enc.c:1009&#8211;1069, 540</FONT></TD><TD ALIGN="LEFT"><FONT POINT-SIZE="8"><B>[T5]</B> ffmpeg_mux.c:403&#8211;453, 283&#8211;355, 220&#8211;233</FONT></TD></TR>
+      <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="8"><B>[Q1/Q4]</B> ffmpeg_sched.c:778&#8211;850, 2307&#8211;2333, 2458&#8211;2469</FONT></TD><TD ALIGN="LEFT"><FONT POINT-SIZE="8"><B>[Q2]</B> ffmpeg_sched.c:859&#8211;898, 2551&#8211;2600</FONT></TD></TR>
+      <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="8"><B>[Q3]</B> ffmpeg_sched.c:901&#8211;954, 1832&#8211;1970</FONT></TD><TD ALIGN="LEFT"><FONT POINT-SIZE="8"><B>[Q5]</B> ffmpeg_sched.c:1135&#8211;1194, 1973&#8211;2035</FONT></TD></TR>
+      <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="8"><B>[Q6]</B> ffmpeg_sched.h:244&#8211;262; ffmpeg_sched.c:1690&#8211;1706, 2038&#8211;2048</FONT></TD><TD ALIGN="LEFT"><FONT POINT-SIZE="8"><B>[Q7]</B> ffmpeg_mux.c:246&#8211;278</FONT></TD></TR>
+      <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="8"><B>[P1/P2]</B> ffmpeg_sched.c:957&#8211;1002, 2009&#8211;2132; ffmpeg_mux.c:291&#8211;300, 456&#8211;499</FONT></TD><TD ALIGN="LEFT"><FONT POINT-SIZE="8"><B>[B1]</B> thread_queue.c:40&#8211;55, 143&#8211;205, 234&#8211;298</FONT></TD></TR>
+      <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="8"><B>[S1/S2]</B> ffmpeg_sched.c:438&#8211;477, 2009&#8211;2061</FONT></TD><TD ALIGN="LEFT"><FONT POINT-SIZE="8"><B>[S3/S4]</B> ffmpeg_sched.c:1312&#8211;1513, 2179&#8211;2198, 2551&#8211;2585</FONT></TD></TR>
+      <TR><TD ALIGN="LEFT" COLSPAN="2"><FONT POINT-SIZE="8"><B>[N1]</B> ffmpeg_enc.c:240&#8211;262; ffmpeg_filter.c:2178&#8211;2203  &#8226;  ThreadQueue defaults: ffmpeg_sched.h:253&#8211;262</FONT></TD></TR>
+    </TABLE>>
+  ];
+
+  { rank=same; thread_model; backpressure; internals; }
+
+  // Keep the four sections stacked; feedback edges above are non-constraining.
+  mux_q -> clock [style=invis, weight=100];
+  clock -> thread_model [style=invis, weight=100];
+  thread_model -> sources [style=invis, weight=100];
+}

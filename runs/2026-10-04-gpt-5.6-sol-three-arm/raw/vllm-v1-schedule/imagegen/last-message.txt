@@ -1,0 +1,5 @@
+Created and verified the code-grounded diagram as a 1672×941 PNG:
+
+[Download schedule-step.png](/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-vllm-v1-schedule-imagegen-LhC1Wr/workspace/out/schedule-step.png)
+
+Generated with the built-in image-generation tool using a technical infographic prompt grounded in pinned commit `4c2d277643e217344056e1d2c42115d5f005912f`.

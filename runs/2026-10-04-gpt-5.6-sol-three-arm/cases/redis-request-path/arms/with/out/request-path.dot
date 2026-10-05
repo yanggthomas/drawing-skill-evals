@@ -1,0 +1,210 @@
+digraph redis_request_path {
+  graph [
+    rankdir=TB,
+    bgcolor="white",
+    fontname="Helvetica",
+    pad="0.35",
+    nodesep="0.40",
+    ranksep="0.48",
+    splines=ortho,
+    compound=true,
+    dpi=180,
+    label="Redis 8 threaded I/O: the life of one ordinary client request\nRedis 8.10.2  •  commit 498ecd0d6d007db11ddb3aea9428552598a78622",
+    labelloc=t,
+    labeljust=c,
+    fontsize=22
+  ];
+
+  node [
+    fontname="Helvetica",
+    fontsize=11,
+    margin="0.18,0.12",
+    penwidth=1.6,
+    style=filled
+  ];
+
+  edge [
+    color="#555555",
+    fontname="Helvetica",
+    fontsize=9.5,
+    penwidth=1.5,
+    arrowsize=0.8
+  ];
+
+  client_request [
+    shape=cylinder,
+    fillcolor="#FFF2B2",
+    color="#B8860B",
+    label="CLIENT\nTCP/TLS request bytes"
+  ];
+
+  subgraph cluster_accept {
+    label="MAIN THREAD  •  connection setup";
+    color="#E76F51";
+    bgcolor="#FFF8F4";
+    fontname="Helvetica-Bold";
+    fontsize=15;
+    penwidth=2;
+    style="rounded,filled";
+    margin=18;
+
+    accept [
+      shape=box,
+      style="rounded,filled",
+      fillcolor="#E1BEE7",
+      color="#6A1B9A",
+      label="1  ACCEPT + CREATE client\nListener accept event is registered on server.el;\nacceptCommonHandler() creates client with tid = running_tid = MAIN.\n\nserver.c:2833–2845, 3297–3310\nnetworking.c:122–143, 1666–1740"
+    ];
+
+    assign [
+      shape=box,
+      style="rounded,filled",
+      fillcolor="#E1BEE7",
+      color="#6A1B9A",
+      label="2  ASSIGN to the least-loaded I/O thread\nclientAcceptHandler() calls assignClientToIOThread();\nchoose worker 1..N−1, set c->tid, unbind from server.el,\ndisable client I/O, and queue the same client pointer.\n\nnetworking.c:1593–1664\niothread.c:332–360"
+    ];
+
+    accept -> assign [label="accepted connection"];
+  }
+
+  initial_handoff [
+    shape=hexagon,
+    fillcolor="#F4D35E",
+    color="#D68A1A",
+    label="HANDOFF ①  MAIN → I/O THREAD N\nmainThreadPendingClientsToIOThreads[N]\n  →  t->pending_clients\nmutex-protected listJoin + eventNotifier;\nmain beforeSleep() also flushes pending clients.\n\niothread.c:146–190, 565–590\nserver.c:2103–2111"
+  ];
+
+  subgraph cluster_read {
+    label="I/O THREAD N  •  its own ae event loop";
+    color="#2E86AB";
+    bgcolor="#F6FBFE";
+    fontname="Helvetica-Bold";
+    fontsize=15;
+    penwidth=2;
+    style="rounded,filled";
+    margin=18;
+
+    bind [
+      shape=box,
+      style="rounded,filled",
+      fillcolor="#E1BEE7",
+      color="#6A1B9A",
+      label="3  TAKE client + bind its fd\nprocessClientsFromMainThread() moves it into t->clients,\nsets READ_ENABLED | WRITE_ENABLED, rebinds the connection\nto t->el, and installs readQueryFromClient().\n\niothread.c:754–817"
+    ];
+
+    read [
+      shape=box,
+      style="rounded,filled",
+      fillcolor="#E1BEE7",
+      color="#6A1B9A",
+      label="4  READ socket bytes\nA readable event calls readQueryFromClient();\nclientConnRead() appends bytes to c->querybuf.\n\nnetworking.c:3893–3916, 3981–4006"
+    ];
+
+    parse [
+      shape=box,
+      style="rounded,filled",
+      fillcolor="#E1BEE7",
+      color="#6A1B9A",
+      label="5  PARSE RESP query — but do not execute\nprocessInputBuffer() runs inline/multibulk parsing, creates a\npendingCommand, preprocesses it, and detects a complete command.\nBecause running_tid is not MAIN, it sets IO_PENDING_COMMAND.\n\nnetworking.c:3690–3785, 3838–3846"
+    ];
+
+    bind -> read [label="fd becomes readable"];
+    read -> parse [label="processInputBuffer(c)"];
+  }
+
+  to_main [
+    shape=hexagon,
+    fillcolor="#F4D35E",
+    color="#D68A1A",
+    label="HANDOFF ②  I/O THREAD N → MAIN\nClear READ_ENABLED | WRITE_ENABLED, then move the same client *:\nt->clients → t->pending_clients_to_main_thread\n  → mainThreadPendingClients[N]\nThe fd stays bound to t->el; disabled flags prevent concurrent I/O.\nNotifier wakes main if needed; both event handler and beforeSleep drain it.\n\nnetworking.c:3840–3846\niothread.c:29–48, 112–137, 717–751, 847–881\nserver.c:2076–2089"
+  ];
+
+  subgraph cluster_execute {
+    label="MAIN THREAD  •  serialized command execution";
+    color="#E76F51";
+    bgcolor="#FFF8F4";
+    fontname="Helvetica-Bold";
+    fontsize=15;
+    penwidth=2;
+    style="rounded,filled";
+    margin=18;
+
+    take_main [
+      shape=box,
+      style="rounded,filled",
+      fillcolor="#E1BEE7",
+      color="#6A1B9A",
+      label="6  TAKE client for execution\nprocessClientsFromIOThread() splices the pending list, asserts\nworker I/O is disabled, and sets c->running_tid = MAIN.\n\niothread.c:603–640"
+    ];
+
+    execute [
+      shape=hexagon,
+      fillcolor="#F4A261",
+      color="#E76F51",
+      label="7  EXECUTE command + build reply\nIO_PENDING_COMMAND becomes CLIENT_PENDING_COMMAND;\nprocessPendingCommandAndInputBuffer() calls\nprocessCommandAndResetClient() → processCommand().\nOnly the main thread touches the dataset/executes the command.\n\niothread.c:663–674\nnetworking.c:3547–3564, 3582–3605"
+    ];
+
+    return_client [
+      shape=box,
+      style="rounded,filled",
+      fillcolor="#E1BEE7",
+      color="#6A1B9A",
+      label="8  RETURN eligible client to its assigned worker\nIf the reply buffer is nonempty, main records pending output,\nthen removes that pending-write entry, restores\nc->running_tid = c->tid, and queues the client back to worker N.\n\niothread.c:676–705"
+    ];
+
+    take_main -> execute [label="parsed pendingCommand"];
+    execute -> return_client [label="reply now in client output buffer"];
+  }
+
+  to_io [
+    shape=hexagon,
+    fillcolor="#F4D35E",
+    color="#D68A1A",
+    label="HANDOFF ③  MAIN → SAME I/O THREAD N\nmainThreadPendingClientsToIOThreads[N]\n  → t->pending_clients\nmutex-protected listJoin + eventNotifier.\n\niothread.c:565–590, 694–712\nserver.c:2103–2111"
+  ];
+
+  subgraph cluster_write {
+    label="I/O THREAD N  •  reply I/O";
+    color="#2E86AB";
+    bgcolor="#F6FBFE";
+    fontname="Helvetica-Bold";
+    fontsize=15;
+    penwidth=2;
+    style="rounded,filled";
+    margin=18;
+
+    write [
+      shape=box,
+      style="rounded,filled",
+      fillcolor="#E1BEE7",
+      color="#6A1B9A",
+      label="9  RE-ENABLE I/O + WRITE reply\nprocessClientsFromMainThread() restores READ/WRITE_ENABLED\nand immediately calls writeToClient(). If bytes remain, the worker's\nevent loop installs sendReplyToClient() for later writable events.\n\niothread.c:776–840\nnetworking.c:2948–2952"
+    ];
+  }
+
+  client_reply [
+    shape=cylinder,
+    fillcolor="#FFF2B2",
+    color="#B8860B",
+    label="CLIENT\nRESP reply bytes"
+  ];
+
+  invariant [
+    shape=ellipse,
+    fillcolor="#F5F5F5",
+    color="#CCCCCC",
+    style="filled,dashed",
+    fontsize=10,
+    label="Ownership invariant for the normal path shown\nThe handoff unit is the same client * (and connection), moved through lists—not a copied request job.\nc->tid remains the assigned worker; c->running_tid identifies who may operate it now.\nRead/write enable bits are cleared during main-thread execution.\nSpecial clients (blocked/pubsub/tracking/etc.) can instead be kept on main by isClientMustHandledByMainThread().\n\niothread.c:112–190, 290–329, 603–712"
+  ];
+
+  client_request -> accept [label="connect"];
+  assign -> initial_handoff [label="client *"];
+  initial_handoff -> bind [label="event notifier / beforeSleep"];
+  parse -> to_main [label="complete command"];
+  to_main -> take_main [label="client *"];
+  return_client -> to_io [label="client * + reply buffer"];
+  to_io -> write [label="event notifier / beforeSleep"];
+  write -> client_reply [label="socket write"];
+  client_reply -> invariant [style=invis];
+}

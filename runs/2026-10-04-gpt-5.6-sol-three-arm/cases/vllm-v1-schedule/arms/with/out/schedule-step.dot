@@ -1,0 +1,314 @@
+digraph schedule_step {
+  graph [
+    rankdir=TB,
+    bgcolor="white",
+    fontname="Helvetica",
+    pad="0.35",
+    nodesep="0.42",
+    ranksep="0.62",
+    splines=polyline,
+    compound=true,
+    newrank=true,
+    labelloc=t,
+    labeljust=l,
+    label=<<FONT POINT-SIZE="27"><B>vLLM V1 continuous batching: one Scheduler.schedule() step</B></FONT><BR/><FONT POINT-SIZE="13" COLOR="#5F6B76">Pinned commit 4c2d277 (2026-10-01)  •  source references are embedded in every stage</FONT>>
+  ]
+
+  edge [
+    color="#59636E",
+    fontname="Helvetica",
+    fontsize=10,
+    arrowsize=0.72,
+    penwidth=1.25
+  ]
+
+  node [
+    shape=ellipse,
+    style=filled,
+    fillcolor="#E8F4FD",
+    color="#2E86AB",
+    fontname="Helvetica",
+    fontsize=11,
+    penwidth=1.35,
+    margin="0.13,0.08"
+  ]
+
+  start [
+    shape=hexagon,
+    fillcolor="#F4A261",
+    color="#E76F51",
+    penwidth=2,
+    label=<<B>Scheduler.schedule()</B><BR/><FONT POINT-SIZE="10">one engine step</FONT><BR/><FONT POINT-SIZE="8" COLOR="#6B4A3B">scheduler.py:563–604</FONT>>
+  ]
+
+  principle [
+    shape=box,
+    style="rounded,filled",
+    fillcolor="#E1BEE7",
+    color="#6A1B9A",
+    label=<<B>One catch-up rule; no separate decode/prefill phase</B><BR ALIGN="LEFT"/><FONT FACE="Courier">work = known tokens (+ placeholders) − computed tokens</FONT><BR ALIGN="LEFT"/><FONT POINT-SIZE="9">The same rule covers decode, speculative decode, prefix hits, and prompt chunks.</FONT><BR/><FONT POINT-SIZE="8" COLOR="#60456A">scheduler.py:565–574, 675–684, 1081–1125</FONT>>
+  ]
+
+  budget [
+    shape=hexagon,
+    fillcolor="#F4D35E",
+    color="#D68A1A",
+    penwidth=1.8,
+    label=<<B>Shared per-step ledgers</B><BR/><FONT FACE="Courier">token_budget = max_num_scheduled_tokens</FONT><BR/><FONT FACE="Courier">input_budget = max_num_batched_tokens</FONT><BR/><FONT POINT-SIZE="9">Every accepted request subtracts its scheduled tokens;<BR/>waiting requests see only the remainder.</FONT><BR/><FONT POINT-SIZE="8" COLOR="#70591A">scheduler.py:581–589, 825–827, 1314–1316</FONT>>
+  ]
+
+  start -> principle -> budget [color="#E76F51", penwidth=1.8]
+
+  subgraph cluster_running {
+    label=<<B>1  Spend budget on requests already RUNNING</B><BR/><FONT POINT-SIZE="9" COLOR="#5C6670">Iteration order is the running list; requests that cannot make progress may be skipped.</FONT>>
+    color="#9CCBE1"
+    fillcolor="#F4FAFE"
+    style="rounded,filled"
+    penwidth=1.4
+    margin=18
+
+    running_q [
+      shape=folder,
+      fillcolor="#FFCDD2",
+      color="#B71C1C",
+      label=<<B>running[]</B><BR/><FONT POINT-SIZE="9">already resident in the model runner</FONT><BR/><FONT POINT-SIZE="8" COLOR="#7D3434">scheduler.py:629–634</FONT>>
+    ]
+
+    run_work [
+      shape=box,
+      style="rounded,filled",
+      fillcolor="#E1BEE7",
+      color="#6A1B9A",
+      label=<<B>Choose this request's token slice k</B><BR ALIGN="LEFT"/><FONT FACE="Courier">k = tokens_with_spec + placeholders − computed</FONT><BR ALIGN="LEFT"/><FONT FACE="Courier">k = min(k, long-prefill cap, token_budget, input room, model limit)</FONT><BR/><FONT POINT-SIZE="8" COLOR="#60456A">scheduler.py:675–723</FONT>>
+    ]
+
+    run_alloc [
+      shape=cylinder,
+      fillcolor="#FFF2B2",
+      color="#B8860B",
+      label=<<B>KVCacheManager.allocate_slots(request, k)</B><BR/><FONT POINT-SIZE="9">reuse/adopt computed prefix blocks; allocate only needed<BR/>main-model + lookahead slots; cache finalized tokens</FONT><BR/><FONT POINT-SIZE="8" COLOR="#725A18">scheduler.py:745–752 • kv_cache_manager.py:371–465, 538–614</FONT>>
+    ]
+
+    run_fit [
+      shape=hexagon,
+      fillcolor="#F4D35E",
+      color="#D68A1A",
+      label=<<B>blocks returned?</B><BR/><FONT POINT-SIZE="8" COLOR="#70591A">scheduler.py:754–818</FONT>>
+    ]
+
+    run_spend [
+      shape=box,
+      style="rounded,filled",
+      fillcolor="#E1BEE7",
+      color="#6A1B9A",
+      label=<<B>Schedule + debit</B><BR/><FONT FACE="Courier">num_scheduled_tokens[id] = k</FONT><BR/><FONT FACE="Courier">token_budget −= k</FONT><BR/><FONT POINT-SIZE="9">record newly allocated block IDs</FONT><BR/><FONT POINT-SIZE="8" COLOR="#60456A">scheduler.py:820–828</FONT>>
+    ]
+
+    victim [
+      shape=hexagon,
+      fillcolor="#F4D35E",
+      color="#D68A1A",
+      label=<<B>Immediate KV pressure → select victim</B><BR/><FONT POINT-SIZE="9">PRIORITY: worst (priority, arrival_time)<BR/>FCFS: tail of running[]</FONT><BR/><FONT POINT-SIZE="8" COLOR="#70591A">scheduler.py:758–776</FONT>>
+    ]
+
+    preempt [
+      shape=box,
+      style="rounded,filled",
+      fillcolor="#E1BEE7",
+      color="#6A1B9A",
+      label=<<B>Preempt victim</B><BR ALIGN="LEFT"/>• remove from running; free KV + encoder blocks<BR ALIGN="LEFT"/>• status = PREEMPTED; computed = 0; clear spec tokens<BR ALIGN="LEFT"/>• prepend to waiting; record preempted ID<BR ALIGN="LEFT"/><FONT POINT-SIZE="9">If an already-selected priority victim is undone, restore its step budget.</FONT><BR/><FONT POINT-SIZE="8" COLOR="#60456A">scheduler.py:778–814, 1540–1583</FONT>>
+    ]
+
+    { rank=same; running_q; run_work; run_alloc; run_fit; run_spend; }
+    { rank=same; victim; preempt; }
+
+    running_q -> run_work -> run_alloc -> run_fit
+    run_fit -> run_spend [label=" yes", color="#2E86AB"]
+    run_fit -> victim [label=" no / allocation returned None", color="#B71C1C"]
+    victim -> preempt [label="blocks can be freed"]
+    preempt -> run_alloc [label="retry current request", color="#B71C1C", penwidth=1.55]
+  }
+
+  budget -> running_q [lhead=cluster_running, color="#D68A1A", penwidth=1.7, label="start with full budget"]
+
+  gate [
+    shape=hexagon,
+    fillcolor="#F4D35E",
+    color="#D68A1A",
+    penwidth=1.7,
+    label=<<B>Was any request preempted?</B><BR/><FONT POINT-SIZE="9">Waiting admission runs only when<BR/><FONT FACE="Courier">not preempted_reqs</FONT>.</FONT><BR/><FONT POINT-SIZE="8" COLOR="#70591A">scheduler.py:873–886</FONT>>
+  ]
+
+  run_spend -> gate [label="after running scan"]
+  preempt -> gate [label="current request still cannot fit", style=dashed]
+
+  subgraph cluster_waiting {
+    label=<<B>2  If no preemption, use the leftover budget to admit WAITING / PREEMPTED requests</B>>
+    color="#9CCBE1"
+    fillcolor="#F4FAFE"
+    style="rounded,filled"
+    penwidth=1.4
+    margin=18
+
+    waiting_q [
+      shape=folder,
+      fillcolor="#FFCDD2",
+      color="#B71C1C",
+      label=<<B>kv_holding_waiting, else waiting</B><BR/><FONT POINT-SIZE="9">FCFS head or smallest (priority, arrival time);<BR/>stop at active-request / budget limits</FONT><BR/><FONT POINT-SIZE="8" COLOR="#7D3434">scheduler.py:886–898 • request_queue.py:75–205</FONT>>
+    ]
+
+    prefix [
+      label=<<B>Find reusable work</B><BR/><FONT POINT-SIZE="9">local prefix-cache hit (+ optional connector hit)<BR/>sets starting <FONT FACE="Courier">num_computed_tokens</FONT></FONT><BR/><FONT POINT-SIZE="8" COLOR="#356B84">scheduler.py:930–1040</FONT>>
+    ]
+
+    wait_work [
+      shape=box,
+      style="rounded,filled",
+      fillcolor="#E1BEE7",
+      color="#6A1B9A",
+      label=<<B>Choose admission slice k from the remainder</B><BR ALIGN="LEFT"/><FONT FACE="Courier">request_budget = min(token_budget, input room)</FONT><BR ALIGN="LEFT"/><FONT FACE="Courier">k = request.num_tokens − computed</FONT><BR ALIGN="LEFT"/><FONT FACE="Courier">k = min(k, long-prefill cap, request_budget)</FONT><BR/><FONT POINT-SIZE="9">If chunking is disabled and the whole request exceeds its budget: stop.</FONT><BR/><FONT POINT-SIZE="8" COLOR="#60456A">scheduler.py:1074–1126</FONT>>
+    ]
+
+    wait_alloc [
+      shape=cylinder,
+      fillcolor="#FFF2B2",
+      color="#B8860B",
+      label=<<B>KVCacheManager.allocate_slots(...)</B><BR/><FONT POINT-SIZE="9">adopt prefix blocks + allocate slots for this chunk/lookahead;<BR/>None when required blocks exceed available blocks</FONT><BR/><FONT POINT-SIZE="8" COLOR="#725A18">scheduler.py:1208–1232 • kv_cache_manager.py:558–576</FONT>>
+    ]
+
+    wait_fit [
+      shape=hexagon,
+      fillcolor="#F4D35E",
+      color="#D68A1A",
+      label=<<B>blocks returned?</B><BR/><FONT POINT-SIZE="8" COLOR="#70591A">scheduler.py:1225–1232</FONT>>
+    ]
+
+    admit [
+      shape=box,
+      style="rounded,filled",
+      fillcolor="#E1BEE7",
+      color="#6A1B9A",
+      label=<<B>Admit + debit</B><BR ALIGN="LEFT"/>• pop waiting; append running; status = RUNNING<BR ALIGN="LEFT"/>• classify as new or resumed<BR ALIGN="LEFT"/>• <FONT FACE="Courier">num_scheduled_tokens[id] = k; token_budget −= k</FONT><BR/><FONT POINT-SIZE="8" COLOR="#60456A">scheduler.py:1292–1326</FONT>>
+    ]
+
+    wait_stop [
+      fillcolor="#F5F5F5",
+      color="#CCCCCC",
+      style="filled,dashed",
+      label=<<B>Stop waiting admissions</B><BR/><FONT POINT-SIZE="9">No running request is evicted for a waiting admission.</FONT><BR/><FONT POINT-SIZE="8" COLOR="#747474">scheduler.py:1225–1232</FONT>>
+    ]
+
+    { rank=same; waiting_q; prefix; wait_work; wait_alloc; wait_fit; admit; }
+
+    waiting_q -> prefix -> wait_work -> wait_alloc -> wait_fit
+    wait_fit -> admit [label=" yes", color="#2E86AB"]
+    admit -> waiting_q [label="repeat while budgets/slots remain", color="#2E86AB"]
+    wait_fit -> wait_stop [label=" no", color="#777777"]
+  }
+
+  gate -> waiting_q [label=" no: pass remaining budget", lhead=cluster_waiting, color="#D68A1A", penwidth=1.7]
+
+  skip_wait [
+    fillcolor="#F5F5F5",
+    color="#CCCCCC",
+    style="filled,dashed",
+    label=<<B>Skip waiting phase this step</B><BR/><FONT POINT-SIZE="9">Preempted requests remain queued until a later step.</FONT><BR/><FONT POINT-SIZE="8" COLOR="#747474">scheduler.py:873–874, 1581–1583</FONT>>
+  ]
+  gate -> skip_wait [label=" yes", color="#B71C1C"]
+
+  collect [
+    shape=hexagon,
+    fillcolor="#F4D35E",
+    color="#D68A1A",
+    label=<<B>Close the batch</B><BR/><FONT FACE="Courier">total = sum(num_scheduled_tokens.values()) ≤ max</FONT><BR/><FONT POINT-SIZE="8" COLOR="#70591A">scheduler.py:1355–1367</FONT>>
+  ]
+  admit -> collect [label="budget/queue exhausted"]
+  wait_stop -> collect
+  skip_wait -> collect
+
+  output [
+    shape=box,
+    style="rounded,filled",
+    fillcolor="#E1BEE7",
+    color="#6A1B9A",
+    penwidth=1.8,
+    label=<<B>Build SchedulerOutput</B><BR ALIGN="LEFT"/><FONT POINT-SIZE="10"><B>Request payloads</B>  scheduled_new_reqs (full data + block IDs);<BR ALIGN="LEFT"/>scheduled_cached_reqs (running/resumed diffs + new block IDs)<BR ALIGN="LEFT"/><B>Exact work</B>  {request_id → k}, total tokens; spec-token IDs; encoder inputs<BR ALIGN="LEFT"/><B>Batch/KV control</B>  common-prefix count; preempted + finished IDs;<BR ALIGN="LEFT"/>block zero/copy ops and connector metadata</FONT><BR/><FONT POINT-SIZE="8" COLOR="#60456A">scheduler.py:1379–1519, 1661–1718 • output.py:40–203, 231–290</FONT>>
+  ]
+
+  runner [
+    shape=ellipse,
+    fillcolor="#F5F5F5",
+    color="#CCCCCC",
+    style="filled,dashed",
+    penwidth=1.6,
+    label=<<B>Model runner executes this mixed batch</B><BR/><FONT POINT-SIZE="9">prefill chunks + decode/spec work can coexist,<BR/>each with its k tokens and KV block table</FONT><BR/><FONT POINT-SIZE="8" COLOR="#747474">schedule() returns SchedulerOutput at scheduler.py:1517–1519</FONT>>
+  ]
+
+  advance [
+    shape=box,
+    style="rounded,filled",
+    fillcolor="#E1BEE7",
+    color="#6A1B9A",
+    label=<<B>Optimistically advance request state</B><BR/><FONT FACE="Courier">computed += k; in_flight += k</FONT><BR/><FONT FACE="Courier">is_prefill_chunk = computed &lt; known tokens (+ placeholders)</FONT><BR/><FONT POINT-SIZE="9">Done after output construction so the runner sees original input positions.</FONT><BR/><FONT POINT-SIZE="8" COLOR="#60456A">scheduler.py:1585–1611</FONT>>
+  ]
+
+  collect -> output -> runner [color="#6A1B9A", penwidth=1.7]
+  output -> advance [label="scheduler-side state for next step"]
+  { rank=same; advance; runner; }
+
+  subgraph cluster_chunk {
+    label=<<B>Chunked prefill across scheduler steps</B><BR/><FONT POINT-SIZE="9" COLOR="#5C6670">A long prompt is not a special phase; it repeatedly consumes bounded catch-up slices.</FONT>>
+    color="#E2B8E8"
+    fillcolor="#FCF7FD"
+    style="rounded,filled"
+    penwidth=1.4
+    margin=16
+
+    chunk_t [
+      shape=plain,
+      label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="6" COLOR="#6A1B9A">
+        <TR><TD COLSPAN="3" BGCOLOR="#F3E5F5"><B>step t</B>  k₁ = min(remaining, budgets, long-prefill cap)</TD></TR>
+        <TR><TD BGCOLOR="#B7DDF0">already computed c</TD><TD BGCOLOR="#F4A261"><B>schedule chunk k₁</B></TD><TD BGCOLOR="#F5F5F5">prompt still remaining</TD></TR>
+      </TABLE>>
+    ]
+
+    chunk_next [
+      shape=plain,
+      label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="6" COLOR="#6A1B9A">
+        <TR><TD COLSPAN="3" BGCOLOR="#F3E5F5"><B>step t+1</B>  request is now in running[] and is considered first</TD></TR>
+        <TR><TD BGCOLOR="#B7DDF0">computed c+k₁</TD><TD BGCOLOR="#F4A261"><B>schedule chunk k₂</B></TD><TD BGCOLOR="#F5F5F5">remaining</TD></TR>
+      </TABLE>>
+    ]
+
+    chunk_done [
+      shape=plain,
+      label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="6" COLOR="#6A1B9A">
+        <TR><TD COLSPAN="2" BGCOLOR="#F3E5F5"><B>final chunk</B></TD></TR>
+        <TR><TD BGCOLOR="#B7DDF0">whole prompt computed</TD><TD BGCOLOR="#D8F0DE"><B>is_prefill_chunk = false</B><BR/>next catch-up is decode work</TD></TR>
+      </TABLE>>
+    ]
+
+    { rank=same; chunk_t; chunk_next; chunk_done; }
+
+    chunk_t -> chunk_next [label="advance computed by k₁"]
+    chunk_next -> chunk_done [label="repeat until caught up"]
+
+    chunk_ref [
+      shape=plaintext,
+      fontcolor="#6F5574",
+      fontsize=8,
+      label="scheduler.py:1111–1126, 1324–1326, 1585–1611 • Request.is_prefill_chunk: request.py:200–201"
+    ]
+    chunk_done -> chunk_ref [arrowhead=none, style=dashed, color="#C2A5C7"]
+  }
+
+  advance -> chunk_t [lhead=cluster_chunk, label="if prompt remains", color="#6A1B9A", penwidth=1.4]
+
+  footer [
+    shape=plaintext,
+    fontsize=9,
+    fontcolor="#66717C",
+    label=<<B>Scope:</B> core token/KV path shown; encoder, distributed-prefill throttling, Mamba alignment, and async KV transfer are represented only where they constrain k or allocation.<BR/><B>Source:</B> vendored files listed in PINNED.txt at commit 4c2d277643e217344056e1d2c42115d5f005912f.>
+  ]
+  chunk_ref -> footer [style=invis]
+}

@@ -1,0 +1,8 @@
+Created the code-grounded threaded transcoding diagram:
+
+[Download transcode-threads.png](/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-ffmpeg-transcode-threads-imagegen-JV2RHA/workspace/out/transcode-threads.png)
+
+- Format: PNG, 1672×941
+- Generated with the built-in image-generation tool
+- Prompt: a code-grounded FFmpeg `fftools` pipeline showing worker threads, packet/frame queues, stream copy, queue backpressure, DTS scheduling, mux startup, and exact source anchors from pinned commit `a344f097…`
+- Final correction prompt replaced the pre-encode SyncQueue citation with `[S:1877–1949]` while preserving the diagram.

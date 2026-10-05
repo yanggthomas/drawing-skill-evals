@@ -1,0 +1,281 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2800" height="2100" viewBox="0 0 2800 2100">
+  <defs>
+    <linearGradient id="header" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#12263f"/>
+      <stop offset="1" stop-color="#1b4965"/>
+    </linearGradient>
+    <linearGradient id="runGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#eaf3ff"/>
+      <stop offset="1" stop-color="#f7fbff"/>
+    </linearGradient>
+    <linearGradient id="waitGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#eaf9f1"/>
+      <stop offset="1" stop-color="#f7fcf9"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="5" stdDeviation="8" flood-color="#11243a" flood-opacity="0.13"/>
+    </filter>
+    <marker id="arrowBlue" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 z" fill="#2b6cb0"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 z" fill="#23856d"/>
+    </marker>
+    <marker id="arrowRed" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 z" fill="#c23b4b"/>
+    </marker>
+    <style>
+      .title { font: 700 50px Verdana, sans-serif; fill: #fff; }
+      .subtitle { font: 400 23px Verdana, sans-serif; fill: #d8e8f5; }
+      .eyebrow { font: 700 18px Verdana, sans-serif; fill: #4f6b82; letter-spacing: 1.4px; }
+      .section { font: 700 27px Verdana, sans-serif; fill: #132d46; }
+      .h3 { font: 700 21px Verdana, sans-serif; fill: #17324d; }
+      .body { font: 400 18px Verdana, sans-serif; fill: #29445d; }
+      .body2 { font: 400 17px Verdana, sans-serif; fill: #29445d; }
+      .small { font: 400 15px Verdana, sans-serif; fill: #4d667b; }
+      .tiny { font: 400 13px Verdana, sans-serif; fill: #587084; }
+      .mono { font: 600 17px Menlo, monospace; fill: #153c5c; }
+      .monoSm { font: 600 15px Menlo, monospace; fill: #153c5c; }
+      .ref { font: 600 14px Menlo, monospace; fill: #657e92; }
+      .whiteRef { font: 600 14px Menlo, monospace; fill: #cfe1ef; }
+      .num { font: 700 21px Verdana, sans-serif; fill: #fff; }
+      .center { text-anchor: middle; }
+    </style>
+  </defs>
+
+  <rect width="2800" height="2100" fill="#f5f7fa"/>
+  <rect x="0" y="0" width="2800" height="205" fill="url(#header)"/>
+  <text x="72" y="77" class="title">One vLLM V1 scheduler step: continuous batching</text>
+  <text x="74" y="121" class="subtitle">One shared token budget • RUNNING first • WAITING admission second • KV allocation at each selection • one mixed execution plan</text>
+  <text x="74" y="164" class="whiteRef">Pinned vLLM commit 4c2d2776…  |  scheduler.py:563–1519  |  there is no separate “prefill phase” or “decode phase” (565–574)</text>
+
+  <!-- left state -->
+  <g filter="url(#shadow)">
+    <rect x="60" y="250" width="460" height="790" rx="22" fill="#fff" stroke="#d6e0e8" stroke-width="2"/>
+  </g>
+  <text x="90" y="292" class="eyebrow">STATE AT STEP START</text>
+
+  <rect x="90" y="324" width="400" height="195" rx="16" fill="#edf5ff" stroke="#9fc3e8" stroke-width="2"/>
+  <circle cx="124" cy="361" r="19" fill="#2b6cb0"/><text x="124" y="368" class="num center">R</text>
+  <text x="156" y="368" class="h3">RUNNING list</text>
+  <text x="113" y="406" class="body2">Already active requests, including:</text>
+  <text x="113" y="439" class="body2">• decode / speculative decode</text>
+  <text x="113" y="471" class="body2">• an unfinished prefill chunk</text>
+  <text x="113" y="503" class="ref">scheduler.py:221, 629–631</text>
+
+  <rect x="90" y="543" width="400" height="238" rx="16" fill="#eefaf5" stroke="#9bd7c3" stroke-width="2"/>
+  <circle cx="124" cy="580" r="19" fill="#23856d"/><text x="124" y="587" class="num center">W</text>
+  <text x="156" y="587" class="h3">WAITING queues</text>
+  <text x="113" y="625" class="body2">1. kv_holding_waiting, then</text>
+  <text x="113" y="657" class="body2">2. normal waiting</text>
+  <text x="113" y="695" class="small">Ordering within a queue:</text>
+  <text x="113" y="723" class="small">FCFS, or smaller (priority, arrival_time)</text>
+  <text x="113" y="765" class="ref">scheduler.py:213–220, 886–899</text>
+
+  <rect x="90" y="805" width="400" height="198" rx="16" fill="#fff9e8" stroke="#e4c76d" stroke-width="2"/>
+  <text x="113" y="845" class="h3">GPU KV block pool</text>
+  <g>
+    <rect x="113" y="871" width="42" height="34" rx="5" fill="#efb949"/>
+    <rect x="162" y="871" width="42" height="34" rx="5" fill="#efb949"/>
+    <rect x="211" y="871" width="42" height="34" rx="5" fill="#efb949"/>
+    <rect x="260" y="871" width="42" height="34" rx="5" fill="#f8e6b2" stroke="#d3a83e"/>
+    <rect x="309" y="871" width="42" height="34" rx="5" fill="#f8e6b2" stroke="#d3a83e"/>
+    <rect x="358" y="871" width="42" height="34" rx="5" fill="#f8e6b2" stroke="#d3a83e"/>
+  </g>
+  <text x="113" y="942" class="body2">Per-request block tables + free blocks</text>
+  <text x="113" y="978" class="ref">kv_cache_manager.py:371–384</text>
+
+  <!-- arrows into scheduler -->
+  <path d="M520 420 C560 420, 565 470, 603 470" fill="none" stroke="#2b6cb0" stroke-width="5" marker-end="url(#arrowBlue)"/>
+  <path d="M520 650 C560 650, 565 1075, 603 1075" fill="none" stroke="#23856d" stroke-width="5" marker-end="url(#arrowGreen)"/>
+
+  <!-- scheduler container -->
+  <g filter="url(#shadow)">
+    <rect x="600" y="250" width="1410" height="1365" rx="24" fill="#fff" stroke="#cbd7e1" stroke-width="2"/>
+  </g>
+  <text x="635" y="294" class="eyebrow">SCHEDULER.schedule()</text>
+
+  <!-- budgets -->
+  <rect x="635" y="320" width="1340" height="126" rx="16" fill="#132d46"/>
+  <text x="664" y="354" style="font:700 20px Verdana,sans-serif;fill:#fff">Shared step limits</text>
+  <text x="664" y="386" style="font:600 16px Menlo,monospace;fill:#dbeaf5">token_budget = max_num_scheduled_tokens</text>
+  <rect x="1105" y="369" width="385" height="24" rx="12" fill="#38536a"/>
+  <rect x="1105" y="369" width="310" height="24" rx="12" fill="#5fa8d3"/>
+  <text x="1508" y="389" style="font:600 15px Verdana,sans-serif;fill:#fff">decrements by every Δ</text>
+  <text x="664" y="420" class="whiteRef">A separate input_budget=max_num_batched_tokens also caps work (+ draft slots). scheduler.py:581–589, 675–684</text>
+
+  <!-- running pass -->
+  <rect x="635" y="475" width="1340" height="515" rx="19" fill="url(#runGrad)" stroke="#86b3df" stroke-width="2.5"/>
+  <circle cx="677" cy="515" r="23" fill="#2b6cb0"/><text x="677" y="523" class="num center">1</text>
+  <text x="715" y="523" class="section">Spend budget on RUNNING requests first</text>
+  <text x="1938" y="522" class="ref" text-anchor="end">scheduler.py:629–861</text>
+
+  <rect x="670" y="558" width="365" height="206" rx="14" fill="#fff" stroke="#bad2e8" stroke-width="2"/>
+  <text x="692" y="591" class="h3">Compute this request’s Δ</text>
+  <text x="692" y="628" class="monoSm">gap = tokens_with_spec</text>
+  <text x="692" y="654" class="monoSm">    + placeholders − computed</text>
+  <text x="692" y="690" class="body2">Δ = min(gap, remaining shared</text>
+  <text x="692" y="716" class="body2">budgets, model-length cap, optional</text>
+  <text x="692" y="742" class="body2">long-prefill cap / other gates)</text>
+  <text x="692" y="786" class="ref">675–723; request.py:295–300</text>
+
+  <path d="M1035 659 L1088 659" stroke="#2b6cb0" stroke-width="4" marker-end="url(#arrowBlue)"/>
+  <rect x="1094" y="558" width="390" height="206" rx="14" fill="#fff9e8" stroke="#dfbd59" stroke-width="2"/>
+  <text x="1116" y="591" class="h3">Allocate KV slots for Δ</text>
+  <text x="1116" y="627" class="monoSm">allocate_slots(request, Δ,</text>
+  <text x="1116" y="653" class="monoSm">               lookahead)</text>
+  <text x="1116" y="690" class="body2">Extends the request’s block table.</text>
+  <text x="1116" y="718" class="body2">Returns new blocks, or None if the</text>
+  <text x="1116" y="746" class="body2">free pool cannot satisfy the request.</text>
+  <text x="1116" y="786" class="ref">745–752; KV manager:538–614</text>
+
+  <path d="M1484 659 L1537 659" stroke="#2b6cb0" stroke-width="4" marker-end="url(#arrowBlue)"/>
+  <rect x="1543" y="558" width="397" height="206" rx="14" fill="#e9f7ef" stroke="#80c8aa" stroke-width="2"/>
+  <text x="1565" y="591" class="h3">Success → record + debit</text>
+  <text x="1565" y="630" class="monoSm">num_scheduled_tokens[id] = Δ</text>
+  <text x="1565" y="659" class="monoSm">token_budget −= Δ</text>
+  <text x="1565" y="688" class="monoSm">input_budget −= Δ + draft_slots</text>
+  <text x="1565" y="726" class="body2">Keep request in RUNNING; continue scan.</text>
+  <text x="1565" y="786" class="ref">820–861</text>
+
+  <path d="M1289 764 L1289 811" stroke="#c23b4b" stroke-width="4" marker-end="url(#arrowRed)"/>
+  <text x="1310" y="798" style="font:700 16px Verdana,sans-serif;fill:#a82d3e">None</text>
+  <rect x="670" y="821" width="1270" height="133" rx="14" fill="#fff1f3" stroke="#d97c88" stroke-width="2"/>
+  <text x="694" y="856" class="h3" style="fill:#8f2938">Allocation failure → preempt, then retry</text>
+  <text x="694" y="888" class="body2">If no connector free is pending and a victim’s blocks are freeable now: victim = RUNNING tail (FCFS), or worst max(priority, arrival_time).</text>
+  <text x="694" y="917" class="body2">Remove it; free caches; status=PREEMPTED; computed=0; prepend to WAITING; record id. Restore budget if it was scheduled this step.</text>
+  <text x="694" y="943" class="ref">764–818; _preempt_request 1540–1583</text>
+  <path d="M670 855 L650 855 L650 540 L1289 540 L1289 556" fill="none" stroke="#c23b4b" stroke-width="3" stroke-dasharray="10 8" marker-end="url(#arrowRed)"/>
+
+  <!-- waiting pass -->
+  <rect x="635" y="1020" width="1340" height="550" rx="19" fill="url(#waitGrad)" stroke="#74bda4" stroke-width="2.5"/>
+  <circle cx="677" cy="1060" r="23" fill="#23856d"/><text x="677" y="1068" class="num center">2</text>
+  <text x="715" y="1068" class="section">Then admit WAITING requests — only if no request was preempted</text>
+  <text x="1938" y="1067" class="ref" text-anchor="end">scheduler.py:873–1353</text>
+
+  <rect x="670" y="1104" width="358" height="235" rx="14" fill="#fff" stroke="#acd7c7" stroke-width="2"/>
+  <text x="692" y="1138" class="h3">Pick an eligible head</text>
+  <text x="692" y="1175" class="body2">KV-holding queue first; otherwise</text>
+  <text x="692" y="1203" class="body2">the normal queue. Stop if no token /</text>
+  <text x="692" y="1231" class="body2">input budget or active-request slot.</text>
+  <text x="692" y="1269" class="body2">Blocked requests may be skipped and</text>
+  <text x="692" y="1297" class="body2">requeued after the scan.</text>
+  <text x="692" y="1328" class="ref">886–923, 1343–1347</text>
+
+  <path d="M1028 1222 L1074 1222" stroke="#23856d" stroke-width="4" marker-end="url(#arrowGreen)"/>
+  <rect x="1080" y="1104" width="420" height="235" rx="14" fill="#fff" stroke="#acd7c7" stroke-width="2"/>
+  <text x="1102" y="1138" class="h3">Cache hit, remaining work, chunk</text>
+  <text x="1102" y="1174" class="body2">At first admission, adopt local/external</text>
+  <text x="1102" y="1202" class="body2">prefix hits → starting computed count.</text>
+  <text x="1102" y="1238" class="monoSm">remaining = num_tokens − computed</text>
+  <text x="1102" y="1273" class="monoSm">Δ = min(remaining, budgets, caps)</text>
+  <text x="1102" y="1306" class="small">If chunking is disabled and it won’t fit: stop.</text>
+  <text x="1102" y="1328" class="ref">930–1015, 1074–1125</text>
+
+  <path d="M1500 1222 L1546 1222" stroke="#23856d" stroke-width="4" marker-end="url(#arrowGreen)"/>
+  <rect x="1552" y="1104" width="388" height="235" rx="14" fill="#fff9e8" stroke="#dfbd59" stroke-width="2"/>
+  <text x="1574" y="1138" class="h3">Allocate; admit on success</text>
+  <text x="1574" y="1174" class="body2">allocate_slots adopts prefix blocks and</text>
+  <text x="1574" y="1202" class="body2">allocates slots for new work/lookahead.</text>
+  <text x="1574" y="1239" class="body2">None → stop waiting scan (no victim).</text>
+  <text x="1574" y="1275" class="body2">Success → WAITING/PREEMPTED → RUNNING;</text>
+  <text x="1574" y="1303" class="body2">classify new/resumed; record Δ; debit budget.</text>
+  <text x="1574" y="1328" class="ref">1211–1232, 1292–1326</text>
+
+  <rect x="670" y="1370" width="1270" height="157" rx="14" fill="#eaf7f2" stroke="#9acdbb" stroke-width="2"/>
+  <text x="694" y="1403" class="h3">Why this is continuous batching</text>
+  <text x="694" y="1437" class="body2">The batch built in this one step can contain decode rows, speculative rows, continued prompt chunks, and newly admitted prompt chunks.</text>
+  <text x="694" y="1470" class="body2">They compete for the same budgets; request state is simply “computed tokens catching up to tokens_with_spec.”</text>
+  <text x="694" y="1504" class="ref">scheduler.py:565–574, 675–684, 1074–1125</text>
+
+  <!-- output to model runner -->
+  <path d="M2010 778 L2071 778" stroke="#2b6cb0" stroke-width="5" marker-end="url(#arrowBlue)"/>
+  <g filter="url(#shadow)">
+    <rect x="2075" y="250" width="665" height="1365" rx="24" fill="#fff" stroke="#cbd7e1" stroke-width="2"/>
+  </g>
+  <text x="2110" y="294" class="eyebrow">ONE OUTPUT → MODEL RUNNER</text>
+  <text x="2110" y="338" class="section">SchedulerOutput</text>
+  <text x="2110" y="370" class="ref">scheduler.py:1379–1519; output.py:231–315</text>
+
+  <rect x="2110" y="405" width="595" height="245" rx="16" fill="#edf5ff" stroke="#9fc3e8" stroke-width="2"/>
+  <text x="2135" y="444" class="h3">Request payloads</text>
+  <text x="2135" y="482" class="monoSm">scheduled_new_reqs: NewRequestData[]</text>
+  <text x="2135" y="512" class="body2">first-time request: prompt/MM/sampling data,</text>
+  <text x="2135" y="540" class="body2">block IDs, starting computed-token count</text>
+  <text x="2135" y="568" class="monoSm">scheduled_cached_reqs: CachedRequestData</text>
+  <text x="2135" y="598" class="body2">running/resumed IDs + new block IDs + starting</text>
+  <text x="2135" y="626" class="body2">computed/output counts (and small token diffs)</text>
+  <text x="2675" y="647" class="ref" text-anchor="end">output.py:40–83, 137–171</text>
+
+  <rect x="2110" y="675" width="595" height="273" rx="16" fill="#eefaf5" stroke="#9bd7c3" stroke-width="2"/>
+  <text x="2135" y="714" class="h3">Per-step execution plan</text>
+  <text x="2135" y="752" class="monoSm">num_scheduled_tokens: {req_id: Δ}</text>
+  <text x="2135" y="783" class="monoSm">total_num_scheduled_tokens = ΣΔ</text>
+  <text x="2135" y="821" class="body2">plus scheduled speculative token IDs, encoder</text>
+  <text x="2135" y="849" class="body2">inputs, and common-prefix block counts</text>
+  <text x="2135" y="887" class="body2">This map tells the runner exactly how many query</text>
+  <text x="2135" y="915" class="body2">tokens each mixed-batch request contributes.</text>
+  <text x="2675" y="935" class="ref" text-anchor="end">output.py:242–258</text>
+
+  <rect x="2110" y="973" width="595" height="273" rx="16" fill="#fff7e2" stroke="#dfbd59" stroke-width="2"/>
+  <text x="2135" y="1012" class="h3">KV / lifecycle instructions</text>
+  <text x="2135" y="1050" class="body2">• preempted and finished request IDs</text>
+  <text x="2135" y="1082" class="body2">• newly allocated block IDs to zero</text>
+  <text x="2135" y="1114" class="body2">• copy-on-write KV block copies</text>
+  <text x="2135" y="1146" class="body2">• KV/encoder connector metadata</text>
+  <text x="2135" y="1187" class="small">The worker can reset stale request state, update block</text>
+  <text x="2135" y="1214" class="small">tables, prepare memory, then execute the mixed batch.</text>
+  <text x="2675" y="1234" class="ref" text-anchor="end">output.py:260–305</text>
+
+  <rect x="2110" y="1272" width="595" height="286" rx="16" fill="#f4f0ff" stroke="#b6a2df" stroke-width="2"/>
+  <text x="2135" y="1311" class="h3">After packaging, advance scheduler state</text>
+  <text x="2135" y="1349" class="body2">For each scheduled request:</text>
+  <text x="2135" y="1385" class="monoSm">num_computed_tokens += Δ</text>
+  <text x="2135" y="1415" class="monoSm">num_in_flight_tokens += Δ</text>
+  <text x="2135" y="1454" class="body2">is_prefill_chunk remains true while computed is</text>
+  <text x="2135" y="1482" class="body2">still behind known tokens. Therefore the next call can</text>
+  <text x="2135" y="1510" class="body2">immediately schedule the next chunk.</text>
+  <text x="2675" y="1542" class="ref" text-anchor="end">scheduler.py:1585–1611</text>
+
+  <!-- bottom explanatory strip -->
+  <g filter="url(#shadow)">
+    <rect x="60" y="1655" width="2680" height="385" rx="24" fill="#fff" stroke="#cbd7e1" stroke-width="2"/>
+  </g>
+  <text x="90" y="1700" class="eyebrow">CHUNKED PREFILL ACROSS STEPS — ILLUSTRATIVE LONG PROMPT</text>
+  <text x="90" y="1738" class="body">A prompt larger than the remaining budget is split; the request stays RUNNING between chunks and competes again next step.</text>
+
+  <!-- timeline baseline -->
+  <line x1="115" y1="1840" x2="1935" y2="1840" stroke="#9bb0c2" stroke-width="5"/>
+  <circle cx="295" cy="1840" r="13" fill="#2b6cb0"/>
+  <circle cx="815" cy="1840" r="13" fill="#2b6cb0"/>
+  <circle cx="1335" cy="1840" r="13" fill="#2b6cb0"/>
+  <circle cx="1855" cy="1840" r="13" fill="#23856d"/>
+  <text x="295" y="1787" class="h3 center">step t</text>
+  <text x="815" y="1787" class="h3 center">step t+1</text>
+  <text x="1335" y="1787" class="h3 center">step t+2</text>
+  <text x="1855" y="1787" class="h3 center">prompt caught up</text>
+
+  <rect x="155" y="1868" width="280" height="70" rx="12" fill="#dcecff" stroke="#7eaee0"/>
+  <text x="295" y="1898" class="monoSm center">Δ₁ = min(remaining,B)</text>
+  <text x="295" y="1925" class="small center">allocate blocks → computed += Δ₁</text>
+  <rect x="675" y="1868" width="280" height="70" rx="12" fill="#dcecff" stroke="#7eaee0"/>
+  <text x="815" y="1898" class="monoSm center">Δ₂ = min(remaining,B)</text>
+  <text x="815" y="1925" class="small center">running pass → next blocks</text>
+  <rect x="1195" y="1868" width="280" height="70" rx="12" fill="#dcecff" stroke="#7eaee0"/>
+  <text x="1335" y="1898" class="monoSm center">Δ₃ = final remainder</text>
+  <text x="1335" y="1925" class="small center">prefill flag becomes false</text>
+  <rect x="1715" y="1868" width="280" height="70" rx="12" fill="#daf3e8" stroke="#67b99a"/>
+  <text x="1855" y="1898" class="monoSm center">next known token(s)</text>
+  <text x="1855" y="1925" class="small center">decode uses same scheduling path</text>
+
+  <rect x="2055" y="1745" width="650" height="245" rx="16" fill="#fff1f3" stroke="#d97c88" stroke-width="2"/>
+  <text x="2080" y="1783" class="h3" style="fill:#8f2938">Preemption changes the next step</text>
+  <text x="2080" y="1822" class="body2">Freed KV makes allocation retry possible now, but the</text>
+  <text x="2080" y="1850" class="body2">victim loses its computed count and returns to WAITING.</text>
+  <text x="2080" y="1888" class="body2">On resumption it may reuse any surviving prefix-cache hit;</text>
+  <text x="2080" y="1916" class="body2">otherwise its prompt/output prefix is recomputed in chunks.</text>
+  <text x="2080" y="1962" class="ref">scheduler.py:873–875, 1540–1583</text>
+
+  <text x="90" y="1994" class="ref">Chunk gate: scheduler.py:1114–1125  •  optimistic counter advance / next-chunk readiness: 1585–1611  •  long-prefill fairness cap: 612–627</text>
+  <text x="2740" y="2080" class="tiny" text-anchor="end">Code map uses vendored line numbers from PINNED.txt (commit 4c2d277643e217344056e1d2c42115d5f005912f).</text>
+</svg>

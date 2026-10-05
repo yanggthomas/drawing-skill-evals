@@ -1,0 +1,5 @@
+Created the code-grounded architecture diagram at:
+
+[Download process-arch.png](/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-vllm-v1-process-arch-without-aFY8W2/workspace/out/process-arch.png)
+
+It is 2400×1560 and includes source file/line anchors for every process, component, and transport. The editable SVG is alongside it.

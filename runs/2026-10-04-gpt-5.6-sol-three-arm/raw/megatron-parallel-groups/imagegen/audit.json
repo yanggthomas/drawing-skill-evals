@@ -1,0 +1,132 @@
+{
+  "case_id": "A3",
+  "case": "megatron-parallel-groups",
+  "arm": "imagegen",
+  "model": "gpt-5.6-sol",
+  "reasoning_effort": "high",
+  "attempts": 1,
+  "prompt_file": "/Users/guangyang/Projects/drawing-skill-evals/evals/megatron-parallel-groups/prompt.md",
+  "prompt_sha256": "9e561378f7144a586c956b5d0e4293df64cb0b36109c0030ff17f9c3a892fed7",
+  "prompt_suffix": "Produce the diagram with image generation.",
+  "source": "/Users/guangyang/Projects/drawing-skill-evals/evals/megatron-parallel-groups/src",
+  "output_png": "out/parallel-groups.png",
+  "catalog_expected_skill": "graphviz",
+  "expected_skills_visible": [
+    "imagegen"
+  ],
+  "image_generation_tool": true,
+  "isolation_args": [
+    "--config",
+    "skills.bundled.enabled=false",
+    "--disable",
+    "plugins",
+    "--disable",
+    "apps"
+  ],
+  "proxy": "http://127.0.0.1:7890",
+  "isolated_home": true,
+  "target": "/Users/guangyang/Projects/drawing-skill-evals/runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-parallel-groups/arms/imagegen",
+  "status": "complete",
+  "run": {
+    "cli_version": "codex-cli 0.160.0",
+    "started_at": "2026-10-04T09:46:56.122Z",
+    "ended_at": "2026-10-04T09:53:27.601Z",
+    "elapsed_seconds": 391.413,
+    "exit_code": 0,
+    "signal": null,
+    "process_error": null,
+    "timed_out": false,
+    "archived_attempt": null,
+    "temp_root": "/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-megatron-parallel-groups-imagegen-UxGkCw",
+    "skills_visible": [
+      "imagegen"
+    ],
+    "launcher": {
+      "command": "codex",
+      "args": [
+        "exec",
+        "--json",
+        "--ephemeral",
+        "--ignore-user-config",
+        "--ignore-rules",
+        "--skip-git-repo-check",
+        "--model",
+        "gpt-5.6-sol",
+        "--strict-config",
+        "--config",
+        "model_reasoning_effort=\"high\"",
+        "--config",
+        "approval_policy=\"never\"",
+        "--config",
+        "skills.bundled.enabled=false",
+        "--disable",
+        "plugins",
+        "--disable",
+        "apps",
+        "--sandbox",
+        "workspace-write",
+        "--cd",
+        "/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-megatron-parallel-groups-imagegen-UxGkCw/workspace",
+        "--output-last-message",
+        "/Users/guangyang/Projects/drawing-skill-evals/runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-parallel-groups/arms/imagegen/last-message.md",
+        "<PROMPT sha256=9e561378f7144a586c956b5d0e4293df64cb0b36109c0030ff17f9c3a892fed7>"
+      ]
+    }
+  },
+  "usage": {
+    "input_tokens": 507031,
+    "cached_input_tokens": 450560,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 6585,
+    "reasoning_output_tokens": 2478
+  },
+  "estimated_cost_usd": 0.537808,
+  "image_output_cost_usd": {
+    "low": 0.0077,
+    "medium": 0.0695,
+    "high": 0.2779
+  },
+  "skill_reads": [
+    "/bin/zsh -lc \"sed -n '1,240p' /private/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-megatron-parallel-groups-imagegen-UxGkCw/codex-home/skills/imagegen/SKILL.md\""
+  ],
+  "graphviz_read": false,
+  "model_architecture_read": false,
+  "imagegen_read": true,
+  "graphviz_workflow_verified": false,
+  "model_architecture_workflow_verified": false,
+  "image_generation_calls": 2,
+  "generated_images": [
+    {
+      "path": "01a1064f-3337-7161-a9bb-73307d6371cb/exec-27d609c2-02dd-48f7-b936-73a806c163d0.png",
+      "width": 1672,
+      "height": 941,
+      "bytes": 1744678,
+      "sha256": "2993d1d71459507b3889b452022aee3a284cc9e583cd36a8eda3611cfaae26fc"
+    },
+    {
+      "path": "01a1064f-3337-7161-a9bb-73307d6371cb/exec-c905d38d-af3f-4e16-a7d9-e208a8ad302e.png",
+      "width": 1672,
+      "height": 941,
+      "bytes": 1794517,
+      "sha256": "089d238dc7f4d06e317add2431326e92d002a5e23e866a89cc5961f39b3c9ddc"
+    }
+  ],
+  "png_from_image_tool": true,
+  "code_render_commands": [],
+  "subagents_spawned": 0,
+  "repo_references": [],
+  "route_verified": true,
+  "editable_dot_files": [],
+  "editable_tex_files": [],
+  "compiled_pdf_files": [],
+  "output_files": [
+    "parallel-groups.png"
+  ],
+  "png": {
+    "path": "/Users/guangyang/Projects/drawing-skill-evals/runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-parallel-groups/arms/imagegen/out/parallel-groups.png",
+    "width": 1672,
+    "height": 941,
+    "bytes": 1794517,
+    "sha256": "089d238dc7f4d06e317add2431326e92d002a5e23e866a89cc5961f39b3c9ddc"
+  }
+}

@@ -1,0 +1,5 @@
+Created the code-grounded diagram:
+
+[Download mixed-batch-attn.png](/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-vllm-v1-mixed-batch-attn-without-0Z59XH/workspace/out/mixed-batch-attn.png)
+
+It is a 2400×1600 PNG and includes pinned source line references throughout.

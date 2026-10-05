@@ -1,0 +1,132 @@
+{
+  "case_id": "A1",
+  "case": "vllm-v1-process-arch",
+  "arm": "imagegen",
+  "model": "gpt-5.6-sol",
+  "reasoning_effort": "high",
+  "attempts": 1,
+  "prompt_file": "/Users/guangyang/Projects/drawing-skill-evals/evals/vllm-v1-process-arch/prompt.md",
+  "prompt_sha256": "04350a3b2ccc212d598889b92396bd34404e03dee5bd187b58303bc45f748921",
+  "prompt_suffix": "Produce the diagram with image generation.",
+  "source": "/Users/guangyang/Projects/drawing-skill-evals/evals/vllm-v1-process-arch/src",
+  "output_png": "out/process-arch.png",
+  "catalog_expected_skill": "graphviz",
+  "expected_skills_visible": [
+    "imagegen"
+  ],
+  "image_generation_tool": true,
+  "isolation_args": [
+    "--config",
+    "skills.bundled.enabled=false",
+    "--disable",
+    "plugins",
+    "--disable",
+    "apps"
+  ],
+  "proxy": "http://127.0.0.1:7890",
+  "isolated_home": true,
+  "target": "/Users/guangyang/Projects/drawing-skill-evals/runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-process-arch/arms/imagegen",
+  "status": "complete",
+  "run": {
+    "cli_version": "codex-cli 0.160.0",
+    "started_at": "2026-10-04T09:29:21.203Z",
+    "ended_at": "2026-10-04T09:37:23.155Z",
+    "elapsed_seconds": 481.98,
+    "exit_code": 0,
+    "signal": null,
+    "process_error": null,
+    "timed_out": false,
+    "archived_attempt": null,
+    "temp_root": "/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-vllm-v1-process-arch-imagegen-1WCYDP",
+    "skills_visible": [
+      "imagegen"
+    ],
+    "launcher": {
+      "command": "codex",
+      "args": [
+        "exec",
+        "--json",
+        "--ephemeral",
+        "--ignore-user-config",
+        "--ignore-rules",
+        "--skip-git-repo-check",
+        "--model",
+        "gpt-5.6-sol",
+        "--strict-config",
+        "--config",
+        "model_reasoning_effort=\"high\"",
+        "--config",
+        "approval_policy=\"never\"",
+        "--config",
+        "skills.bundled.enabled=false",
+        "--disable",
+        "plugins",
+        "--disable",
+        "apps",
+        "--sandbox",
+        "workspace-write",
+        "--cd",
+        "/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-vllm-v1-process-arch-imagegen-1WCYDP/workspace",
+        "--output-last-message",
+        "/Users/guangyang/Projects/drawing-skill-evals/runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-process-arch/arms/imagegen/last-message.md",
+        "<PROMPT sha256=04350a3b2ccc212d598889b92396bd34404e03dee5bd187b58303bc45f748921>"
+      ]
+    }
+  },
+  "usage": {
+    "input_tokens": 1758890,
+    "cached_input_tokens": 1661056,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 9897,
+    "reasoning_output_tokens": 3774
+  },
+  "estimated_cost_usd": 1.2536984,
+  "image_output_cost_usd": {
+    "low": 0.0077,
+    "medium": 0.0695,
+    "high": 0.2779
+  },
+  "skill_reads": [
+    "/bin/zsh -lc \"sed -n '1,240p' /private/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-vllm-v1-process-arch-imagegen-1WCYDP/codex-home/skills/imagegen/SKILL.md\""
+  ],
+  "graphviz_read": false,
+  "model_architecture_read": false,
+  "imagegen_read": true,
+  "graphviz_workflow_verified": false,
+  "model_architecture_workflow_verified": false,
+  "image_generation_calls": 2,
+  "generated_images": [
+    {
+      "path": "01a1063f-1a78-7cd2-a86b-eecec5c6509f/exec-ae7396e3-5b8f-46de-bfce-4eb2124a22c8.png",
+      "width": 1672,
+      "height": 941,
+      "bytes": 1646691,
+      "sha256": "d8a7437cd7ff4eeb6a82df42f21c2e4879a2314e38311c698b8257e831c93a51"
+    },
+    {
+      "path": "01a1063f-1a78-7cd2-a86b-eecec5c6509f/exec-bc31b4c9-9175-45c1-a075-6bab676279d3.png",
+      "width": 1672,
+      "height": 941,
+      "bytes": 1504305,
+      "sha256": "5d7b0beb2a324480be842850ecf2050711eee6c1406e9bd23274a3d330e34a42"
+    }
+  ],
+  "png_from_image_tool": true,
+  "code_render_commands": [],
+  "subagents_spawned": 0,
+  "repo_references": [],
+  "route_verified": true,
+  "editable_dot_files": [],
+  "editable_tex_files": [],
+  "compiled_pdf_files": [],
+  "output_files": [
+    "process-arch.png"
+  ],
+  "png": {
+    "path": "/Users/guangyang/Projects/drawing-skill-evals/runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-process-arch/arms/imagegen/out/process-arch.png",
+    "width": 1672,
+    "height": 941,
+    "bytes": 1646691,
+    "sha256": "d8a7437cd7ff4eeb6a82df42f21c2e4879a2314e38311c698b8257e831c93a51"
+  }
+}

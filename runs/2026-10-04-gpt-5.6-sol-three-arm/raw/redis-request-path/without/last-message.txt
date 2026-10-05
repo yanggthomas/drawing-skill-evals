@@ -1,0 +1,5 @@
+Created the code-grounded Redis 8 request lifecycle diagram:
+
+[View/download request-path.png](/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-redis-request-path-without-pqHn2j/workspace/out/request-path.png)
+
+PNG dimensions: 2200 × 1700.

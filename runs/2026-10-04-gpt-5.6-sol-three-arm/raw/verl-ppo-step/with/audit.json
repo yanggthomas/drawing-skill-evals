@@ -1,0 +1,126 @@
+{
+  "case_id": "G2",
+  "case": "verl-ppo-step",
+  "arm": "with",
+  "model": "gpt-5.6-sol",
+  "reasoning_effort": "high",
+  "attempts": 1,
+  "prompt_file": "/Users/guangyang/Projects/drawing-skill-evals/evals/verl-ppo-step/prompt.md",
+  "prompt_sha256": "cc7a24bb7e7b22cced116ed7d81e0882067329ea9e06385e1d6ebd96bd32f68e",
+  "prompt_suffix": null,
+  "source": "/Users/guangyang/Projects/drawing-skill-evals/evals/verl-ppo-step/src",
+  "output_png": "out/ppo-step.png",
+  "catalog_expected_skill": "graphviz",
+  "expected_skills_visible": [
+    "graphviz",
+    "model-architecture"
+  ],
+  "image_generation_tool": false,
+  "isolation_args": [
+    "--config",
+    "skills.bundled.enabled=false",
+    "--disable",
+    "plugins",
+    "--disable",
+    "apps",
+    "--disable",
+    "image_generation"
+  ],
+  "proxy": "http://127.0.0.1:7890",
+  "isolated_home": true,
+  "target": "/Users/guangyang/Projects/drawing-skill-evals/runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-ppo-step/arms/with",
+  "status": "complete",
+  "run": {
+    "cli_version": "codex-cli 0.160.0",
+    "started_at": "2026-10-04T03:21:02.613Z",
+    "ended_at": "2026-10-04T03:27:41.362Z",
+    "elapsed_seconds": 398.735,
+    "exit_code": 0,
+    "signal": null,
+    "process_error": null,
+    "timed_out": false,
+    "archived_attempt": null,
+    "temp_root": "/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-verl-ppo-step-with-7kdCNy",
+    "skills_visible": [
+      "graphviz",
+      "model-architecture"
+    ],
+    "launcher": {
+      "command": "codex",
+      "args": [
+        "exec",
+        "--json",
+        "--ephemeral",
+        "--ignore-user-config",
+        "--ignore-rules",
+        "--skip-git-repo-check",
+        "--model",
+        "gpt-5.6-sol",
+        "--strict-config",
+        "--config",
+        "model_reasoning_effort=\"high\"",
+        "--config",
+        "approval_policy=\"never\"",
+        "--config",
+        "skills.bundled.enabled=false",
+        "--disable",
+        "plugins",
+        "--disable",
+        "apps",
+        "--disable",
+        "image_generation",
+        "--sandbox",
+        "workspace-write",
+        "--cd",
+        "/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-verl-ppo-step-with-7kdCNy/workspace",
+        "--output-last-message",
+        "/Users/guangyang/Projects/drawing-skill-evals/runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-ppo-step/arms/with/last-message.md",
+        "<PROMPT sha256=cc7a24bb7e7b22cced116ed7d81e0882067329ea9e06385e1d6ebd96bd32f68e>"
+      ]
+    }
+  },
+  "usage": {
+    "input_tokens": 933007,
+    "cached_input_tokens": 857856,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 15037,
+    "reasoning_output_tokens": 5485
+  },
+  "estimated_cost_usd": 0.9444864000000001,
+  "skill_reads": [
+    "/bin/zsh -lc \"sed -n '1,240p' /private/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-verl-ppo-step-with-7kdCNy/codex-home/skills/graphviz/SKILL.md\""
+  ],
+  "graphviz_read": true,
+  "model_architecture_read": false,
+  "imagegen_read": false,
+  "graphviz_workflow_verified": true,
+  "model_architecture_workflow_verified": false,
+  "image_generation_calls": 0,
+  "generated_images": [],
+  "png_from_image_tool": false,
+  "code_render_commands": [
+    "/bin/zsh -lc 'dot -Tpng -Gdpi=180 out/ppo-step.dot -o out/ppo-step.png && file out/ppo-step.png && identify out/ppo-step.png 2>/dev/null || true'",
+    "/bin/zsh -lc 'dot -Tpng -Gdpi=180 out/ppo-step.dot -o out/ppo-step.png && file out/ppo-step.png && identify out/ppo-step.png 2>/dev/null || true'",
+    "/bin/zsh -lc 'dot -Tpng -Gdpi=180 out/ppo-step.dot -o out/ppo-step.png && file out/ppo-step.png && test -s out/ppo-step.png && git status --short -- out/ppo-step.dot out/ppo-step.png'",
+    "/bin/zsh -lc 'dot -Tpng -Gdpi=180 out/ppo-step.dot -o out/ppo-step.png && file out/ppo-step.png && test -s out/ppo-step.png && git status --short -- out/ppo-step.dot out/ppo-step.png'"
+  ],
+  "subagents_spawned": 0,
+  "repo_references": [],
+  "route_verified": true,
+  "editable_dot_files": [
+    "ppo-step.dot"
+  ],
+  "editable_tex_files": [],
+  "compiled_pdf_files": [],
+  "output_files": [
+    "ppo-step.dot",
+    "ppo-step.png"
+  ],
+  "png": {
+    "path": "/Users/guangyang/Projects/drawing-skill-evals/runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-ppo-step/arms/with/out/ppo-step.png",
+    "width": 3651,
+    "height": 4015,
+    "bytes": 1204876,
+    "sha256": "9dd523991406f3c7d934dd0b1deceb08421d452cfe5d081c2412494a24962472"
+  }
+}

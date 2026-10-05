@@ -1,0 +1,6 @@
+Created and visually verified the architecture diagram:
+
+- [process-arch.png](/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-vllm-v1-process-arch-with-vqm7GQ/workspace/out/process-arch.png)
+- [Graphviz source](/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-vllm-v1-process-arch-with-vqm7GQ/workspace/out/process-arch.dot)
+
+The diagram is grounded in pinned commit `4c2d277643e217344056e1d2c42115d5f005912f`, with code references embedded throughout.

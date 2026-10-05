@@ -1,0 +1,7 @@
+Created the architecture diagram as a 1672×941 PNG:
+
+[Download parallel-groups.png](/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-megatron-parallel-groups-imagegen-UxGkCw/workspace/out/parallel-groups.png)
+
+It was produced with built-in image generation and a targeted correction pass. The prompt specified the exact rank table, complete TP/PP/DP/MP/embedding rosters, assignment equation, node placement, pinned commit, and relevant `parallel_state.py` line references.
+
+SHA-256: `089d238dc7f4d06e317add2431326e92d002a5e23e866a89cc5961f39b3c9ddc`

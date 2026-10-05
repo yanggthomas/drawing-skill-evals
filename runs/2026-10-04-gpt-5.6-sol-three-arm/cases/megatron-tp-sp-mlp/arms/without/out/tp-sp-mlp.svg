@@ -1,0 +1,251 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="1800" viewBox="0 0 2400 1800">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#071523"/>
+      <stop offset="0.55" stop-color="#0b1d2d"/>
+      <stop offset="1" stop-color="#10192b"/>
+    </linearGradient>
+    <linearGradient id="rank" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#102d42"/>
+      <stop offset="1" stop-color="#102438"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#000" flood-opacity="0.28"/>
+    </filter>
+    <marker id="arrow-cyan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#5ed7ff"/>
+    </marker>
+    <marker id="arrow-violet" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#c59bff"/>
+    </marker>
+    <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#ffb454"/>
+    </marker>
+    <style>
+      .sans { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; }
+      .mono { font-family: "SFMono-Regular", Menlo, Consolas, monospace; }
+      .title { font: 700 46px Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; fill: #f5fbff; letter-spacing: .2px; }
+      .subtitle { font: 400 21px Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; fill: #9fb8ca; }
+      .section { font: 700 25px Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; fill: #f3f9ff; letter-spacing: 1.4px; }
+      .boxTitle { font: 700 22px Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; fill: #f5fbff; }
+      .body { font: 400 18px Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; fill: #bdd0dd; }
+      .shape { font: 600 20px "SFMono-Regular", Menlo, Consolas, monospace; fill: #f3fbff; }
+      .small { font: 400 16px Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; fill: #9fb8ca; }
+      .tiny { font: 400 14px Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; fill: #8fa9bc; }
+      .ref { font: 600 14px "SFMono-Regular", Menlo, Consolas, monospace; fill: #68d8fb; }
+      .collective { font: 800 20px Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; fill: #201506; letter-spacing: .5px; }
+      .collectiveSub { font: 600 15px Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; fill: #4b300b; }
+      .pill { font: 700 15px "SFMono-Regular", Menlo, Consolas, monospace; fill: #d9f6ff; }
+      .arrowF { stroke:#5ed7ff; stroke-width:6; fill:none; marker-end:url(#arrow-cyan); }
+      .arrowB { stroke:#c59bff; stroke-width:6; fill:none; marker-end:url(#arrow-violet); }
+      .branch { stroke:#ffb454; stroke-width:4; fill:none; marker-end:url(#arrow-orange); stroke-dasharray:9 8; }
+    </style>
+  </defs>
+
+  <rect width="2400" height="1800" fill="url(#bg)"/>
+  <circle cx="2250" cy="70" r="260" fill="#13354a" opacity="0.22"/>
+  <circle cx="90" cy="1690" r="300" fill="#251c46" opacity="0.20"/>
+
+  <!-- Header -->
+  <text x="80" y="74" class="title">Tensor + sequence parallel MLP · rank r of p</text>
+  <text x="82" y="111" class="subtitle">Megatron-Core · fc1 → activation → fc2 · forward and backward on one TP rank</text>
+  <rect x="82" y="137" width="2236" height="69" rx="16" fill="#0e2638" stroke="#254760"/>
+  <text x="106" y="165" class="body">Notation</text>
+  <text x="215" y="165" class="pill">s</text><text x="235" y="165" class="small">global sequence</text>
+  <text x="385" y="165" class="pill">b</text><text x="405" y="165" class="small">batch</text>
+  <text x="495" y="165" class="pill">h</text><text x="515" y="165" class="small">hidden</text>
+  <text x="645" y="165" class="pill">f</text><text x="665" y="165" class="small">FFN hidden size</text>
+  <text x="860" y="165" class="pill">p</text><text x="880" y="165" class="small">TP size</text>
+  <line x1="1035" y1="150" x2="1035" y2="192" stroke="#31536a"/>
+  <text x="1062" y="165" class="small">Scope: dense, trainable, non-gated MLP; add_bias_linear=True;</text>
+  <text x="1062" y="189" class="small">equal partitions; sequence_parallel=True, p &gt; 1; p divides s and f.</text>
+  <text x="2098" y="165" class="ref">commit e998be0</text>
+  <text x="2098" y="189" class="tiny">pinned 2026-09-30</text>
+
+  <!-- Forward section -->
+  <rect x="52" y="232" width="2296" height="586" rx="28" fill="url(#rank)" stroke="#1e455e" stroke-width="2"/>
+  <rect x="52" y="232" width="2296" height="54" rx="28" fill="#12354c"/>
+  <rect x="52" y="259" width="2296" height="27" fill="#12354c"/>
+  <text x="82" y="269" class="section">FORWARD</text>
+  <text x="235" y="269" class="small">blue arrows = activations on rank r · amber nodes = collective over TP ranks 0…p−1</text>
+
+  <!-- forward connectors behind boxes -->
+  <path class="arrowF" d="M 295 505 L 385 505"/>
+  <path class="arrowF" d="M 595 505 L 690 505"/>
+  <path class="arrowF" d="M 1010 505 L 1100 505"/>
+  <path class="arrowF" d="M 1370 505 L 1460 505"/>
+  <path class="arrowF" d="M 1780 505 L 1860 505"/>
+  <path class="arrowF" d="M 2080 505 L 2190 505"/>
+
+  <!-- input -->
+  <rect x="82" y="414" width="213" height="183" rx="18" fill="#0c3b52" stroke="#55cfee" stroke-width="2" filter="url(#shadow)"/>
+  <text x="106" y="450" class="boxTitle">SP input shard</text>
+  <text x="106" y="492" class="shape">xᵣ [s/p,b,h]</text>
+  <text x="106" y="529" class="small">local sequence slice</text>
+  <text x="106" y="566" class="ref">layers.py:1340–75</text>
+
+  <!-- AG -->
+  <path d="M 407 425 L 565 425 L 595 505 L 565 585 L 407 585 L 377 505 Z" fill="#ffb454" stroke="#ffd28d" stroke-width="2" filter="url(#shadow)"/>
+  <text x="429" y="480" class="collective">ALL-GATHER</text>
+  <text x="429" y="509" class="collectiveSub">concat dim 0</text>
+  <text x="417" y="539" class="collectiveSub">[s/p,b,h] → [s,b,h]</text>
+  <text x="426" y="565" class="collectiveSub">all p TP ranks</text>
+
+  <!-- fc1 -->
+  <rect x="690" y="365" width="320" height="280" rx="20" fill="#12394d" stroke="#56d3f4" stroke-width="2" filter="url(#shadow)"/>
+  <rect x="710" y="385" width="112" height="29" rx="14" fill="#1e6883"/>
+  <text x="727" y="405" class="pill">COLUMN TP</text>
+  <text x="715" y="449" class="boxTitle">fc1 on rank r</text>
+  <text x="715" y="485" class="shape">W1ᵣ [f/p,h]</text>
+  <text x="715" y="514" class="shape">b1ᵣ [f/p]</text>
+  <line x1="715" y1="532" x2="985" y2="532" stroke="#2c6178"/>
+  <text x="715" y="564" class="body">tᵣ = x · W1ᵣᵀ; return b1ᵣ</text>
+  <text x="715" y="595" class="shape">tᵣ [s,b,f/p]</text>
+  <text x="715" y="626" class="ref">layers.py:1150–61, 724–34</text>
+
+  <!-- activation -->
+  <rect x="1100" y="414" width="270" height="183" rx="20" fill="#1d2850" stroke="#9787ec" stroke-width="2" filter="url(#shadow)"/>
+  <text x="1125" y="450" class="boxTitle">activation φ</text>
+  <text x="1125" y="486" class="body">aᵣ = φ(tᵣ + b1ᵣ)</text>
+  <text x="1125" y="516" class="shape">[s,b,f/p]</text>
+  <text x="1125" y="548" class="small">bias add may be fused;</text>
+  <text x="1125" y="570" class="small">stays feature-sharded</text>
+  <text x="1125" y="579" class="ref">mlp.py:268–72, 326–66</text>
+
+  <!-- fc2 -->
+  <rect x="1460" y="365" width="320" height="280" rx="20" fill="#2d284b" stroke="#b39cf4" stroke-width="2" filter="url(#shadow)"/>
+  <rect x="1480" y="385" width="104" height="29" rx="14" fill="#6756ae"/>
+  <text x="1496" y="405" class="pill">ROW TP</text>
+  <text x="1485" y="449" class="boxTitle">fc2 on rank r</text>
+  <text x="1485" y="485" class="shape">W2ᵣ [h,f/p]</text>
+  <text x="1485" y="514" class="shape">b2 [h] replicated</text>
+  <line x1="1485" y1="532" x2="1755" y2="532" stroke="#574b83"/>
+  <text x="1485" y="564" class="body">uᵣ = aᵣ · W2ᵣᵀ</text>
+  <text x="1485" y="595" class="shape">uᵣ [s,b,h]</text>
+  <text x="1485" y="626" class="ref">layers.py:1545–83, 1682–92</text>
+
+  <!-- RS -->
+  <path d="M 1888 425 L 2048 425 L 2080 505 L 2048 585 L 1888 585 L 1856 505 Z" fill="#ffb454" stroke="#ffd28d" stroke-width="2" filter="url(#shadow)"/>
+  <text x="1902" y="480" class="collective">REDUCE-SCATTER</text>
+  <text x="1907" y="509" class="collectiveSub">sum ranks + split dim 0</text>
+  <text x="1905" y="539" class="collectiveSub">[s,b,h] → [s/p,b,h]</text>
+  <text x="1920" y="565" class="collectiveSub">all p TP ranks</text>
+
+  <!-- output -->
+  <rect x="2190" y="414" width="128" height="183" rx="18" fill="#0c3b52" stroke="#55cfee" stroke-width="2" filter="url(#shadow)"/>
+  <text x="2211" y="450" class="boxTitle">output</text>
+  <text x="2207" y="492" class="shape">yᵣ</text>
+  <text x="2207" y="520" class="shape">[s/p,</text>
+  <text x="2207" y="548" class="shape"> b,h]</text>
+  <text x="2207" y="579" class="ref">1698–1701</text>
+
+  <!-- Forward notes -->
+  <rect x="82" y="687" width="2236" height="93" rx="16" fill="#0b2132" stroke="#28475b"/>
+  <text x="107" y="720" class="body">Why these boundaries:</text>
+  <text x="300" y="720" class="small">MLP constructs fc1 with gather_output=False and fc2 with input_is_parallel=True (mlp.py:221–57).</text>
+  <text x="107" y="751" class="small">fc2 uses skip_bias_add=True, so b2 [h] is returned separately after the reduce-scatter; it is not included in each rank’s partial uᵣ (mlp.py:242–57; layers.py:1682–1710).</text>
+
+  <!-- Backward section -->
+  <rect x="52" y="842" width="2296" height="626" rx="28" fill="#191c39" stroke="#514578" stroke-width="2"/>
+  <rect x="52" y="842" width="2296" height="54" rx="28" fill="#30284f"/>
+  <rect x="52" y="869" width="2296" height="27" fill="#30284f"/>
+  <text x="82" y="879" class="section">BACKWARD</text>
+  <text x="256" y="879" class="small">read right → left · purple arrows = gradients · dashed amber branch = saved-input gather for ∇W1ᵣ</text>
+
+  <!-- backward connectors behind boxes, right to left -->
+  <path class="arrowB" d="M 2202 1060 L 2090 1060"/>
+  <path class="arrowB" d="M 1848 1060 L 1770 1060"/>
+  <path class="arrowB" d="M 1450 1060 L 1370 1060"/>
+  <path class="arrowB" d="M 1100 1060 L 1020 1060"/>
+  <path class="arrowB" d="M 690 1060 L 610 1060"/>
+  <path class="arrowB" d="M 370 1060 L 286 1060"/>
+
+  <!-- dx -->
+  <rect x="82" y="969" width="204" height="182" rx="18" fill="#302654" stroke="#b59aef" stroke-width="2" filter="url(#shadow)"/>
+  <text x="107" y="1005" class="boxTitle">input grad</text>
+  <text x="107" y="1048" class="shape">∇xᵣ</text>
+  <text x="107" y="1078" class="shape">[s/p,b,h]</text>
+  <text x="107" y="1118" class="small">summed + SP-sharded</text>
+  <text x="107" y="1143" class="ref">layers.py:801–10</text>
+
+  <!-- backward RS -->
+  <path d="M 400 980 L 578 980 L 610 1060 L 578 1140 L 400 1140 L 368 1060 Z" fill="#ffb454" stroke="#ffd28d" stroke-width="2" filter="url(#shadow)"/>
+  <text x="404" y="1035" class="collective">REDUCE-SCATTER</text>
+  <text x="420" y="1064" class="collectiveSub">fc1 input gradient</text>
+  <text x="411" y="1094" class="collectiveSub">[s,b,h] → [s/p,b,h]</text>
+  <text x="428" y="1120" class="collectiveSub">sum + split dim 0</text>
+
+  <!-- fc1 backward -->
+  <rect x="690" y="930" width="330" height="260" rx="20" fill="#27244c" stroke="#b39cf4" stroke-width="2" filter="url(#shadow)"/>
+  <text x="715" y="970" class="boxTitle">fc1 backward · rank r</text>
+  <text x="715" y="1009" class="shape">∇tᵣ [s,b,f/p]</text>
+  <line x1="715" y1="1027" x2="995" y2="1027" stroke="#574b83"/>
+  <text x="715" y="1058" class="body">partial ∇x = ∇tᵣ · W1ᵣ</text>
+  <text x="715" y="1088" class="shape">[s,b,h]</text>
+  <text x="715" y="1128" class="body">∇W1ᵣ [f/p,h]</text>
+  <text x="715" y="1161" class="ref">layers.py:784, 790–94, 894</text>
+
+  <!-- activation backward -->
+  <rect x="1100" y="969" width="270" height="182" rx="20" fill="#2b2550" stroke="#aa91ed" stroke-width="2" filter="url(#shadow)"/>
+  <text x="1125" y="1005" class="boxTitle">activation backward</text>
+  <text x="1125" y="1048" class="shape">∇aᵣ → ∇tᵣ</text>
+  <text x="1125" y="1078" class="shape">[s,b,f/p]</text>
+  <text x="1125" y="1118" class="small">local; no collective</text>
+
+  <!-- fc2 backward -->
+  <rect x="1450" y="930" width="320" height="260" rx="20" fill="#27244c" stroke="#b39cf4" stroke-width="2" filter="url(#shadow)"/>
+  <text x="1475" y="970" class="boxTitle">fc2 backward · rank r</text>
+  <text x="1475" y="1009" class="shape">∇y [s,b,h]</text>
+  <line x1="1475" y1="1027" x2="1745" y2="1027" stroke="#574b83"/>
+  <text x="1475" y="1058" class="body">∇aᵣ = ∇y · W2ᵣ</text>
+  <text x="1475" y="1088" class="shape">[s,b,f/p]</text>
+  <text x="1475" y="1128" class="body">∇W2ᵣ [h,f/p]</text>
+  <text x="1475" y="1161" class="ref">layers.py:784, 894–95</text>
+
+  <!-- backward AG at output -->
+  <path d="M 1880 980 L 2058 980 L 2090 1060 L 2058 1140 L 1880 1140 L 1848 1060 Z" fill="#ffb454" stroke="#ffd28d" stroke-width="2" filter="url(#shadow)"/>
+  <text x="1910" y="1035" class="collective">ALL-GATHER</text>
+  <text x="1888" y="1064" class="collectiveSub">backward of forward RS</text>
+  <text x="1881" y="1094" class="collectiveSub">[s/p,b,h] → [s,b,h]</text>
+  <text x="1915" y="1120" class="collectiveSub">concat dim 0</text>
+
+  <!-- dy -->
+  <rect x="2202" y="969" width="116" height="182" rx="18" fill="#302654" stroke="#b59aef" stroke-width="2" filter="url(#shadow)"/>
+  <text x="2221" y="1005" class="boxTitle">output</text>
+  <text x="2221" y="1032" class="boxTitle">grad</text>
+  <text x="2221" y="1075" class="shape">∇yᵣ</text>
+  <text x="2215" y="1104" class="shape">[s/p,</text>
+  <text x="2215" y="1132" class="shape"> b,h]</text>
+
+  <!-- auxiliary saved-input AG for fc1 wgrad -->
+  <rect x="720" y="1261" width="240" height="70" rx="14" fill="#0f3348" stroke="#3ea9cc"/>
+  <text x="739" y="1290" class="small">saved local fc1 input</text>
+  <text x="739" y="1318" class="shape">xᵣ [s/p,b,h]</text>
+  <path class="branch" d="M 720 1297 L 610 1297"/>
+  <path d="M 418 1222 L 578 1222 L 610 1297 L 578 1372 L 418 1372 L 386 1297 Z" fill="#ffb454" stroke="#ffd28d" stroke-width="2"/>
+  <text x="449" y="1275" class="collective">ALL-GATHER</text>
+  <text x="408" y="1304" class="collectiveSub">rebuild x [s,b,h] for ∇W1ᵣ</text>
+  <text x="422" y="1333" class="collectiveSub">async; overlaps fc1 ∇x GEMM</text>
+  <path class="branch" d="M 610 1297 C 675 1297, 650 1170, 720 1139"/>
+  <text x="1022" y="1272" class="small">fc1 saves the pre-gather xᵣ, then gathers it again in backward before the weight-gradient GEMM.</text>
+  <text x="1022" y="1301" class="ref">layers.py:705, 768–94</text>
+  <text x="1022" y="1340" class="small">The fc2 boundary AG is the autograd backward of reduce_scatter_to_sequence_parallel_region.</text>
+  <text x="1022" y="1369" class="ref">mappings.py:359–85</text>
+  <text x="1022" y="1408" class="small">No TP all-reduce appears on this SP path: fc1 dgrad uses reduce-scatter; fc2’s row-parallel sum is the forward reduce-scatter.</text>
+  <text x="1022" y="1437" class="ref">layers.py:1256–58, 1671–1703</text>
+
+  <!-- Footer / code anchors -->
+  <rect x="52" y="1492" width="2296" height="258" rx="24" fill="#0a1724" stroke="#26394a"/>
+  <text x="82" y="1532" class="section">CODE ANCHORS</text>
+  <text x="82" y="1571" class="ref">MLP wiring</text>
+  <text x="210" y="1571" class="small">mlp.py:203–15 (non-gated scope), 221–57 (fc1/fc2 construction), 263–80 (execution order and shapes)</text>
+  <text x="82" y="1607" class="ref">fc1 / column TP</text>
+  <text x="240" y="1607" class="small">layers.py:1044–60, 1150–61 (partition), 1248–58 (SP), 1369–1401 (kernel call; no output gather)</text>
+  <text x="82" y="1643" class="ref">fc2 / row TP</text>
+  <text x="240" y="1643" class="small">layers.py:1465–80, 1530–45, 1547–83 (partition), 1664–1703 (parallel input and forward RS)</text>
+  <text x="82" y="1679" class="ref">fc1 SP kernel</text>
+  <text x="240" y="1679" class="small">layers.py:724–34 (forward AG), 768–810 and 894–917 (backward saved-input AG, dgrad RS, wgrad)</text>
+  <text x="82" y="1715" class="ref">collective semantics</text>
+  <text x="275" y="1715" class="small">mappings.py:122–60 (AG dim 0), 163–202 (RS dim 0), 359–85 (forward RS ↔ backward AG)</text>
+  <text x="2258" y="1720" class="tiny" text-anchor="end">Every tensor shown is resident on rank r; s-sized intermediates have full sequence but rank-local TP features/partials.</text>
+</svg>

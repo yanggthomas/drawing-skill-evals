@@ -1,0 +1,3 @@
+Created the code-grounded architecture diagram as a 3600×2400 PNG:
+
+[Download resource-placement.png](/private/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-verl-resource-placement-without-1Q567F/workspace/out/resource-placement.png)

@@ -1,0 +1,3 @@
+Created and visually verified the code-grounded diagram for Redis 8.10.2 (`498ecd0…`).
+
+[Open request-path.png](/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-redis-request-path-with-7kzHvx/workspace/out/request-path.png)

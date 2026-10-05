@@ -1,0 +1,478 @@
+{
+  "schema_version": 1,
+  "id": "2026-10-04-gpt-5.6-sol-three-arm",
+  "date": "2026-10-04",
+  "status": "complete",
+  "protocol": "codex-exec-three-arm",
+  "source_commit": "fee8196",
+  "models": {
+    "agent": "gpt-5.6-sol",
+    "reasoning_effort": "high",
+    "image": "GPT Image 2 (cost assumed at high quality)"
+  },
+  "arms": [
+    "with",
+    "without",
+    "imagegen"
+  ],
+  "cost_usd": {
+    "with": 12.25,
+    "without": 8.74,
+    "imagegen_agent": 6.74,
+    "imagegen_images_high": 2.08,
+    "image_generation_calls": 15,
+    "assumptions": "Official API rates: gpt-5.6-sol $4 / $0.40 cached / $20 per 1M tokens; image output $30 per 1M tokens, token count from the GPT Image 2 formula at high quality."
+  },
+  "review": {
+    "status": "complete",
+    "reviewer": "human + Fable 5.1 (blind)",
+    "images_reviewed": 54,
+    "report": "../../comparisons/2026-10-04-blind-54/REPORT.md"
+  },
+  "comparison_refs": [
+    "../../comparisons/2026-10-04-blind-54/comparison.yaml"
+  ],
+  "raw": {
+    "per_arm_evidence": "raw/<case>/<arm>/: audit.json, trace.jsonl, stderr.log, prompt-input.json, last-message.txt, image-tool output files, attempts/",
+    "migration_map": "raw/migration-map.json"
+  },
+  "cases": [
+    {
+      "id": "G1",
+      "case": "vllm-v1-schedule",
+      "arms": {
+        "with": [
+          {
+            "path": "out/schedule-step.dot",
+            "sha256": "35d9400e20b6238389089de1228364659b09749bef9033ef33ab0fb70846a72d",
+            "bytes": 14505
+          },
+          {
+            "path": "out/schedule-step.png",
+            "sha256": "2985f4ec7f92edcd4619190c76886bbb1a4ce88f649f461fb0927ccb5e1fe555",
+            "bytes": 1230930,
+            "width": 7957,
+            "height": 4595
+          }
+        ],
+        "without": [
+          {
+            "path": "out/schedule-step.png",
+            "sha256": "25822d2613e56553ff787ce47d387c1db0241727bcfd2eb788b729048c8537fc",
+            "bytes": 971593,
+            "width": 2800,
+            "height": 2100
+          },
+          {
+            "path": "out/schedule-step.svg",
+            "sha256": "6757e496f523e538355ea419f457efb82ac4fcfcfea5906e814b1cc55120e7d9",
+            "bytes": 19968
+          }
+        ],
+        "imagegen": [
+          {
+            "path": "out/schedule-step.png",
+            "sha256": "60bb4991cfad2ccd572b92fb4aeedb10d230864050743e3513a58d4ec36ebcf4",
+            "bytes": 1797968,
+            "width": 1672,
+            "height": 941
+          }
+        ]
+      }
+    },
+    {
+      "id": "G2",
+      "case": "verl-ppo-step",
+      "arms": {
+        "with": [
+          {
+            "path": "out/ppo-step.dot",
+            "sha256": "bff7e5f2aa89705fdc61e06948229f64ec4bd2b2873a0b83da78b5c2625e3e5c",
+            "bytes": 15185
+          },
+          {
+            "path": "out/ppo-step.png",
+            "sha256": "9dd523991406f3c7d934dd0b1deceb08421d452cfe5d081c2412494a24962472",
+            "bytes": 1204876,
+            "width": 3651,
+            "height": 4015
+          }
+        ],
+        "without": [
+          {
+            "path": "out/ppo-step.png",
+            "sha256": "239443a680d807e1e1f199c5425941b3ea0eb26efcda2f48a83e6d45d82097f6",
+            "bytes": 990599,
+            "width": 2600,
+            "height": 1900
+          },
+          {
+            "path": "out/ppo-step.svg",
+            "sha256": "f2466b458a6bea8f447dd278419bb8b4c777d326bbe93ba3270bda3472c8c43d",
+            "bytes": 25018
+          }
+        ],
+        "imagegen": [
+          {
+            "path": "out/ppo-step.png",
+            "sha256": "13088a90bc97be4c2bff7facd9222524099405df1adb5a1b87f434dbf610b0ec",
+            "bytes": 1798452,
+            "width": 1672,
+            "height": 941
+          }
+        ]
+      }
+    },
+    {
+      "id": "G3",
+      "case": "ffmpeg-transcode-threads",
+      "arms": {
+        "with": [
+          {
+            "path": "out/transcode-threads.dot",
+            "sha256": "afe17eefcb95b7076428f6c3c55845515630c2f83e6afa2f042ef973c2396669",
+            "bytes": 13919
+          },
+          {
+            "path": "out/transcode-threads.png",
+            "sha256": "459ec149107329043c484dd20adbe9355a08fff569fc40b8f33def525e2c2c0d",
+            "bytes": 982182,
+            "width": 4696,
+            "height": 2973
+          }
+        ],
+        "without": [
+          {
+            "path": "out/transcode-threads.png",
+            "sha256": "f7e9b1a2fa51064b2812abf2341762366601a99fc7cb8bdde3ebc79bf9f8a586",
+            "bytes": 692555,
+            "width": 4814,
+            "height": 2379
+          }
+        ],
+        "imagegen": [
+          {
+            "path": "out/transcode-threads.png",
+            "sha256": "7fc19e0d1d9126e034e0cd3e6d78790b76fad027b3301bab006c31e172747010",
+            "bytes": 1885873,
+            "width": 1672,
+            "height": 941
+          }
+        ]
+      }
+    },
+    {
+      "id": "G4",
+      "case": "redis-request-path",
+      "arms": {
+        "with": [
+          {
+            "path": "out/request-path.dot",
+            "sha256": "de637abdf536c63774467757b1f306b5ce5e0712ec0ebe294f95fe937a8d4a34",
+            "bytes": 7685
+          },
+          {
+            "path": "out/request-path.png",
+            "sha256": "5eb0aba5976de46d7715bb0a57e271fba9cd79b81065a72a046af98a6a3c2fd9",
+            "bytes": 969215,
+            "width": 1997,
+            "height": 6656
+          }
+        ],
+        "without": [
+          {
+            "path": "out/request-path.png",
+            "sha256": "2a4d563e6cd12ba2894f26171b87f3e1204f58aae9b435369461aaa8432b95cb",
+            "bytes": 514833,
+            "width": 2200,
+            "height": 1700
+          },
+          {
+            "path": "out/request-path.svg",
+            "sha256": "d67c4e735c304e62111832abad1902f176d1e02ec2f5bab06c4eb06003901250",
+            "bytes": 13547
+          }
+        ],
+        "imagegen": [
+          {
+            "path": "out/request-path.png",
+            "sha256": "1235c9b1fb3180a19c51f95ef61c0f1ccb74e1196bfbcdc0983de7733050f095",
+            "bytes": 1598026,
+            "width": 1672,
+            "height": 941
+          }
+        ]
+      }
+    },
+    {
+      "id": "M1",
+      "case": "megatron-tp-sp-mlp",
+      "arms": {
+        "with": [
+          {
+            "path": "out/tp-sp-mlp.aux",
+            "sha256": "fbabe80c887f95a1ede6847f22dd91b380bda9d17ae8bfaa72e1741b16aa41e9",
+            "bytes": 32
+          },
+          {
+            "path": "out/tp-sp-mlp.fdb_latexmk",
+            "sha256": "d6f3e8eea7ab7212585a1c68fe1dd94537d2f4444fac635fc6b6a43df3974735",
+            "bytes": 18843
+          },
+          {
+            "path": "out/tp-sp-mlp.fls",
+            "sha256": "dc9dc3ddbd3e109d4ea7b17901bad694b7bf10e5c90d6c33e5a4f0abc6b11ba0",
+            "bytes": 19497
+          },
+          {
+            "path": "out/tp-sp-mlp.log",
+            "sha256": "a4bc0a4ec3a7d69f3a4cb6ada5b0cf891ca85d4cfd8cf457c16a75f96b4ab851",
+            "bytes": 24425
+          },
+          {
+            "path": "out/tp-sp-mlp.pdf",
+            "sha256": "2382d79d294feb27070b2faec68c47b811d5a3a9999b5162ef3eeea7974697a1",
+            "bytes": 50538
+          },
+          {
+            "path": "out/tp-sp-mlp.png",
+            "sha256": "3f698fc9d78898a4cc2f874ff068a618e84598b33f33f98ccc2568b20d21a6d7",
+            "bytes": 524615,
+            "width": 2576,
+            "height": 1427
+          },
+          {
+            "path": "out/tp-sp-mlp.tex",
+            "sha256": "c8ab4fdc73dfc2807d3e68e51a5fccafc63f7199218fcce76fd38b02b4c962e2",
+            "bytes": 11473
+          },
+          {
+            "path": "out/tp-sp-mlp.xdv",
+            "sha256": "793ee22a6a07e984079aa2b539464c30c9ea454e5229e184f73a570dbe03b3e9",
+            "bytes": 60828
+          }
+        ],
+        "without": [
+          {
+            "path": "out/tp-sp-mlp.png",
+            "sha256": "a8b063885a8cd613f1f48b94b9cc6bde0eb511b6b90de1a594094ad1f242eae5",
+            "bytes": 569905,
+            "width": 2400,
+            "height": 1800
+          },
+          {
+            "path": "out/tp-sp-mlp.svg",
+            "sha256": "29813fd4a7867b705ae09370df98b368dbf5b0896976d7483b70e0e22726520f",
+            "bytes": 16904
+          }
+        ],
+        "imagegen": [
+          {
+            "path": "out/tp-sp-mlp.png",
+            "sha256": "a6267b19c2fb5b6edaab89e137043b2a129bd93639cab4b7441d137b56e47875",
+            "bytes": 1482160,
+            "width": 1672,
+            "height": 941
+          }
+        ]
+      }
+    },
+    {
+      "id": "M2",
+      "case": "vllm-v1-mixed-batch-attn",
+      "arms": {
+        "with": [
+          {
+            "path": "out/mixed-batch-attn.aux",
+            "sha256": "fbabe80c887f95a1ede6847f22dd91b380bda9d17ae8bfaa72e1741b16aa41e9",
+            "bytes": 32
+          },
+          {
+            "path": "out/mixed-batch-attn.fdb_latexmk",
+            "sha256": "20ccdfde4f3d2ca8bd95a9f6682b3749700dc44c987224856865ae5bfd510002",
+            "bytes": 17197
+          },
+          {
+            "path": "out/mixed-batch-attn.fls",
+            "sha256": "137084ea4fb98fdf4875b81955a5c0f59ac83b456bf245f1f32ad97d050d9094",
+            "bytes": 21039
+          },
+          {
+            "path": "out/mixed-batch-attn.log",
+            "sha256": "1bc6cf2253bfb79d0d0d3d6e2916283e652567f26074acee28e4ac018aabd4a3",
+            "bytes": 24049
+          },
+          {
+            "path": "out/mixed-batch-attn.pdf",
+            "sha256": "304d4cefd7175b4054ed16317676d0a9f4f696a7cfd3e25130823bd5259254ac",
+            "bytes": 66747
+          },
+          {
+            "path": "out/mixed-batch-attn.png",
+            "sha256": "1e2b9078b42d1f16f7c138a3bbb12691b72547d4c92925fa524d6e71bccc2318",
+            "bytes": 670624,
+            "width": 2745,
+            "height": 1670
+          },
+          {
+            "path": "out/mixed-batch-attn.tex",
+            "sha256": "493c161e751ba95925574b1ec80e62425c2a38b41ddda3b512dda6e84973083d",
+            "bytes": 13834
+          },
+          {
+            "path": "out/mixed-batch-attn.xdv",
+            "sha256": "c4c79237cce234fb36cc787be8124d651d0d7ccf19497720a7df8fbda152aa11",
+            "bytes": 96416
+          }
+        ],
+        "without": [
+          {
+            "path": "out/mixed-batch-attn.png",
+            "sha256": "3701b338224d5a5dcb2352cd51e7ab130f6c7b937f77b9caca3abb243114cca0",
+            "bytes": 611302,
+            "width": 2400,
+            "height": 1600
+          },
+          {
+            "path": "out/mixed-batch-attn.svg",
+            "sha256": "ab55744a1568afd535d9fdf6a243c0b0f5d7b2d7e0f4fca20c494fcc0ef7aa52",
+            "bytes": 19130
+          }
+        ],
+        "imagegen": [
+          {
+            "path": "out/mixed-batch-attn.png",
+            "sha256": "4efbd4b09a2a03d5aeb750d37942f28537fe99464887861fff95adb6f3a8b93b",
+            "bytes": 1573782,
+            "width": 1672,
+            "height": 941
+          }
+        ]
+      }
+    },
+    {
+      "id": "A1",
+      "case": "vllm-v1-process-arch",
+      "arms": {
+        "with": [
+          {
+            "path": "out/process-arch.dot",
+            "sha256": "27e8a15516abd200e43a8435e53f6ad25214ed95c0c74a986e387c7aa8592338",
+            "bytes": 12331
+          },
+          {
+            "path": "out/process-arch.png",
+            "sha256": "e2300668026cd07607cd3a87f76cb6d32bff8d93d0ad45f58a60e4146e04ecea",
+            "bytes": 894450,
+            "width": 2682,
+            "height": 4944
+          }
+        ],
+        "without": [
+          {
+            "path": "out/process-arch.png",
+            "sha256": "29a95f5ef96d441427e6d4e92225ca662318c2d909ba584336b320c48bdaf6cb",
+            "bytes": 693282,
+            "width": 2400,
+            "height": 1560
+          },
+          {
+            "path": "out/process-arch.svg",
+            "sha256": "52f17578e33775036cb8601d72728aeff9a9100c4582e48a1b1e96543cc93ac1",
+            "bytes": 22787
+          }
+        ],
+        "imagegen": [
+          {
+            "path": "out/process-arch.png",
+            "sha256": "d8a7437cd7ff4eeb6a82df42f21c2e4879a2314e38311c698b8257e831c93a51",
+            "bytes": 1646691,
+            "width": 1672,
+            "height": 941
+          }
+        ]
+      }
+    },
+    {
+      "id": "A2",
+      "case": "verl-resource-placement",
+      "arms": {
+        "with": [
+          {
+            "path": "out/resource-placement.dot",
+            "sha256": "e93b6ec5059ff1736f357ac0b3116d95404ecb0aeafa24306ff5c5f4ff7db6d3",
+            "bytes": 10867
+          },
+          {
+            "path": "out/resource-placement.png",
+            "sha256": "87504f120660fa8087905e5abfdf652b35017b23d5444bf4331c6b19dbb000b8",
+            "bytes": 869520,
+            "width": 4909,
+            "height": 2093
+          }
+        ],
+        "without": [
+          {
+            "path": "out/resource-placement.png",
+            "sha256": "0e1574e6f667850d72c76eb302a7461179d02d8c39c11a6be5dd1fbd2da2a25a",
+            "bytes": 1092859,
+            "width": 3600,
+            "height": 2400
+          }
+        ],
+        "imagegen": [
+          {
+            "path": "out/resource-placement.png",
+            "sha256": "a50befbc4172653ab021593a894fc86cbf83be3a7b8d489dc50c0eec51a06cbc",
+            "bytes": 1930135,
+            "width": 1672,
+            "height": 941
+          }
+        ]
+      }
+    },
+    {
+      "id": "A3",
+      "case": "megatron-parallel-groups",
+      "arms": {
+        "with": [
+          {
+            "path": "out/parallel-groups.dot",
+            "sha256": "953d22d7bff3b6fb7139d399b5d4d1637e83b72d1769b1e289217195e8eadcbe",
+            "bytes": 8643
+          },
+          {
+            "path": "out/parallel-groups.png",
+            "sha256": "cda858d58f2ecb5d0471665f19f45d2e1ead1b9bf9b6719795ab251577a4185d",
+            "bytes": 469363,
+            "width": 2844,
+            "height": 2312
+          }
+        ],
+        "without": [
+          {
+            "path": "out/parallel-groups.png",
+            "sha256": "71323040a20ca1c5e5349f25a5a9d48c0354b7b929b1941414a9ab0815ce0e9b",
+            "bytes": 524247,
+            "width": 2400,
+            "height": 1800
+          },
+          {
+            "path": "out/parallel-groups.svg",
+            "sha256": "2abfcd0a8f413fad0de0483fefd7cda9a655fc86c25a1ac02e76f4c21f6c3d9b",
+            "bytes": 27429
+          }
+        ],
+        "imagegen": [
+          {
+            "path": "out/parallel-groups.png",
+            "sha256": "089d238dc7f4d06e317add2431326e92d002a5e23e866a89cc5961f39b3c9ddc",
+            "bytes": 1794517,
+            "width": 1672,
+            "height": 941
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,163 @@
+digraph megatron_parallel_groups {
+  graph [
+    rankdir=TB,
+    bgcolor="white",
+    fontname="Helvetica",
+    pad="0.35",
+    nodesep="0.32",
+    ranksep="0.42",
+    splines=ortho,
+    compound=true,
+    newrank=true,
+    labelloc=t
+  ];
+
+  node [
+    fontname="Helvetica",
+    fontsize=11,
+    color="#2E86AB",
+    fillcolor="#E8F4FD",
+    style=filled,
+    penwidth=1.4
+  ];
+
+  edge [
+    color="#555555",
+    fontname="Helvetica",
+    fontsize=9,
+    arrowsize=0.7,
+    penwidth=1.1
+  ];
+
+  title [
+    shape=hexagon,
+    fillcolor="#F4A261",
+    color="#E76F51",
+    penwidth=2.0,
+    fontsize=20,
+    margin="0.28,0.16",
+    label="MEGATRON-CORE PROCESS-GROUP LAYOUT\n16 global ranks • 2 nodes × 8 GPUs • TP=2 • PP=4 • DP=2 • CP=EP=1"
+  ];
+
+  rule [
+    shape=box,
+    style="rounded,filled",
+    fillcolor="#E1BEE7",
+    color="#6A1B9A",
+    penwidth=1.8,
+    margin="0.24,0.14",
+    label=<<B>Rank assignment rule (default order)</B><BR ALIGN="LEFT"/>
+      Config order <FONT FACE="Courier">tp-cp-ep-dp-pp</FONT>; injected size-1 GTP axis gives
+      <FONT FACE="Courier">tp-cp-gtp_remat-ep-dp-pp</FONT>.<BR ALIGN="LEFT"/>
+      Collapse size-1 axes → <B>tp-dp-pp</B>, leftmost axis fastest. &nbsp;
+      <FONT FACE="Courier">r = t + 2d + 4p</FONT>, where
+      <FONT FACE="Courier">t∈{0,1}, d∈{0,1}, p∈{0,1,2,3}</FONT>.<BR ALIGN="LEFT"/>
+      To form group X: vary X's coordinate(s); hold every other coordinate fixed. &nbsp;
+      <B>Embedding</B>: first + last rank of each PP group.
+    >
+  ];
+
+  title -> rule [color="#E76F51"];
+
+  subgraph cluster_nodes {
+    label="PHYSICAL PLACEMENT + MEMBERSHIP OF EVERY GLOBAL RANK";
+    labelloc=t;
+    labeljust=c;
+    fontname="Helvetica-Bold";
+    fontsize=14;
+    color="#CCCCCC";
+    fillcolor="#FAFAFA";
+    style="rounded,filled";
+    penwidth=1.3;
+    margin=18;
+
+    node0 [
+      shape=plain,
+      label=<<TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="7" COLOR="#2E86AB">
+        <TR><TD COLSPAN="9" BGCOLOR="#E8F4FD"><FONT POINT-SIZE="15"><B>NODE 0</B></FONT> &nbsp; global ranks 0–7 &nbsp; (local GPUs 0–7)</TD></TR>
+        <TR>
+          <TD BGCOLOR="#D7EAF8"><B>rank</B></TD><TD BGCOLOR="#D7EAF8"><B>GPU</B></TD>
+          <TD BGCOLOR="#D7EAF8"><B>(t,d,p)</B></TD><TD BGCOLOR="#D7EAF8"><B>TP</B></TD>
+          <TD BGCOLOR="#FFF2B2"><B>DP</B></TD><TD BGCOLOR="#E1BEE7"><B>PP</B></TD>
+          <TD BGCOLOR="#F4A261"><B>MP</B></TD><TD BGCOLOR="#FFCDD2"><B>EMB</B></TD>
+          <TD BGCOLOR="#F5F5F5"><B>pipeline stage</B></TD>
+        </TR>
+        <TR><TD><B>0</B></TD><TD>0</TD><TD>(0,0,0)</TD><TD>T0</TD><TD>D0</TD><TD>P0</TD><TD>M0</TD><TD BGCOLOR="#FFCDD2"><B>E0</B></TD><TD>first</TD></TR>
+        <TR><TD><B>1</B></TD><TD>1</TD><TD>(1,0,0)</TD><TD>T0</TD><TD>D1</TD><TD>P1</TD><TD>M0</TD><TD BGCOLOR="#FFCDD2"><B>E1</B></TD><TD>first</TD></TR>
+        <TR><TD><B>2</B></TD><TD>2</TD><TD>(0,1,0)</TD><TD>T1</TD><TD>D0</TD><TD>P2</TD><TD>M1</TD><TD BGCOLOR="#FFCDD2"><B>E2</B></TD><TD>first</TD></TR>
+        <TR><TD><B>3</B></TD><TD>3</TD><TD>(1,1,0)</TD><TD>T1</TD><TD>D1</TD><TD>P3</TD><TD>M1</TD><TD BGCOLOR="#FFCDD2"><B>E3</B></TD><TD>first</TD></TR>
+        <TR><TD><B>4</B></TD><TD>4</TD><TD>(0,0,1)</TD><TD>T2</TD><TD>D2</TD><TD>P0</TD><TD>M0</TD><TD>—</TD><TD>middle</TD></TR>
+        <TR><TD><B>5</B></TD><TD>5</TD><TD>(1,0,1)</TD><TD>T2</TD><TD>D3</TD><TD>P1</TD><TD>M0</TD><TD>—</TD><TD>middle</TD></TR>
+        <TR><TD><B>6</B></TD><TD>6</TD><TD>(0,1,1)</TD><TD>T3</TD><TD>D2</TD><TD>P2</TD><TD>M1</TD><TD>—</TD><TD>middle</TD></TR>
+        <TR><TD><B>7</B></TD><TD>7</TD><TD>(1,1,1)</TD><TD>T3</TD><TD>D3</TD><TD>P3</TD><TD>M1</TD><TD>—</TD><TD>middle</TD></TR>
+      </TABLE>>
+    ];
+
+    node1 [
+      shape=plain,
+      label=<<TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="7" COLOR="#2E86AB">
+        <TR><TD COLSPAN="9" BGCOLOR="#E8F4FD"><FONT POINT-SIZE="15"><B>NODE 1</B></FONT> &nbsp; global ranks 8–15 &nbsp; (local GPUs 0–7)</TD></TR>
+        <TR>
+          <TD BGCOLOR="#D7EAF8"><B>rank</B></TD><TD BGCOLOR="#D7EAF8"><B>GPU</B></TD>
+          <TD BGCOLOR="#D7EAF8"><B>(t,d,p)</B></TD><TD BGCOLOR="#D7EAF8"><B>TP</B></TD>
+          <TD BGCOLOR="#FFF2B2"><B>DP</B></TD><TD BGCOLOR="#E1BEE7"><B>PP</B></TD>
+          <TD BGCOLOR="#F4A261"><B>MP</B></TD><TD BGCOLOR="#FFCDD2"><B>EMB</B></TD>
+          <TD BGCOLOR="#F5F5F5"><B>pipeline stage</B></TD>
+        </TR>
+        <TR><TD><B>8</B></TD><TD>0</TD><TD>(0,0,2)</TD><TD>T4</TD><TD>D4</TD><TD>P0</TD><TD>M0</TD><TD>—</TD><TD>middle</TD></TR>
+        <TR><TD><B>9</B></TD><TD>1</TD><TD>(1,0,2)</TD><TD>T4</TD><TD>D5</TD><TD>P1</TD><TD>M0</TD><TD>—</TD><TD>middle</TD></TR>
+        <TR><TD><B>10</B></TD><TD>2</TD><TD>(0,1,2)</TD><TD>T5</TD><TD>D4</TD><TD>P2</TD><TD>M1</TD><TD>—</TD><TD>middle</TD></TR>
+        <TR><TD><B>11</B></TD><TD>3</TD><TD>(1,1,2)</TD><TD>T5</TD><TD>D5</TD><TD>P3</TD><TD>M1</TD><TD>—</TD><TD>middle</TD></TR>
+        <TR><TD><B>12</B></TD><TD>4</TD><TD>(0,0,3)</TD><TD>T6</TD><TD>D6</TD><TD>P0</TD><TD>M0</TD><TD BGCOLOR="#FFCDD2"><B>E0</B></TD><TD>last</TD></TR>
+        <TR><TD><B>13</B></TD><TD>5</TD><TD>(1,0,3)</TD><TD>T6</TD><TD>D7</TD><TD>P1</TD><TD>M0</TD><TD BGCOLOR="#FFCDD2"><B>E1</B></TD><TD>last</TD></TR>
+        <TR><TD><B>14</B></TD><TD>6</TD><TD>(0,1,3)</TD><TD>T7</TD><TD>D6</TD><TD>P2</TD><TD>M1</TD><TD BGCOLOR="#FFCDD2"><B>E2</B></TD><TD>last</TD></TR>
+        <TR><TD><B>15</B></TD><TD>7</TD><TD>(1,1,3)</TD><TD>T7</TD><TD>D7</TD><TD>P3</TD><TD>M1</TD><TD BGCOLOR="#FFCDD2"><B>E3</B></TD><TD>last</TD></TR>
+      </TABLE>>
+    ];
+
+    { rank=same; node0; node1; }
+  }
+
+  rule -> node0 [lhead=cluster_nodes, color="#6A1B9A"];
+  rule -> node1 [lhead=cluster_nodes, color="#6A1B9A"];
+
+  group_key [
+    shape=plain,
+    label=<<TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="8" COLOR="#555555">
+      <TR><TD COLSPAN="5" BGCOLOR="#F5F5F5"><FONT POINT-SIZE="15"><B>COMPLETE PROCESS-GROUP ROSTERS</B></FONT> &nbsp; IDs match every rank row above</TD></TR>
+      <TR>
+        <TD BGCOLOR="#E8F4FD"><B>Tensor parallel (TP)</B><BR/><FONT POINT-SIZE="9">vary t; hold d,p</FONT></TD>
+        <TD BGCOLOR="#FFF2B2"><B>Data parallel (DP)</B><BR/><FONT POINT-SIZE="9">vary d; hold t,p</FONT></TD>
+        <TD BGCOLOR="#E1BEE7"><B>Pipeline parallel (PP)</B><BR/><FONT POINT-SIZE="9">vary p; hold t,d</FONT></TD>
+        <TD BGCOLOR="#F4A261"><B>Model parallel (MP)</B><BR/><FONT POINT-SIZE="9">vary t,p; hold d</FONT></TD>
+        <TD BGCOLOR="#FFCDD2"><B>Embedding (EMB)</B><BR/><FONT POINT-SIZE="9">first + last of PP</FONT></TD>
+      </TR>
+      <TR>
+        <TD ALIGN="LEFT"><B>T0</B> {0,1}<BR ALIGN="LEFT"/><B>T1</B> {2,3}<BR ALIGN="LEFT"/><B>T2</B> {4,5}<BR ALIGN="LEFT"/><B>T3</B> {6,7}<BR ALIGN="LEFT"/><B>T4</B> {8,9}<BR ALIGN="LEFT"/><B>T5</B> {10,11}<BR ALIGN="LEFT"/><B>T6</B> {12,13}<BR ALIGN="LEFT"/><B>T7</B> {14,15}</TD>
+        <TD ALIGN="LEFT"><B>D0</B> {0,2}<BR ALIGN="LEFT"/><B>D1</B> {1,3}<BR ALIGN="LEFT"/><B>D2</B> {4,6}<BR ALIGN="LEFT"/><B>D3</B> {5,7}<BR ALIGN="LEFT"/><B>D4</B> {8,10}<BR ALIGN="LEFT"/><B>D5</B> {9,11}<BR ALIGN="LEFT"/><B>D6</B> {12,14}<BR ALIGN="LEFT"/><B>D7</B> {13,15}</TD>
+        <TD ALIGN="LEFT" VALIGN="TOP"><B>P0</B> {0,4,8,12}<BR ALIGN="LEFT"/><B>P1</B> {1,5,9,13}<BR ALIGN="LEFT"/><B>P2</B> {2,6,10,14}<BR ALIGN="LEFT"/><B>P3</B> {3,7,11,15}</TD>
+        <TD ALIGN="LEFT" VALIGN="TOP"><B>M0</B> {0,1,4,5,8,9,12,13}<BR ALIGN="LEFT"/><B>M1</B> {2,3,6,7,10,11,14,15}</TD>
+        <TD ALIGN="LEFT" VALIGN="TOP"><B>E0</B> {0,12}<BR ALIGN="LEFT"/><B>E1</B> {1,13}<BR ALIGN="LEFT"/><B>E2</B> {2,14}<BR ALIGN="LEFT"/><B>E3</B> {3,15}<BR/><FONT POINT-SIZE="9">Interior PP stages: no EMB group</FONT></TD>
+      </TR>
+    </TABLE>>
+  ];
+
+  node0 -> group_key [color="#2E86AB"];
+  node1 -> group_key [color="#2E86AB"];
+
+  source [
+    shape=cylinder,
+    fillcolor="#FFF2B2",
+    color="#B8860B",
+    penwidth=1.5,
+    margin="0.20,0.12",
+    label=<<B>CODE GROUNDING — vendored <FONT FACE="Courier">megatron/core/parallel_state.py</FONT></B><BR ALIGN="LEFT"/>
+      Pin: NVIDIA/Megatron-LM <FONT FACE="Courier">e998be072d22ff57b4b49899819a1a153f4f3dc9</FONT><BR ALIGN="LEFT"/>
+      Inputs/default order: L622–648 • DP derivation: L847–859 • effective order + generator: L602–618, L891–902<BR ALIGN="LEFT"/>
+      Orthogonal rank algorithm: L268–374, L487–570 • 2-node rank placement: L789–803<BR ALIGN="LEFT"/>
+      Group builders: DP L1115–1131 • MP L1204–1218 • TP L1220–1235 • PP/EMB L1237–1340 • default EMB endpoints L580–586
+    >
+  ];
+
+  group_key -> source [color="#B8860B"];
+}

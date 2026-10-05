@@ -1,0 +1,369 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2600" height="1900" viewBox="0 0 2600 1900">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#07111f"/>
+      <stop offset="0.55" stop-color="#0a1628"/>
+      <stop offset="1" stop-color="#10182b"/>
+    </linearGradient>
+    <linearGradient id="driverHead" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#113b45"/>
+      <stop offset="1" stop-color="#0c2936"/>
+    </linearGradient>
+    <linearGradient id="workerHead" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#32275b"/>
+      <stop offset="1" stop-color="#211f43"/>
+    </linearGradient>
+    <linearGradient id="batchHead" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#553b19"/>
+      <stop offset="1" stop-color="#372b19"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="7" stdDeviation="9" flood-color="#000814" flood-opacity="0.36"/>
+    </filter>
+    <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <marker id="arrowTeal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#4dd6c6"/>
+    </marker>
+    <marker id="arrowPurple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#a78bfa"/>
+    </marker>
+    <marker id="arrowAmber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#f4bd61"/>
+    </marker>
+    <marker id="arrowCoral" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#ff7c72"/>
+    </marker>
+    <style>
+      .title { font: 700 47px Inter, ui-sans-serif, system-ui, sans-serif; fill: #f6f8fc; letter-spacing: -0.8px; }
+      .subtitle { font: 400 22px Inter, ui-sans-serif, system-ui, sans-serif; fill: #aebbd0; }
+      .kicker { font: 700 15px Inter, ui-sans-serif, system-ui, sans-serif; fill: #63e6d6; letter-spacing: 2.4px; }
+      .coltitle { font: 700 23px Inter, ui-sans-serif, system-ui, sans-serif; fill: #f7fbff; }
+      .colsub { font: 400 15px Inter, ui-sans-serif, system-ui, sans-serif; fill: #9fb0c8; }
+      .step { font: 800 20px Inter, ui-sans-serif, system-ui, sans-serif; fill: #06131a; }
+      .boxTitle { font: 700 21px Inter, ui-sans-serif, system-ui, sans-serif; fill: #f4f7fb; }
+      .boxText { font: 400 17px Inter, ui-sans-serif, system-ui, sans-serif; fill: #cbd5e3; }
+      .boxCode { font: 500 14px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #8da0ba; }
+      .batchText { font: 600 17px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #ffe1a6; }
+      .batchSub { font: 400 14px Inter, ui-sans-serif, system-ui, sans-serif; fill: #bea97d; }
+      .tiny { font: 500 14px Inter, ui-sans-serif, system-ui, sans-serif; fill: #9aacbf; }
+      .small { font: 400 15px Inter, ui-sans-serif, system-ui, sans-serif; fill: #b8c4d5; }
+      .noteTitle { font: 700 18px Inter, ui-sans-serif, system-ui, sans-serif; fill: #f7fbff; }
+      .noteText { font: 400 15px Inter, ui-sans-serif, system-ui, sans-serif; fill: #bdc8d8; }
+      .footer { font: 500 14px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #8495ad; }
+    </style>
+  </defs>
+
+  <rect width="2600" height="1900" fill="url(#bg)"/>
+  <circle cx="2430" cy="65" r="230" fill="#6c5ce7" opacity="0.07"/>
+  <circle cx="85" cy="1800" r="260" fill="#2dd4bf" opacity="0.055"/>
+
+  <!-- Header -->
+  <text x="80" y="66" class="kicker">VERL · SINGLE-CONTROLLER PPO / GRPO</text>
+  <text x="80" y="123" class="title">One training step: control flow, batch growth, and weight handoff</text>
+  <text x="80" y="160" class="subtitle">Pinned at fbb4b3a8 · Read top → bottom. The driver owns orchestration and the DataProto; heavyweight model work is dispatched to Ray workers.</text>
+
+  <!-- Legend -->
+  <g transform="translate(1810,38)">
+    <rect x="0" y="0" width="185" height="38" rx="19" fill="#102d35" stroke="#2f766f"/>
+    <circle cx="21" cy="19" r="7" fill="#4dd6c6"/><text x="37" y="25" class="small">driver / CPU</text>
+    <rect x="198" y="0" width="185" height="38" rx="19" fill="#282343" stroke="#62568f"/>
+    <circle cx="219" cy="19" r="7" fill="#a78bfa"/><text x="235" y="25" class="small">Ray / model</text>
+    <rect x="396" y="0" width="185" height="38" rx="19" fill="#372b19" stroke="#7d5c28"/>
+    <circle cx="417" cy="19" r="7" fill="#f4bd61"/><text x="433" y="25" class="small">batch delta</text>
+    <rect x="594" y="0" width="176" height="38" rx="19" fill="#3d2225" stroke="#89464b"/>
+    <path d="M610 19 H641" stroke="#ff7c72" stroke-width="4" marker-end="url(#arrowCoral)"/>
+    <text x="651" y="25" class="small">weights</text>
+  </g>
+
+  <!-- Column backplates -->
+  <rect x="72" y="205" width="770" height="1364" rx="24" fill="#091b26" stroke="#17404b" stroke-width="2"/>
+  <rect x="862" y="205" width="830" height="1364" rx="24" fill="#14142b" stroke="#3c3565" stroke-width="2"/>
+  <rect x="1712" y="205" width="816" height="1364" rx="24" fill="#201b14" stroke="#5c4827" stroke-width="2"/>
+
+  <!-- Column headers -->
+  <path d="M96 205 H818 Q842 205 842 229 V294 H72 V229 Q72 205 96 205" fill="url(#driverHead)"/>
+  <path d="M886 205 H1668 Q1692 205 1692 229 V294 H862 V229 Q862 205 886 205" fill="url(#workerHead)"/>
+  <path d="M1736 205 H2504 Q2528 205 2528 229 V294 H1712 V229 Q1712 205 1736 205" fill="url(#batchHead)"/>
+  <circle cx="109" cy="246" r="17" fill="#4dd6c6" opacity="0.95"/>
+  <path d="M102 247 l5 5 l10 -12" fill="none" stroke="#082129" stroke-width="3" stroke-linecap="round"/>
+  <text x="140" y="247" class="coltitle">DRIVER · RayPPOTrainer.fit()</text>
+  <text x="140" y="272" class="colsub">single controller · orders RPCs · owns and unions the batch</text>
+
+  <rect x="895" y="229" width="34" height="34" rx="8" fill="#a78bfa"/>
+  <path d="M904 239 h16 v4 h-16z M904 247 h16 v4 h-16z M904 255 h11 v4 h-11z" fill="#241d42"/>
+  <text x="945" y="247" class="coltitle">RAY WORKER GROUPS / SERVICES</text>
+  <text x="945" y="272" class="colsub">distributed generation, inference, and optimizer work</text>
+
+  <path d="M1749 228 h31 l12 12 v31 h-43z" fill="#f4bd61"/>
+  <path d="M1780 228 v13 h12" fill="none" stroke="#513817" stroke-width="3"/>
+  <text x="1808" y="247" class="coltitle">DataProto · cumulative ledger</text>
+  <text x="1808" y="272" class="colsub">each row shows what is added; entries persist downward</text>
+
+  <!-- Sequence spine -->
+  <path d="M105 340 V1460" stroke="#287167" stroke-width="4" opacity="0.7"/>
+
+  <!-- 0 prepare -->
+  <circle cx="105" cy="356" r="24" fill="#4dd6c6" filter="url(#softGlow)"/><text x="98" y="363" class="step">0</text>
+  <g filter="url(#shadow)">
+    <rect x="145" y="315" width="665" height="96" rx="15" fill="#0e2731" stroke="#2d756e"/>
+    <text x="170" y="346" class="boxTitle">Prepare the prompt batch</text>
+    <text x="170" y="372" class="boxText">DataLoader → DataProto; assign one uid per prompt; repeat × rollout.n.</text>
+    <text x="170" y="396" class="boxCode">RT 1478–1491 · _get_gen_batch 572–586</text>
+  </g>
+  <g>
+    <rect x="1740" y="315" width="760" height="96" rx="15" fill="#302616" stroke="#7a5928"/>
+    <text x="1766" y="347" class="batchText">base prompt tensors + metadata</text>
+    <text x="1766" y="374" class="batchText">non_tensor_batch["uid"]</text>
+    <text x="1766" y="397" class="batchSub">uid is the grouping key later used by GRPO</text>
+  </g>
+
+  <!-- 1 rollout -->
+  <circle cx="105" cy="479" r="24" fill="#4dd6c6"/><text x="99" y="486" class="step">1</text>
+  <g filter="url(#shadow)">
+    <rect x="145" y="432" width="665" height="111" rx="15" fill="#0e2731" stroke="#2d756e"/>
+    <text x="170" y="464" class="boxTitle">Dispatch rollout, then sleep replicas</text>
+    <text x="170" y="490" class="boxText">async_rollout_manager.generate_sequences(…) returns; the manager frees</text>
+    <text x="170" y="513" class="boxText">rollout weight/KV-cache memory before training-side model work.</text>
+    <text x="170" y="536" class="boxCode">RT 1509–1519 · CE 467–469</text>
+  </g>
+  <path d="M810 479 H883" stroke="#a78bfa" stroke-width="4" marker-end="url(#arrowPurple)"/>
+  <g filter="url(#shadow)">
+    <rect x="895" y="432" width="765" height="111" rx="15" fill="#24203f" stroke="#6558a3"/>
+    <text x="920" y="464" class="boxTitle">Rollout engine replicas · θ<tspan baseline-shift="sub" font-size="14">t</tspan></text>
+    <text x="920" y="490" class="boxText">Agent loop sends requests to vLLM/SGLang servers; optional reward workers</text>
+    <text x="920" y="513" class="boxText">can stream alongside rollout when enabled.</text>
+    <text x="920" y="536" class="boxCode">RT 946–965 · 1513–1514</text>
+  </g>
+  <g>
+    <rect x="1740" y="432" width="760" height="111" rx="15" fill="#302616" stroke="#7a5928"/>
+    <text x="1766" y="465" class="batchText">+ gen_batch_output</text>
+    <text x="1766" y="490" class="batchText">+ response_mask</text>
+    <text x="1766" y="515" class="batchSub">responses/generation tensors are unioned; rollout_log_probs may be present</text>
+    <text x="1766" y="536" class="boxCode">RT 1521–1544 · 1611</text>
+  </g>
+
+  <!-- 2 reward -->
+  <circle cx="105" cy="611" r="24" fill="#4dd6c6"/><text x="98" y="618" class="step">2</text>
+  <g filter="url(#shadow)">
+    <rect x="145" y="563" width="665" height="114" rx="15" fill="#0e2731" stroke="#2d756e"/>
+    <text x="170" y="595" class="boxTitle">Resolve reward, then extract it</text>
+    <text x="170" y="621" class="boxText">If needed, ask RewardLoopManager for RM scores; extract_reward(batch)</text>
+    <text x="170" y="644" class="boxText">combines the configured reward sources into reward_tensor on the driver.</text>
+    <text x="170" y="669" class="boxCode">RT 588–594 · 1561–1568</text>
+  </g>
+  <path d="M810 611 H883" stroke="#a78bfa" stroke-width="4" marker-end="url(#arrowPurple)"/>
+  <g>
+    <rect x="895" y="563" width="765" height="114" rx="15" fill="#24203f" stroke="#6558a3"/>
+    <text x="920" y="596" class="boxTitle">Reward loop / RM workers · optional</text>
+    <text x="920" y="622" class="boxText">compute_rm_score runs only when a reward model is used and rm_scores</text>
+    <text x="920" y="645" class="boxText">were not already produced during the agent loop.</text>
+    <text x="920" y="669" class="boxCode">RT 913–919 · 949 · 1563–1565</text>
+  </g>
+  <g>
+    <rect x="1740" y="563" width="760" height="114" rx="15" fill="#302616" stroke="#7a5928"/>
+    <text x="1766" y="597" class="batchText">+ rm_scores  [if RM and absent]</text>
+    <text x="1766" y="624" class="batchText">reward_tensor  [driver temporary]</text>
+    <text x="1766" y="650" class="batchSub">reward is materialized into token-level fields at step 6</text>
+    <text x="1766" y="671" class="boxCode">RT 1563–1568</text>
+  </g>
+
+  <!-- 3 old log probs -->
+  <circle cx="105" cy="746" r="24" fill="#4dd6c6"/><text x="98" y="753" class="step">3</text>
+  <g filter="url(#shadow)">
+    <rect x="145" y="699" width="665" height="109" rx="15" fill="#0e2731" stroke="#2d756e"/>
+    <text x="170" y="731" class="boxTitle">Freeze the proximal anchor π<tspan baseline-shift="sub" font-size="14">old</tspan></text>
+    <text x="170" y="757" class="boxText">Normally recompute once for this data batch. Bypass mode instead copies</text>
+    <text x="170" y="780" class="boxText">rollout_log_probs into old_log_probs.</text>
+    <text x="170" y="802" class="boxCode">RT 1570–1617 · _compute_old_log_prob 1290–1325</text>
+  </g>
+  <path d="M810 746 H883" stroke="#a78bfa" stroke-width="4" marker-end="url(#arrowPurple)"/>
+  <g>
+    <rect x="895" y="699" width="765" height="109" rx="15" fill="#24203f" stroke="#6558a3"/>
+    <text x="920" y="733" class="boxTitle">actor_rollout_wg.compute_log_prob</text>
+    <text x="920" y="759" class="boxText">Actor training model inference; entropy is reduced to metrics, then removed.</text>
+    <text x="920" y="787" class="boxCode">EW 703–710 · RT 1304–1324</text>
+  </g>
+  <g>
+    <rect x="1740" y="699" width="760" height="109" rx="15" fill="#302616" stroke="#7a5928"/>
+    <text x="1766" y="735" class="batchText">+ old_log_probs</text>
+    <text x="1766" y="762" class="batchSub">stable across the actor's mini-batch epochs</text>
+    <text x="1766" y="788" class="boxCode">RT 1610 · 1617</text>
+  </g>
+
+  <!-- 4 ref -->
+  <circle cx="105" cy="873" r="24" fill="#4dd6c6"/><text x="98" y="880" class="step">4</text>
+  <g filter="url(#shadow)">
+    <rect x="145" y="830" width="665" height="96" rx="15" fill="#0e2731" stroke="#2d756e"/>
+    <text x="170" y="862" class="boxTitle">Reference log-prob · if enabled</text>
+    <text x="170" y="888" class="boxText">Dispatch after π<tspan baseline-shift="sub" font-size="12">old</tspan>; union the returned reference-policy likelihoods.</text>
+    <text x="170" y="914" class="boxCode">RT 1618–1622 · _compute_ref_log_prob 1266–1288</text>
+  </g>
+  <path d="M810 873 H883" stroke="#a78bfa" stroke-width="4" stroke-dasharray="10 8" marker-end="url(#arrowPurple)"/>
+  <g>
+    <rect x="895" y="830" width="765" height="96" rx="15" fill="#24203f" stroke="#6558a3" stroke-dasharray="8 6"/>
+    <text x="920" y="862" class="boxTitle">ref_policy_wg · or actor WG with LoRA disabled</text>
+    <text x="920" y="888" class="boxText">compute_ref_log_prob; ref_in_actor sets no_lora_adapter=True.</text>
+    <text x="920" y="914" class="boxCode">RT 1272–1279 · EW 696–701</text>
+  </g>
+  <g>
+    <rect x="1740" y="830" width="760" height="96" rx="15" fill="#302616" stroke="#7a5928" stroke-dasharray="8 6"/>
+    <text x="1766" y="867" class="batchText">+ ref_log_prob  [conditional]</text>
+    <text x="1766" y="896" class="boxCode">RT 1281–1286 · 1622</text>
+  </g>
+
+  <!-- 5 values -->
+  <circle cx="105" cy="994" r="24" fill="#4dd6c6"/><text x="98" y="1001" class="step">5</text>
+  <g filter="url(#shadow)">
+    <rect x="145" y="948" width="665" height="102" rx="15" fill="#0e2731" stroke="#2d756e"/>
+    <text x="170" y="980" class="boxTitle">Value inference · PPO / critic path</text>
+    <text x="170" y="1006" class="boxText">Only when use_critic; GRPO commonly omits this entire branch.</text>
+    <text x="170" y="1034" class="boxCode">RT 1624–1628 · _compute_values 1252–1264</text>
+  </g>
+  <path d="M810 994 H883" stroke="#a78bfa" stroke-width="4" stroke-dasharray="10 8" marker-end="url(#arrowPurple)"/>
+  <g>
+    <rect x="895" y="948" width="765" height="102" rx="15" fill="#24203f" stroke="#6558a3" stroke-dasharray="8 6"/>
+    <text x="920" y="981" class="boxTitle">critic_wg.infer_batch</text>
+    <text x="920" y="1007" class="boxText">Distributed critic forward pass; driver converts output back to padding.</text>
+    <text x="920" y="1034" class="boxCode">RT 1253–1263</text>
+  </g>
+  <g>
+    <rect x="1740" y="948" width="760" height="102" rx="15" fill="#302616" stroke="#7a5928" stroke-dasharray="8 6"/>
+    <text x="1766" y="986" class="batchText">+ values  [PPO / use_critic]</text>
+    <text x="1766" y="1015" class="boxCode">RT 1260–1263 · 1628</text>
+  </g>
+
+  <!-- 6 advantage -->
+  <circle cx="105" cy="1126" r="24" fill="#4dd6c6" filter="url(#softGlow)"/><text x="98" y="1133" class="step">6</text>
+  <g filter="url(#shadow)">
+    <rect x="145" y="1072" width="665" height="127" rx="15" fill="#103039" stroke="#45a99d" stroke-width="2"/>
+    <text x="170" y="1105" class="boxTitle">Materialize rewards + compute advantage on driver</text>
+    <text x="170" y="1131" class="boxText">scores ← reward_tensor; rewards ← scores or scores − β·KL(π<tspan baseline-shift="sub" font-size="12">old</tspan>, π<tspan baseline-shift="sub" font-size="12">ref</tspan>).</text>
+    <text x="170" y="1155" class="boxText">Then compute_advantage(…) mutates this same DataProto.</text>
+    <text x="170" y="1183" class="boxCode">RT 1630–1675 · KL 78–117 · advantage 187–282</text>
+  </g>
+  <g>
+    <rect x="895" y="1072" width="765" height="127" rx="15" fill="#191d2d" stroke="#4b526e"/>
+    <text x="920" y="1105" class="boxTitle">Estimator fork · both are local tensor math</text>
+    <rect x="920" y="1120" width="337" height="58" rx="11" fill="#102b31" stroke="#2f766f"/>
+    <text x="940" y="1144" class="small">PPO / GAE: rewards + values</text>
+    <text x="940" y="1166" class="boxCode">CA 215–263</text>
+    <rect x="1270" y="1120" width="365" height="58" rx="11" fill="#302616" stroke="#7a5928"/>
+    <text x="1290" y="1144" class="small">GRPO: group scores by uid</text>
+    <text x="1290" y="1166" class="boxCode">CA 267–331</text>
+  </g>
+  <g>
+    <rect x="1740" y="1072" width="760" height="127" rx="15" fill="#3b2d17" stroke="#ae7b30" stroke-width="2"/>
+    <text x="1766" y="1107" class="batchText">+ token_level_scores</text>
+    <text x="1766" y="1133" class="batchText">+ token_level_rewards</text>
+    <text x="1766" y="1159" class="batchText">+ advantages  + returns</text>
+    <text x="1766" y="1184" class="boxCode">RT 1633–1645 · 1667–1675</text>
+  </g>
+
+  <!-- 7 critic update -->
+  <circle cx="105" cy="1267" r="24" fill="#4dd6c6"/><text x="98" y="1274" class="step">7</text>
+  <g filter="url(#shadow)">
+    <rect x="145" y="1222" width="665" height="100" rx="15" fill="#0e2731" stroke="#2d756e" stroke-dasharray="8 6"/>
+    <text x="170" y="1254" class="boxTitle">Update critic first · if use_critic</text>
+    <text x="170" y="1280" class="boxText">Driver repacks no-padding mini-batches and collects metrics.</text>
+    <text x="170" y="1307" class="boxCode">RT 1676–1681 · _update_critic 1378–1402</text>
+  </g>
+  <path d="M810 1267 H883" stroke="#a78bfa" stroke-width="4" stroke-dasharray="10 8" marker-end="url(#arrowPurple)"/>
+  <g filter="url(#shadow)">
+    <rect x="895" y="1222" width="765" height="100" rx="15" fill="#24203f" stroke="#6558a3" stroke-dasharray="8 6"/>
+    <text x="920" y="1255" class="boxTitle">critic_wg.train_mini_batch</text>
+    <text x="920" y="1281" class="boxText">Critic optimizer consumes returns/values and changes critic parameters.</text>
+    <text x="920" y="1307" class="boxCode">RT 1381–1399</text>
+  </g>
+  <g>
+    <rect x="1740" y="1222" width="760" height="100" rx="15" fill="#292219" stroke="#5b4b31"/>
+    <text x="1766" y="1260" class="batchText">no new training fields</text>
+    <text x="1766" y="1286" class="batchSub">the accumulated batch is consumed; metrics return separately</text>
+  </g>
+
+  <!-- 8 actor update -->
+  <circle cx="105" cy="1393" r="24" fill="#4dd6c6"/><text x="98" y="1400" class="step">8</text>
+  <g filter="url(#shadow)">
+    <rect x="145" y="1344" width="665" height="108" rx="15" fill="#0e2731" stroke="#2d756e"/>
+    <text x="170" y="1376" class="boxTitle">Update actor after critic warmup</text>
+    <text x="170" y="1402" class="boxText">Driver sets PPO epochs/mini-batch metadata and dispatches the full payload.</text>
+    <text x="170" y="1432" class="boxCode">RT 1683–1690 · _update_actor 1327–1375</text>
+  </g>
+  <path d="M810 1393 H883" stroke="#a78bfa" stroke-width="4" marker-end="url(#arrowPurple)"/>
+  <g filter="url(#shadow)">
+    <rect x="895" y="1344" width="765" height="108" rx="15" fill="#2d2040" stroke="#8a66bd" stroke-width="2"/>
+    <text x="920" y="1376" class="boxTitle">actor_rollout_wg.update_actor</text>
+    <text x="920" y="1402" class="boxText">actor.train_mini_batch performs policy optimization → new θ<tspan baseline-shift="sub" font-size="12">t+1</tspan>.</text>
+    <text x="920" y="1432" class="boxCode">EW 712–719 · RT 1369</text>
+  </g>
+  <g>
+    <rect x="1740" y="1344" width="760" height="108" rx="15" fill="#3b2d17" stroke="#ae7b30"/>
+    <text x="1766" y="1376" class="batchText">FINAL TRAINING PAYLOAD</text>
+    <text x="1766" y="1403" class="batchSub">prompts + rollout + masks + old log-probs + ref*/values*</text>
+    <text x="1766" y="1427" class="batchSub">+ scores/rewards + advantages/returns  (*conditional)</text>
+  </g>
+
+  <!-- 9 sync -->
+  <circle cx="105" cy="1510" r="24" fill="#ff7c72" filter="url(#softGlow)"/><text x="98" y="1517" class="step">9</text>
+  <g filter="url(#shadow)">
+    <rect x="145" y="1472" width="665" height="76" rx="15" fill="#382126" stroke="#a94e53" stroke-width="2"/>
+    <text x="170" y="1503" class="boxTitle">CheckpointEngineManager coordinates sync</text>
+    <text x="170" y="1530" class="boxCode">RT 1714–1716 · CE 510–554</text>
+  </g>
+  <path d="M810 1510 H927" stroke="#ff7c72" stroke-width="5" marker-end="url(#arrowCoral)"/>
+  <g filter="url(#shadow)">
+    <rect x="940" y="1472" width="720" height="76" rx="15" fill="#3b222e" stroke="#b45668" stroke-width="2"/>
+    <text x="965" y="1503" class="boxTitle">actor training engine θ<tspan baseline-shift="sub" font-size="13">t+1</tspan> → rollout engine</text>
+    <text x="965" y="1530" class="boxCode">EW 728–826 · direct “naive” or checkpoint-engine send/receive</text>
+  </g>
+  <path d="M1660 1510 H1740" stroke="#ff7c72" stroke-width="5" marker-end="url(#arrowCoral)"/>
+  <g>
+    <rect x="1753" y="1472" width="747" height="76" rx="15" fill="#382126" stroke="#a94e53"/>
+    <text x="1778" y="1503" class="boxTitle">Rollout wakes with θ<tspan baseline-shift="sub" font-size="13">t+1</tspan> for the next step</text>
+    <text x="1778" y="1530" class="boxCode">CE 517–542 · EW 772–824</text>
+  </g>
+
+  <!-- Supporting notes -->
+  <g transform="translate(72,1594)">
+    <rect x="0" y="0" width="791" height="205" rx="20" fill="#0d222b" stroke="#275f61"/>
+    <rect x="0" y="0" width="9" height="205" rx="4" fill="#4dd6c6"/>
+    <text x="30" y="38" class="noteTitle">Why “single controller”?</text>
+    <text x="30" y="68" class="noteText">fit() calls worker-group compute methods through RPC and performs the</text>
+    <text x="30" y="91" class="noteText">lightweight advantage calculation locally. Model execution stays distributed.</text>
+    <text x="30" y="119" class="boxCode">RT 1405–1410</text>
+    <text x="30" y="153" class="noteText">Solid = normal path · dashed = configuration-dependent.</text>
+    <text x="30" y="177" class="noteText">Critic warmup skips actor update and only wakes rollout with unchanged weights.</text>
+    <text x="30" y="198" class="boxCode">RT 1683–1686</text>
+  </g>
+
+  <g transform="translate(884,1594)">
+    <rect x="0" y="0" width="795" height="205" rx="20" fill="#18162d" stroke="#4e467b"/>
+    <rect x="0" y="0" width="9" height="205" rx="4" fill="#a78bfa"/>
+    <text x="30" y="38" class="noteTitle">The weights never stage on the driver</text>
+    <text x="30" y="68" class="noteText">The manager holds actor_wg + rollout replica handles. Colocated “naive” sync</text>
+    <text x="30" y="91" class="noteText">exports actor.engine tensors directly into self.rollout.update_weights.</text>
+    <text x="30" y="115" class="noteText">Other backends pair actor send_weights with rollout receive/update workers.</text>
+    <text x="30" y="142" class="boxCode">CE 409–420 · 517–542 · EW 757–766 · 785–806</text>
+    <text x="30" y="176" class="noteText">A preload sync also runs once before the training loop begins.</text>
+    <text x="30" y="198" class="boxCode">RT 1428–1430</text>
+  </g>
+
+  <g transform="translate(1700,1594)">
+    <rect x="0" y="0" width="828" height="205" rx="20" fill="#281f13" stroke="#705227"/>
+    <rect x="0" y="0" width="9" height="205" rx="4" fill="#f4bd61"/>
+    <text x="30" y="38" class="noteTitle">What differs between PPO and GRPO?</text>
+    <text x="30" y="68" class="noteText">PPO/GAE consumes critic values and computes token-wise TD advantages/returns.</text>
+    <text x="30" y="94" class="noteText">GRPO repeats samples per prompt, groups summed rewards by uid, normalizes each</text>
+    <text x="30" y="117" class="noteText">group, broadcasts to response tokens, and usually has no critic branch.</text>
+    <text x="30" y="145" class="boxCode">RT 218–247 · CA 215–263 · 267–331</text>
+    <text x="30" y="176" class="noteText">Optional in-reward KL requires old_log_probs + ref_log_prob.</text>
+    <text x="30" y="198" class="boxCode">RT 94–113</text>
+  </g>
+
+  <!-- Footer -->
+  <path d="M72 1834 H2528" stroke="#26354a" stroke-width="1"/>
+  <text x="72" y="1865" class="footer">CODE KEY · RT = verl/trainer/ppo/ray_trainer.py · CA = verl/trainer/ppo/core_algos.py · EW = verl/workers/engine_workers.py · CE = verl/checkpoint_engine/base.py</text>
+  <text x="72" y="1888" class="footer">SOURCE · volcengine/verl @ fbb4b3a8bf636f290c9c59fc346f756849e9c241 · line numbers match the vendored files in this session</text>
+</svg>

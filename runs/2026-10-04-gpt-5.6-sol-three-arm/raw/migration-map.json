@@ -1,0 +1,934 @@
+{
+  "schema_version": 1,
+  "base_commit": "fee8196",
+  "note": "Per-arm process evidence moved from cases/<case>/arms/<arm>/ to raw/<case>/<arm>/ so machine-local paths stay inside raw/. Final artifacts under out/ did not move. The map lives under raw/ because the original paths name the image-tool directory.",
+  "entries": [
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/ffmpeg-transcode-threads/arms/imagegen/audit.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/ffmpeg-transcode-threads/imagegen/audit.json",
+      "sha256": "be5ccc7ebaf3cfc4ebe3fb9e41e2a66fd9033087b74fd32011f3332f88e5a241"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/ffmpeg-transcode-threads/arms/imagegen/last-message.md",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/ffmpeg-transcode-threads/imagegen/last-message.txt",
+      "sha256": "875d2835efde2a15c4739a6a5b12465dfef44eeeeb43050a891a234e0b360cc2",
+      "note": "renamed to .txt so its absolute temp-dir links are not checked as archive links; bytes unchanged"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/ffmpeg-transcode-threads/arms/imagegen/prompt-input.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/ffmpeg-transcode-threads/imagegen/prompt-input.json",
+      "sha256": "f256308a4f27bca1ae50fb374f77031684a2f15c639b4a3f5973b568d17f31dc"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/ffmpeg-transcode-threads/arms/imagegen/stderr.log",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/ffmpeg-transcode-threads/imagegen/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/ffmpeg-transcode-threads/arms/imagegen/trace.jsonl",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/ffmpeg-transcode-threads/imagegen/trace.jsonl",
+      "sha256": "9fea75dfad33a53c89211970cca8d15b67f1b77418557a3073c48c78e9cca4dd"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/ffmpeg-transcode-threads/arms/with/audit.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/ffmpeg-transcode-threads/with/audit.json",
+      "sha256": "9d027676dc6d34be610ca464347bfea22c0c2ac32df72719fc148bd288e799f0"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/ffmpeg-transcode-threads/arms/with/last-message.md",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/ffmpeg-transcode-threads/with/last-message.txt",
+      "sha256": "e0fc3df2b1f23a38e80cfd1f87ac37ddd7b862e4d19adb3bb91f7ad459f99be9",
+      "note": "renamed to .txt so its absolute temp-dir links are not checked as archive links; bytes unchanged"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/ffmpeg-transcode-threads/arms/with/prompt-input.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/ffmpeg-transcode-threads/with/prompt-input.json",
+      "sha256": "f617798771e7349c5cbdc3157b528a4ea96ba6cf54d1fdf1c2ef9d4796128379"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/ffmpeg-transcode-threads/arms/with/stderr.log",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/ffmpeg-transcode-threads/with/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/ffmpeg-transcode-threads/arms/with/trace.jsonl",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/ffmpeg-transcode-threads/with/trace.jsonl",
+      "sha256": "961d970bf65f619a81b741fa1436c70a40e97dab72954dfdb0360a47f130999b"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/ffmpeg-transcode-threads/arms/without/audit.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/ffmpeg-transcode-threads/without/audit.json",
+      "sha256": "e3ca151f25887a02f3db2434933bb9307c56e71823b9b072521264c9b0fa3d05"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/ffmpeg-transcode-threads/arms/without/last-message.md",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/ffmpeg-transcode-threads/without/last-message.txt",
+      "sha256": "b41802a1d188ce29ecc22e49e72bbbb4f08068c539ef4fd2df8e48a57fcc5199",
+      "note": "renamed to .txt so its absolute temp-dir links are not checked as archive links; bytes unchanged"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/ffmpeg-transcode-threads/arms/without/prompt-input.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/ffmpeg-transcode-threads/without/prompt-input.json",
+      "sha256": "24531d9ece17b2aeecb8f047201396dc1ed5a9ee98406b5917a39d93a7cca0d8"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/ffmpeg-transcode-threads/arms/without/stderr.log",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/ffmpeg-transcode-threads/without/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/ffmpeg-transcode-threads/arms/without/trace.jsonl",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/ffmpeg-transcode-threads/without/trace.jsonl",
+      "sha256": "fd05169fc98ab4121f7af76cbf43976a5d808f35ad7a5fe16f7fc108af51ae94"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-parallel-groups/arms/imagegen/audit.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/megatron-parallel-groups/imagegen/audit.json",
+      "sha256": "63371954d15b2527f46e230e2df9098463fa06aabacf74e566ce0ecf10b7e0cf"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-parallel-groups/arms/imagegen/generated_images/01a1064f-3337-7161-a9bb-73307d6371cb/exec-27d609c2-02dd-48f7-b936-73a806c163d0.png",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/megatron-parallel-groups/imagegen/generated_images/01a1064f-3337-7161-a9bb-73307d6371cb/exec-27d609c2-02dd-48f7-b936-73a806c163d0.png",
+      "sha256": "2993d1d71459507b3889b452022aee3a284cc9e583cd36a8eda3611cfaae26fc"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-parallel-groups/arms/imagegen/generated_images/01a1064f-3337-7161-a9bb-73307d6371cb/exec-c905d38d-af3f-4e16-a7d9-e208a8ad302e.png",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/megatron-parallel-groups/imagegen/generated_images/01a1064f-3337-7161-a9bb-73307d6371cb/exec-c905d38d-af3f-4e16-a7d9-e208a8ad302e.png",
+      "sha256": "089d238dc7f4d06e317add2431326e92d002a5e23e866a89cc5961f39b3c9ddc"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-parallel-groups/arms/imagegen/last-message.md",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/megatron-parallel-groups/imagegen/last-message.txt",
+      "sha256": "cb5f036721933974a44e61f6e8f577738c4e396d2a4c0a5544029ea0d9a7e9f1",
+      "note": "renamed to .txt so its absolute temp-dir links are not checked as archive links; bytes unchanged"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-parallel-groups/arms/imagegen/prompt-input.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/megatron-parallel-groups/imagegen/prompt-input.json",
+      "sha256": "e18b0b44a3bf832f54c5010908cf4cc135729ed68eeca32553fbd66c4d96b1e2"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-parallel-groups/arms/imagegen/stderr.log",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/megatron-parallel-groups/imagegen/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-parallel-groups/arms/imagegen/trace.jsonl",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/megatron-parallel-groups/imagegen/trace.jsonl",
+      "sha256": "414c2f5bb27105deea3c2865bfad7df42a50884a319dfe2eb5957b3fc2d545b5"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-parallel-groups/arms/with/audit.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/megatron-parallel-groups/with/audit.json",
+      "sha256": "6662bb0082106ebb72eb9b0c5af4a8eb43ffe9afc98743cc362c0deb734d6a37"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-parallel-groups/arms/with/last-message.md",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/megatron-parallel-groups/with/last-message.txt",
+      "sha256": "1e1eb265bf4bc1e91457e6dbea29327efac3bb7a21c6e0b0de4f923a08c5154b",
+      "note": "renamed to .txt so its absolute temp-dir links are not checked as archive links; bytes unchanged"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-parallel-groups/arms/with/prompt-input.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/megatron-parallel-groups/with/prompt-input.json",
+      "sha256": "68c8b5a275e25a66a19806f512fcf91cae973637c8f461260fc6e7f193709763"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-parallel-groups/arms/with/stderr.log",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/megatron-parallel-groups/with/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-parallel-groups/arms/with/trace.jsonl",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/megatron-parallel-groups/with/trace.jsonl",
+      "sha256": "f7aa54e36c614692afeeb2f0f5f48b7c58879e82d967bd6744be66953b49f616"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-parallel-groups/arms/without/audit.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/megatron-parallel-groups/without/audit.json",
+      "sha256": "f701f35a60a4be4f651d4d4a351e9069df23ad73291d7ee7731a4c54133b5671"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-parallel-groups/arms/without/last-message.md",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/megatron-parallel-groups/without/last-message.txt",
+      "sha256": "5ba7c275240d1053b9972094e415c8275d8f780073987ae3cbd4f9280a218496",
+      "note": "renamed to .txt so its absolute temp-dir links are not checked as archive links; bytes unchanged"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-parallel-groups/arms/without/prompt-input.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/megatron-parallel-groups/without/prompt-input.json",
+      "sha256": "26c16e5afbae9e652c3395f7365ff9af45c3c354874ccdcf772a0fd454f4f336"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-parallel-groups/arms/without/stderr.log",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/megatron-parallel-groups/without/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-parallel-groups/arms/without/trace.jsonl",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/megatron-parallel-groups/without/trace.jsonl",
+      "sha256": "260958af13f7d8c5290d9cbe534106694d3b1fabc1746063f017ba2a1cb5d938"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-tp-sp-mlp/arms/imagegen/audit.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/megatron-tp-sp-mlp/imagegen/audit.json",
+      "sha256": "4aafe929bede68102f6ea83f971eb8d78540b182e7ca217e778fe992fb81d889"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-tp-sp-mlp/arms/imagegen/last-message.md",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/megatron-tp-sp-mlp/imagegen/last-message.txt",
+      "sha256": "1c005f0093806db3235a8ef2312d17f2d69770acde518b185214400e70538336",
+      "note": "renamed to .txt so its absolute temp-dir links are not checked as archive links; bytes unchanged"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-tp-sp-mlp/arms/imagegen/prompt-input.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/megatron-tp-sp-mlp/imagegen/prompt-input.json",
+      "sha256": "0de5f52e4887091dc10866f49fba8438a677e6a25a68c83c899148b41d06a9a6"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-tp-sp-mlp/arms/imagegen/stderr.log",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/megatron-tp-sp-mlp/imagegen/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-tp-sp-mlp/arms/imagegen/trace.jsonl",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/megatron-tp-sp-mlp/imagegen/trace.jsonl",
+      "sha256": "033e9d6cf40f1e29d0da395fa1e90348c75e5404b26ab17f5afce43904738faa"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-tp-sp-mlp/arms/with/audit.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/megatron-tp-sp-mlp/with/audit.json",
+      "sha256": "8ae226bd0dd3eb0472c97a23de92d084f5bbbff10de34fe497b1ee33ffa93377"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-tp-sp-mlp/arms/with/last-message.md",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/megatron-tp-sp-mlp/with/last-message.txt",
+      "sha256": "a83ab7ea65996b2325bc49a995dadb5147eda3ba5d2260cbe4eeb30cfb2e88d3",
+      "note": "renamed to .txt so its absolute temp-dir links are not checked as archive links; bytes unchanged"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-tp-sp-mlp/arms/with/prompt-input.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/megatron-tp-sp-mlp/with/prompt-input.json",
+      "sha256": "0f4ca6fbb50b96d02437ab79c45ecaba4e2cf8429d97768194adfc81cb5644b0"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-tp-sp-mlp/arms/with/stderr.log",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/megatron-tp-sp-mlp/with/stderr.log",
+      "sha256": "0a721bbd8bc811cb75acbc145e3f139cf6fa77deeaaaa23cbbb81c8d8d00fcce"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-tp-sp-mlp/arms/with/trace.jsonl",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/megatron-tp-sp-mlp/with/trace.jsonl",
+      "sha256": "8ff8951d3e7896d1705bda0d41c0186b26c92ebd10d58df4600dae4108a2b775"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-tp-sp-mlp/arms/without/audit.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/megatron-tp-sp-mlp/without/audit.json",
+      "sha256": "80057f7d14bc64858064c5c29ba5e730007a6352861a688c15c3a36f01284670"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-tp-sp-mlp/arms/without/last-message.md",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/megatron-tp-sp-mlp/without/last-message.txt",
+      "sha256": "d82d5bf3f643dd5089bfa65c759cfc1eefc854628071910c9dfd63d883eaf701",
+      "note": "renamed to .txt so its absolute temp-dir links are not checked as archive links; bytes unchanged"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-tp-sp-mlp/arms/without/prompt-input.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/megatron-tp-sp-mlp/without/prompt-input.json",
+      "sha256": "80cd8026be43a6ebbb5899e92655be642bb5e2b7a2c29dc493decb1bbbba2e20"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-tp-sp-mlp/arms/without/stderr.log",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/megatron-tp-sp-mlp/without/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-tp-sp-mlp/arms/without/trace.jsonl",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/megatron-tp-sp-mlp/without/trace.jsonl",
+      "sha256": "59275159838ab86f1acef5b706d34764e31845ff6ffa7af18ba49f0bdd184ff1"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/redis-request-path/arms/imagegen/audit.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/redis-request-path/imagegen/audit.json",
+      "sha256": "e15e657e9e672b0f2733d9bb573d38510e88881326121793b34f44467c254e2d"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/redis-request-path/arms/imagegen/last-message.md",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/redis-request-path/imagegen/last-message.txt",
+      "sha256": "5b1c24c039c5893180fb948439ee7f36ff75866c8b02c0259f60f62b372a7b05",
+      "note": "renamed to .txt so its absolute temp-dir links are not checked as archive links; bytes unchanged"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/redis-request-path/arms/imagegen/prompt-input.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/redis-request-path/imagegen/prompt-input.json",
+      "sha256": "5e3440ce6efea36c0c0bde06b1fd93f32ec287e92fe46df17e76bfb0bd1147ee"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/redis-request-path/arms/imagegen/stderr.log",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/redis-request-path/imagegen/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/redis-request-path/arms/imagegen/trace.jsonl",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/redis-request-path/imagegen/trace.jsonl",
+      "sha256": "13998fd0facdc96b54f7a82a5338a94ae48e884c59b30a3d340badb9231fefbd"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/redis-request-path/arms/with/audit.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/redis-request-path/with/audit.json",
+      "sha256": "4060fb6fd382da510f7deae909d07a4443584846f98cb23a376e21d410d2eba3"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/redis-request-path/arms/with/last-message.md",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/redis-request-path/with/last-message.txt",
+      "sha256": "0971d4c1b735b27f02bf14d78f135d5d913f6fd27db00dd7c52ccb9285473cb9",
+      "note": "renamed to .txt so its absolute temp-dir links are not checked as archive links; bytes unchanged"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/redis-request-path/arms/with/prompt-input.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/redis-request-path/with/prompt-input.json",
+      "sha256": "ec3135274fec613eba320953b3bbba4d854409c672e5f1ea1a19ebe805c82df5"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/redis-request-path/arms/with/stderr.log",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/redis-request-path/with/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/redis-request-path/arms/with/trace.jsonl",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/redis-request-path/with/trace.jsonl",
+      "sha256": "c6cf3336956bef6ac3ab8a69406def472aa879c893e751b9899a55c7cd02f875"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/redis-request-path/arms/without/audit.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/redis-request-path/without/audit.json",
+      "sha256": "1ca4cfa7e0069fe974687f24990c93c7619e40c34820012fcbeeb41c674f9e28"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/redis-request-path/arms/without/last-message.md",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/redis-request-path/without/last-message.txt",
+      "sha256": "e45ba2191f6817093359da6ea5f2423de7d7c1f4bf85d2d0213ac1683570ab1a",
+      "note": "renamed to .txt so its absolute temp-dir links are not checked as archive links; bytes unchanged"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/redis-request-path/arms/without/prompt-input.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/redis-request-path/without/prompt-input.json",
+      "sha256": "18f44475cfa9cf2cd20cfd2f087886e77eab7c5829d3423794ac91bbc69f3ba0"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/redis-request-path/arms/without/stderr.log",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/redis-request-path/without/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/redis-request-path/arms/without/trace.jsonl",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/redis-request-path/without/trace.jsonl",
+      "sha256": "cd233cb254526188da0543cae875805bb547f5fd38ea68da5de484c368844fcc"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-ppo-step/arms/imagegen/audit.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/verl-ppo-step/imagegen/audit.json",
+      "sha256": "942ac5090758a042274847862f8003ad72f2ef862c6a02a3f3002487dfb4e018"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-ppo-step/arms/imagegen/last-message.md",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/verl-ppo-step/imagegen/last-message.txt",
+      "sha256": "f3fea1db9d06704d97a726235446bea013b588da523447f95d223a2263d10ef4",
+      "note": "renamed to .txt so its absolute temp-dir links are not checked as archive links; bytes unchanged"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-ppo-step/arms/imagegen/prompt-input.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/verl-ppo-step/imagegen/prompt-input.json",
+      "sha256": "914bf2605a4bf8b0b1f2fb39f1f7aecba9d431cf97368bde2e459bbc70b97718"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-ppo-step/arms/imagegen/stderr.log",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/verl-ppo-step/imagegen/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-ppo-step/arms/imagegen/trace.jsonl",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/verl-ppo-step/imagegen/trace.jsonl",
+      "sha256": "7ca95577e4d1dd7386bd4df396efcc67f400b845261211bb37edd953b859e59a"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-ppo-step/arms/with/audit.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/verl-ppo-step/with/audit.json",
+      "sha256": "6a95e1cac7687c4720a21b3a4b196f33f033dee69ec6656ba9d3366385268a20"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-ppo-step/arms/with/last-message.md",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/verl-ppo-step/with/last-message.txt",
+      "sha256": "0ba3589180fb185095d9a319c48f1874c6ed9835ea6a5abd9afb8499c1f1c649",
+      "note": "renamed to .txt so its absolute temp-dir links are not checked as archive links; bytes unchanged"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-ppo-step/arms/with/prompt-input.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/verl-ppo-step/with/prompt-input.json",
+      "sha256": "257146981ec8958bc779bfad0204a5b21a7effe96b70a2231f6f1f19a473cede"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-ppo-step/arms/with/stderr.log",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/verl-ppo-step/with/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-ppo-step/arms/with/trace.jsonl",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/verl-ppo-step/with/trace.jsonl",
+      "sha256": "eb0c0f69d5262600d4a998cbc62bbda8312f4ddb164fe5bb66b1e0bad15c2d42"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-ppo-step/arms/without/audit.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/verl-ppo-step/without/audit.json",
+      "sha256": "8261129a2ff3795af239baae69408d00d1f5012f168722189d1f862bef3ac939"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-ppo-step/arms/without/last-message.md",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/verl-ppo-step/without/last-message.txt",
+      "sha256": "18594de0558ca09107922e1d40c6a638287c0facbf8175e5063a76be6f8b6960",
+      "note": "renamed to .txt so its absolute temp-dir links are not checked as archive links; bytes unchanged"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-ppo-step/arms/without/prompt-input.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/verl-ppo-step/without/prompt-input.json",
+      "sha256": "7c8db3a2f967872e0fee3eadafe0995ecabfca0921ebd9581e1634760c01a0bb"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-ppo-step/arms/without/stderr.log",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/verl-ppo-step/without/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-ppo-step/arms/without/trace.jsonl",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/verl-ppo-step/without/trace.jsonl",
+      "sha256": "0a8a08e37d26046b72275611a05c74ff57c47f6ee7e257ff7c684fbceb2f89ff"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-resource-placement/arms/imagegen/audit.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/verl-resource-placement/imagegen/audit.json",
+      "sha256": "b0a1b16ed1d9483296e4ea00c20279fe356dacdba1864f01e0776f2ede2bcfbd"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-resource-placement/arms/imagegen/generated_images/01a10646-8654-78c1-b53f-63cf97b36e96/exec-af46f208-4c4e-440c-8c81-412ae80c1359.png",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/verl-resource-placement/imagegen/generated_images/01a10646-8654-78c1-b53f-63cf97b36e96/exec-af46f208-4c4e-440c-8c81-412ae80c1359.png",
+      "sha256": "a50befbc4172653ab021593a894fc86cbf83be3a7b8d489dc50c0eec51a06cbc"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-resource-placement/arms/imagegen/last-message.md",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/verl-resource-placement/imagegen/last-message.txt",
+      "sha256": "354b2df5344b6ad529ed7d87be0f17d4919d76f8470c195fb24c5a3b4903ef2a",
+      "note": "renamed to .txt so its absolute temp-dir links are not checked as archive links; bytes unchanged"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-resource-placement/arms/imagegen/prompt-input.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/verl-resource-placement/imagegen/prompt-input.json",
+      "sha256": "b46214f6cff4420f8cb0081d988c87533e81cbaf7fefdef04becd8d9faeeba17"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-resource-placement/arms/imagegen/stderr.log",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/verl-resource-placement/imagegen/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-resource-placement/arms/imagegen/trace.jsonl",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/verl-resource-placement/imagegen/trace.jsonl",
+      "sha256": "610d6e5c13a5d97695668f79c8df457e486e9578293842c869a893d4cb5d3aef"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-resource-placement/arms/with/audit.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/verl-resource-placement/with/audit.json",
+      "sha256": "33660ce97659b4260bce6c4ac168b5c9b496a151b1e31bc772708493d79c34b6"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-resource-placement/arms/with/last-message.md",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/verl-resource-placement/with/last-message.txt",
+      "sha256": "8940f6520341575fae5d9c6162f977c236b87236cb11db162e74164e43c74dc1",
+      "note": "renamed to .txt so its absolute temp-dir links are not checked as archive links; bytes unchanged"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-resource-placement/arms/with/prompt-input.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/verl-resource-placement/with/prompt-input.json",
+      "sha256": "a6ceb75930903a171eaa3ef9a7c6c32181136a7428b4bbc0841b4ca025a88856"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-resource-placement/arms/with/stderr.log",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/verl-resource-placement/with/stderr.log",
+      "sha256": "24fa16b9b7a6810061cc2a08dd43c6628b749089ba617767dcc6f7d4a4209fda"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-resource-placement/arms/with/trace.jsonl",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/verl-resource-placement/with/trace.jsonl",
+      "sha256": "ae87d3fc13a3d25f6bd7973e2e37c393ae8f25812ded69a7ce3b539a82a1556a"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-resource-placement/arms/without/audit.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/verl-resource-placement/without/audit.json",
+      "sha256": "d7a09cc625df7080cbe5f438d8670f296367f0942fc8975072099ef5b6adecb3"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-resource-placement/arms/without/last-message.md",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/verl-resource-placement/without/last-message.txt",
+      "sha256": "6a9c8fd2a49a39f607582bd0d41bd7fb7a45ef55753b7ef19a946dcc768cf02b",
+      "note": "renamed to .txt so its absolute temp-dir links are not checked as archive links; bytes unchanged"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-resource-placement/arms/without/prompt-input.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/verl-resource-placement/without/prompt-input.json",
+      "sha256": "0937df5560eeadf2d1d7a31836e887655eb248a1bfff223b11c3bb37a04e8ac1"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-resource-placement/arms/without/stderr.log",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/verl-resource-placement/without/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-resource-placement/arms/without/trace.jsonl",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/verl-resource-placement/without/trace.jsonl",
+      "sha256": "0fa5d094cf6041bd4ce4ddcaf1302b08db5da756f890ace8aca0402642f167ee"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-mixed-batch-attn/arms/imagegen/attempts/2026-10-04T09-22-27.887Z/audit.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-mixed-batch-attn/imagegen/attempts/2026-10-04T09-22-27.887Z/audit.json",
+      "sha256": "3747020c0c008b87ae4091b05c07ac0f7f2a5de1b48115403ec74be183650a1d"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-mixed-batch-attn/arms/imagegen/attempts/2026-10-04T09-22-27.887Z/stderr.log",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-mixed-batch-attn/imagegen/attempts/2026-10-04T09-22-27.887Z/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-mixed-batch-attn/arms/imagegen/attempts/2026-10-04T09-22-27.887Z/trace.jsonl",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-mixed-batch-attn/imagegen/attempts/2026-10-04T09-22-27.887Z/trace.jsonl",
+      "sha256": "4165818a0ffd5c2f343fb57cf2e3392b884876502606b7791ad7d8afe9731073"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-mixed-batch-attn/arms/imagegen/audit.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-mixed-batch-attn/imagegen/audit.json",
+      "sha256": "459a4f74399dc7379b7414e975a35331b1e9747e4251d2cbf826d9bcfed23b80"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-mixed-batch-attn/arms/imagegen/generated_images/01a10638-e368-7872-af88-704a29203b0c/exec-71f61389-70e9-4ae6-b539-b201a51dd19b.png",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-mixed-batch-attn/imagegen/generated_images/01a10638-e368-7872-af88-704a29203b0c/exec-71f61389-70e9-4ae6-b539-b201a51dd19b.png",
+      "sha256": "4efbd4b09a2a03d5aeb750d37942f28537fe99464887861fff95adb6f3a8b93b"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-mixed-batch-attn/arms/imagegen/last-message.md",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-mixed-batch-attn/imagegen/last-message.txt",
+      "sha256": "b97f739a805a0f2ad26f5759ed54e708e387afe2a504b0a8e468a3faca7a612d",
+      "note": "renamed to .txt so its absolute temp-dir links are not checked as archive links; bytes unchanged"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-mixed-batch-attn/arms/imagegen/prompt-input.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-mixed-batch-attn/imagegen/prompt-input.json",
+      "sha256": "1f698619f0e9a5c876bbd6481708f8d9e087d379c52c8d7e085d7a93e642be17"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-mixed-batch-attn/arms/imagegen/stderr.log",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-mixed-batch-attn/imagegen/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-mixed-batch-attn/arms/imagegen/trace.jsonl",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-mixed-batch-attn/imagegen/trace.jsonl",
+      "sha256": "867848bad4980162c520dce700fb363fcb25165bb6362c6d37648795143e48c8"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-mixed-batch-attn/arms/with/attempts/2026-10-04T09-22-27.887Z/audit.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-mixed-batch-attn/with/attempts/2026-10-04T09-22-27.887Z/audit.json",
+      "sha256": "fc5e77f0707347cb61ced2007b2123aad01a975b8eee62a46579fead5a324733"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-mixed-batch-attn/arms/with/attempts/2026-10-04T09-22-27.887Z/stderr.log",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-mixed-batch-attn/with/attempts/2026-10-04T09-22-27.887Z/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-mixed-batch-attn/arms/with/attempts/2026-10-04T09-22-27.887Z/trace.jsonl",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-mixed-batch-attn/with/attempts/2026-10-04T09-22-27.887Z/trace.jsonl",
+      "sha256": "d73f3d9852f751ae5c5b56bf68d61c3e591fbd17b377d9ea7c3dfb3dc8fdaece"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-mixed-batch-attn/arms/with/audit.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-mixed-batch-attn/with/audit.json",
+      "sha256": "3fd0d925000a066373854ef763623d2b3b31c4bd69cdaf1e5c33dc8d3d1bdf41"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-mixed-batch-attn/arms/with/last-message.md",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-mixed-batch-attn/with/last-message.txt",
+      "sha256": "e2d160db3bea4f547a4777e46202b49cf4a16baaf8ef789988bb54c88592e763",
+      "note": "renamed to .txt so its absolute temp-dir links are not checked as archive links; bytes unchanged"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-mixed-batch-attn/arms/with/prompt-input.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-mixed-batch-attn/with/prompt-input.json",
+      "sha256": "9d11606ffc9ee734f8dd48046b6056cb52243e7805247ca4d16fd58aa3092213"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-mixed-batch-attn/arms/with/stderr.log",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-mixed-batch-attn/with/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-mixed-batch-attn/arms/with/trace.jsonl",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-mixed-batch-attn/with/trace.jsonl",
+      "sha256": "0400d644509428682e6d8446fb4357170abaf7881a567188bab48bda725bd2df"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-mixed-batch-attn/arms/without/attempts/2026-10-04T09-22-27.887Z/audit.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-mixed-batch-attn/without/attempts/2026-10-04T09-22-27.887Z/audit.json",
+      "sha256": "4441746c6148f81dcea47760fd702c0d706def2ad376ea900e7d2af34e852fcf"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-mixed-batch-attn/arms/without/attempts/2026-10-04T09-22-27.887Z/stderr.log",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-mixed-batch-attn/without/attempts/2026-10-04T09-22-27.887Z/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-mixed-batch-attn/arms/without/attempts/2026-10-04T09-22-27.887Z/trace.jsonl",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-mixed-batch-attn/without/attempts/2026-10-04T09-22-27.887Z/trace.jsonl",
+      "sha256": "21ac7a1d906ad5dc1e6f0fcdd29cf834a1893eb7aa67f2c81acfff736d6aaba1"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-mixed-batch-attn/arms/without/audit.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-mixed-batch-attn/without/audit.json",
+      "sha256": "0777934a695eaefc448cc0781e461d695587bbae76d91369da1897c606f5a063"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-mixed-batch-attn/arms/without/last-message.md",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-mixed-batch-attn/without/last-message.txt",
+      "sha256": "3a1b5b8c7676c2381c433a9aed90fcd3e73ea8311a5778ede89e3a30fe0f903f",
+      "note": "renamed to .txt so its absolute temp-dir links are not checked as archive links; bytes unchanged"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-mixed-batch-attn/arms/without/prompt-input.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-mixed-batch-attn/without/prompt-input.json",
+      "sha256": "d0d1b433723ae4316c42708ed3c320061abe10811cc6d48607998980cffd4c6b"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-mixed-batch-attn/arms/without/stderr.log",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-mixed-batch-attn/without/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-mixed-batch-attn/arms/without/trace.jsonl",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-mixed-batch-attn/without/trace.jsonl",
+      "sha256": "3045f4518f0f0233284677fc8bb291c7149dc266c22d60e855dd51e846a97171"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-process-arch/arms/imagegen/audit.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-process-arch/imagegen/audit.json",
+      "sha256": "e299731842dc7b5023e970b8881eef3f4ac68fa3c6e9f538004fad7436e8d32d"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-process-arch/arms/imagegen/generated_images/01a1063f-1a78-7cd2-a86b-eecec5c6509f/exec-ae7396e3-5b8f-46de-bfce-4eb2124a22c8.png",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-process-arch/imagegen/generated_images/01a1063f-1a78-7cd2-a86b-eecec5c6509f/exec-ae7396e3-5b8f-46de-bfce-4eb2124a22c8.png",
+      "sha256": "d8a7437cd7ff4eeb6a82df42f21c2e4879a2314e38311c698b8257e831c93a51"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-process-arch/arms/imagegen/generated_images/01a1063f-1a78-7cd2-a86b-eecec5c6509f/exec-bc31b4c9-9175-45c1-a075-6bab676279d3.png",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-process-arch/imagegen/generated_images/01a1063f-1a78-7cd2-a86b-eecec5c6509f/exec-bc31b4c9-9175-45c1-a075-6bab676279d3.png",
+      "sha256": "5d7b0beb2a324480be842850ecf2050711eee6c1406e9bd23274a3d330e34a42"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-process-arch/arms/imagegen/last-message.md",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-process-arch/imagegen/last-message.txt",
+      "sha256": "cb3e621f37c129e907f34125c3bfb3ecc93f672f5cb879ff6616cf1973473a7d",
+      "note": "renamed to .txt so its absolute temp-dir links are not checked as archive links; bytes unchanged"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-process-arch/arms/imagegen/prompt-input.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-process-arch/imagegen/prompt-input.json",
+      "sha256": "060b2f7da46dcdc62b272193705fda4d1bf512cc60762c4386eeeccd72b365d6"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-process-arch/arms/imagegen/stderr.log",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-process-arch/imagegen/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-process-arch/arms/imagegen/trace.jsonl",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-process-arch/imagegen/trace.jsonl",
+      "sha256": "483d32da2f39633814c0e83e6e96ebe11a780617eb614db475613a9d05c11b60"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-process-arch/arms/with/audit.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-process-arch/with/audit.json",
+      "sha256": "7d2a0898fbfddae352ab4eb9741dba273593d15c1632f3b7e562134b726009cb"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-process-arch/arms/with/last-message.md",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-process-arch/with/last-message.txt",
+      "sha256": "20502ca23d87aec6ebcff28ce4933f9dda72e1e9d789c89334179da301e641c9",
+      "note": "renamed to .txt so its absolute temp-dir links are not checked as archive links; bytes unchanged"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-process-arch/arms/with/prompt-input.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-process-arch/with/prompt-input.json",
+      "sha256": "336f615e6d8405957aeae2bd91c26e162e86403cf5d429a18c4055b99ea9d699"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-process-arch/arms/with/stderr.log",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-process-arch/with/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-process-arch/arms/with/trace.jsonl",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-process-arch/with/trace.jsonl",
+      "sha256": "149f4bd938ee7b00b9356f663662ee09b5a27e4331f3deeed4b74e60cafe8f35"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-process-arch/arms/without/audit.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-process-arch/without/audit.json",
+      "sha256": "781f626e8cefed18bc97d12992b7a29fb3b793a0d2e0e85a62c5f2f644202113"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-process-arch/arms/without/last-message.md",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-process-arch/without/last-message.txt",
+      "sha256": "a8dd5b20cb5df5be5b1d30581870d52736b5efad05d35367e3809ecb7547a369",
+      "note": "renamed to .txt so its absolute temp-dir links are not checked as archive links; bytes unchanged"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-process-arch/arms/without/prompt-input.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-process-arch/without/prompt-input.json",
+      "sha256": "c58ea4c64028b7b8bd7d5cd7b3a66eaaad065f6478639437dca3b9693b9b2461"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-process-arch/arms/without/stderr.log",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-process-arch/without/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-process-arch/arms/without/trace.jsonl",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-process-arch/without/trace.jsonl",
+      "sha256": "1836fb223e897469cd2f5347d97abbe349b75cf8728f21ee1d196aaf3d43945a"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-schedule/arms/imagegen/audit.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-schedule/imagegen/audit.json",
+      "sha256": "8dcdb6081f938caa8c4d58282f174507b8731a7d89d437cf3c0c525699ab9be7"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-schedule/arms/imagegen/last-message.md",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-schedule/imagegen/last-message.txt",
+      "sha256": "fd0e72af2c7f896ffb981cfa76326273fd0fa7671f35f11645c8cc7e354d6e0a",
+      "note": "renamed to .txt so its absolute temp-dir links are not checked as archive links; bytes unchanged"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-schedule/arms/imagegen/prompt-input.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-schedule/imagegen/prompt-input.json",
+      "sha256": "767ba07a3aa11cd34d13fbd8ed0c8b9ca413d76734f103ce3c48f2eae6c8f7e4"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-schedule/arms/imagegen/stderr.log",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-schedule/imagegen/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-schedule/arms/imagegen/trace.jsonl",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-schedule/imagegen/trace.jsonl",
+      "sha256": "0c707c09de689aa23c123ec8d19ea55c1573ff3d7a787a8b0b5c83580ab41a09"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-schedule/arms/with/audit.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-schedule/with/audit.json",
+      "sha256": "03f783aef3c940a577274fe629e6f0af389cd892f73a797237e9cbbb80cb9fdb"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-schedule/arms/with/last-message.md",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-schedule/with/last-message.txt",
+      "sha256": "38609baacd9100797d5fa3887f5dc25b13f8c978dde4f04bf4d2fd3721ecf21f",
+      "note": "renamed to .txt so its absolute temp-dir links are not checked as archive links; bytes unchanged"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-schedule/arms/with/prompt-input.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-schedule/with/prompt-input.json",
+      "sha256": "82765b77a6285b216770b6b0027125907bcd45cdbf61eb882270ce4dc56b43f1"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-schedule/arms/with/stderr.log",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-schedule/with/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-schedule/arms/with/trace.jsonl",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-schedule/with/trace.jsonl",
+      "sha256": "a5c0f6e6467aa1fd22ea21ff4eff0c5ffbbcb30422fe1e1ce49537765365d18c"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-schedule/arms/without/audit.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-schedule/without/audit.json",
+      "sha256": "7fe10c3c797a20ce693c7ddc3e726aa8c77ece59ace39cf33d122dbd77c1aa2c"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-schedule/arms/without/last-message.md",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-schedule/without/last-message.txt",
+      "sha256": "b1ea6cfe84695d5a117bfe69329c3b4a451f895508b604578598132e621f172c",
+      "note": "renamed to .txt so its absolute temp-dir links are not checked as archive links; bytes unchanged"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-schedule/arms/without/prompt-input.json",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-schedule/without/prompt-input.json",
+      "sha256": "93a0b8f2ad36122b8364928d2b2746d700dfae8f6d0d1191ac3e93f36abdd419"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-schedule/arms/without/stderr.log",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-schedule/without/stderr.log",
+      "sha256": "1aa26269eb1cc57f86b235a03cda53c004edb5b1e9fc99d4da4f00843293d721"
+    },
+    {
+      "action": "move",
+      "old": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-schedule/arms/without/trace.jsonl",
+      "new": "runs/2026-10-04-gpt-5.6-sol-three-arm/raw/vllm-v1-schedule/without/trace.jsonl",
+      "sha256": "61f5c3fe16df0a7c9f2298a03717260a3eb53de80f777e5d80a604a096b132f3"
+    }
+  ]
+}

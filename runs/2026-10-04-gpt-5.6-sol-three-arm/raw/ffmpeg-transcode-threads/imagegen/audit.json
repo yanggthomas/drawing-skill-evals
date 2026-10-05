@@ -1,0 +1,143 @@
+{
+  "case_id": "G3",
+  "case": "ffmpeg-transcode-threads",
+  "arm": "imagegen",
+  "model": "gpt-5.6-sol",
+  "reasoning_effort": "high",
+  "attempts": 1,
+  "prompt_file": "/Users/guangyang/Projects/drawing-skill-evals/evals/ffmpeg-transcode-threads/prompt.md",
+  "prompt_sha256": "163a9b3558f986e5c6caa0ab4ed1496330db8290ccc53a3e42a07214071f3562",
+  "prompt_suffix": "Produce the diagram with image generation.",
+  "source": "/Users/guangyang/Projects/drawing-skill-evals/evals/ffmpeg-transcode-threads/src",
+  "output_png": "out/transcode-threads.png",
+  "catalog_expected_skill": "graphviz",
+  "expected_skills_visible": [
+    "imagegen"
+  ],
+  "image_generation_tool": true,
+  "isolation_args": [
+    "--config",
+    "skills.bundled.enabled=false",
+    "--disable",
+    "plugins",
+    "--disable",
+    "apps"
+  ],
+  "proxy": "http://127.0.0.1:7890",
+  "isolated_home": true,
+  "target": "/Users/guangyang/Projects/drawing-skill-evals/runs/2026-10-04-gpt-5.6-sol-three-arm/cases/ffmpeg-transcode-threads/arms/imagegen",
+  "status": "complete",
+  "run": {
+    "cli_version": "codex-cli 0.160.0",
+    "started_at": "2026-10-04T03:27:44.986Z",
+    "ended_at": "2026-10-04T03:37:24.044Z",
+    "elapsed_seconds": 579.031,
+    "exit_code": 0,
+    "signal": null,
+    "process_error": null,
+    "timed_out": false,
+    "archived_attempt": null,
+    "temp_root": "/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-ffmpeg-transcode-threads-imagegen-JV2RHA",
+    "skills_visible": [
+      "imagegen"
+    ],
+    "launcher": {
+      "command": "codex",
+      "args": [
+        "exec",
+        "--json",
+        "--ephemeral",
+        "--ignore-user-config",
+        "--ignore-rules",
+        "--skip-git-repo-check",
+        "--model",
+        "gpt-5.6-sol",
+        "--strict-config",
+        "--config",
+        "model_reasoning_effort=\"high\"",
+        "--config",
+        "approval_policy=\"never\"",
+        "--config",
+        "skills.bundled.enabled=false",
+        "--disable",
+        "plugins",
+        "--disable",
+        "apps",
+        "--sandbox",
+        "workspace-write",
+        "--cd",
+        "/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-ffmpeg-transcode-threads-imagegen-JV2RHA/workspace",
+        "--output-last-message",
+        "/Users/guangyang/Projects/drawing-skill-evals/runs/2026-10-04-gpt-5.6-sol-three-arm/cases/ffmpeg-transcode-threads/arms/imagegen/last-message.md",
+        "<PROMPT sha256=163a9b3558f986e5c6caa0ab4ed1496330db8290ccc53a3e42a07214071f3562>"
+      ]
+    }
+  },
+  "usage": {
+    "input_tokens": 816739,
+    "cached_input_tokens": 726912,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 8753,
+    "reasoning_output_tokens": 2928
+  },
+  "estimated_cost_usd": 0.8251328,
+  "image_output_cost_usd": {
+    "low": 0.0116,
+    "medium": 0.1042,
+    "high": 0.4169
+  },
+  "skill_reads": [
+    "/bin/zsh -lc \"sed -n '1,240p' /private/var/folders/70/jjz12r257gx8b1tjtdnydlp00000gn/T/drawing-eval-ffmpeg-transcode-threads-imagegen-JV2RHA/codex-home/skills/imagegen/SKILL.md && pwd && rg --files -g 'PINNED.txt' -g 'AGENTS.md' -g '\"'!out'\"' . .. /private/tmp 2>/dev/null | head -80\""
+  ],
+  "graphviz_read": false,
+  "model_architecture_read": false,
+  "imagegen_read": true,
+  "graphviz_workflow_verified": false,
+  "model_architecture_workflow_verified": false,
+  "image_generation_calls": 3,
+  "generated_images": [
+    {
+      "path": null,
+      "width": 1672,
+      "height": 941,
+      "bytes": 1885873,
+      "sha256": "7fc19e0d1d9126e034e0cd3e6d78790b76fad027b3301bab006c31e172747010",
+      "recovered": true
+    },
+    {
+      "path": null,
+      "width": 1672,
+      "height": 941,
+      "bytes": null,
+      "sha256": null,
+      "recovered": true
+    },
+    {
+      "path": null,
+      "width": 1672,
+      "height": 941,
+      "bytes": null,
+      "sha256": null,
+      "recovered": true
+    }
+  ],
+  "png_from_image_tool": true,
+  "code_render_commands": [],
+  "subagents_spawned": 0,
+  "repo_references": [],
+  "route_verified": true,
+  "editable_dot_files": [],
+  "editable_tex_files": [],
+  "compiled_pdf_files": [],
+  "output_files": [
+    "transcode-threads.png"
+  ],
+  "png": {
+    "path": "/Users/guangyang/Projects/drawing-skill-evals/runs/2026-10-04-gpt-5.6-sol-three-arm/cases/ffmpeg-transcode-threads/arms/imagegen/out/transcode-threads.png",
+    "width": 1672,
+    "height": 941,
+    "bytes": 1885873,
+    "sha256": "7fc19e0d1d9126e034e0cd3e6d78790b76fad027b3301bab006c31e172747010"
+  },
+  "audit_recovery": "generated_images, image_generation_calls, png_from_image_tool and image_output_cost_usd restored from the 2026-10-04 12:04 audit, which read the arm's temp CODEX_HOME/generated_images before the temp root was removed; that audit found the output PNG byte-identical to one generated image (kept image sha256 = png.sha256). Discarded images' hashes were not retained."
+}

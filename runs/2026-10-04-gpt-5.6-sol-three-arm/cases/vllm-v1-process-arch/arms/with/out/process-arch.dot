@@ -1,0 +1,259 @@
+digraph vllm_v1_process_arch {
+  graph [
+    rankdir=TB,
+    bgcolor="white",
+    fontname="Helvetica",
+    fontsize=12,
+    pad="0.32",
+    nodesep=0.42,
+    ranksep=0.78,
+    splines=polyline,
+    compound=true,
+    newrank=true,
+    dpi=180,
+    label=<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="2">
+      <TR><TD><FONT POINT-SIZE="24"><B>vLLM V1 — single-node tensor-parallel serving</B></FONT></TD></TR>
+      <TR><TD><FONT POINT-SIZE="12">N+2 long-lived Python processes · DP=1 · PP=1 · TP=N (N ≥ 2) · one CUDA device per TP worker</FONT></TD></TR>
+      <TR><TD><FONT POINT-SIZE="10" COLOR="#555555">Pinned vLLM commit 4c2d277643e217344056e1d2c42115d5f005912f</FONT></TD></TR>
+    </TABLE>>,
+    labelloc=t,
+    labeljust=c
+  ];
+
+  node [
+    shape=ellipse,
+    style=filled,
+    fillcolor="#E8F4FD",
+    color="#2E86AB",
+    penwidth=1.4,
+    fontname="Helvetica",
+    fontsize=10,
+    margin="0.10,0.07"
+  ];
+
+  edge [
+    color="#555555",
+    fontcolor="#333333",
+    fontname="Helvetica",
+    fontsize=9,
+    penwidth=1.35,
+    arrowsize=0.72
+  ];
+
+  subgraph cluster_host {
+    label=<<B>SINGLE HOST</B>>;
+    color="#AAB7C4";
+    fillcolor="#FAFCFE";
+    style="rounded,filled";
+    penwidth=1.5;
+    margin=20;
+
+    subgraph cluster_frontend {
+      label=<<B>OS PROCESS A — serving frontend</B><BR/><FONT POINT-SIZE="9">the API-server process that owns AsyncLLM</FONT>>;
+      color="#6A1B9A";
+      fillcolor="#F7EFF9";
+      style="rounded,filled";
+      penwidth=2;
+      margin=14;
+
+      frontend_anchor [
+        shape=box,
+        style="rounded,filled",
+        fillcolor="#E1BEE7",
+        color="#6A1B9A",
+        label=<<B>AsyncLLM</B><BR/><FONT POINT-SIZE="9">async_llm.py: 84–188</FONT>>
+      ];
+
+      input_processor [
+        label=<<B>InputProcessor</B><BR/><FONT POINT-SIZE="9">prompt / EngineInput → EngineCoreRequest</FONT><BR/><FONT POINT-SIZE="8">async_llm.py: 154–158, 430–487</FONT>>
+      ];
+
+      mp_client [
+        shape=hexagon,
+        fillcolor="#F4D35E",
+        color="#D68A1A",
+        label=<<B>AsyncMPClient</B><BR/><FONT POINT-SIZE="9">Msgpack encoder/decoder · asyncio output task</FONT><BR/><FONT POINT-SIZE="8">core_client.py: 562–590, 653–706, 1086–1237</FONT>>
+      ];
+
+      output_processor [
+        label=<<B>OutputProcessor</B><BR/><FONT POINT-SIZE="9">EngineCoreOutputs → streamed RequestOutput</FONT><BR/><FONT POINT-SIZE="8">async_llm.py: 166–173, 793–872</FONT>>
+      ];
+
+      launch_mgr [
+        fillcolor="#F5F5F5",
+        color="#CCCCCC",
+        style="filled,dashed",
+        label=<<B>CoreEngineProcManager</B><BR/><FONT POINT-SIZE="9">owns / monitors EngineCore child</FONT><BR/><FONT POINT-SIZE="8">core_client.py: 674–683</FONT>>
+      ];
+
+      input_processor -> frontend_anchor [label="EngineCoreRequest", color="#2E86AB"];
+      frontend_anchor -> mp_client [label="client calls", color="#D68A1A"];
+      mp_client -> output_processor [label="EngineCoreOutputs", color="#2E86AB"];
+      launch_mgr -> mp_client [style=dashed, arrowhead=none, color="#AAAAAA"];
+    }
+
+    subgraph cluster_engine {
+      label=<<B>OS PROCESS B — EngineCore</B><BR/><FONT POINT-SIZE="9">background child process · CPU scheduling / orchestration</FONT>>;
+      color="#6A1B9A";
+      fillcolor="#F7EFF9";
+      style="rounded,filled";
+      penwidth=2;
+      margin=14;
+
+      core_io [
+        shape=box,
+        style="rounded,filled",
+        fillcolor="#E1BEE7",
+        color="#6A1B9A",
+        label=<<B>EngineCoreProc I/O wrapper</B><BR/><FONT POINT-SIZE="9">input thread → queue.Queue<BR/>output queue → output thread</FONT><BR/><FONT POINT-SIZE="8">core.py: 1088–1188, 1757–1918</FONT>>
+      ];
+
+      scheduler [
+        shape=hexagon,
+        fillcolor="#F4A261",
+        color="#E76F51",
+        label=<<B>EngineCore + Scheduler</B><BR/><FONT POINT-SIZE="9">request state · batching · KV-block scheduling<BR/>produces SchedulerOutput; consumes ModelRunnerOutput</FONT><BR/><FONT POINT-SIZE="8">core.py: 111–176, 630–659</FONT>>
+      ];
+
+      executor [
+        shape=hexagon,
+        fillcolor="#F4D35E",
+        color="#D68A1A",
+        label=<<B>MultiprocExecutor</B><BR/><FONT POINT-SIZE="9">spawns TP workers · broadcasts RPCs<BR/>collects selected / all-rank responses</FONT><BR/><FONT POINT-SIZE="8">multiproc_executor.py: 111–256, 377–445</FONT>>
+      ];
+
+      core_io -> scheduler [label="decoded ADD / ABORT / UTILITY", color="#6A1B9A"];
+      scheduler -> core_io [label="EngineCoreOutputs", color="#6A1B9A", constraint=false];
+      scheduler -> executor [label="execute_model(SchedulerOutput)\nsample_tokens(GrammarOutput)", color="#E76F51"];
+      executor -> scheduler [label="Future<ModelRunnerOutput>", color="#D68A1A", constraint=false];
+    }
+
+    subgraph cluster_workers {
+      label=<<B>TP GPU WORKER PROCESSES — exactly N OS processes</B><BR/><FONT POINT-SIZE="9">MultiprocExecutor creates one daemon VllmWorker-r per local_rank / TP rank</FONT>>;
+      color="#B71C1C";
+      fillcolor="#FFF4F5";
+      style="rounded,filled";
+      penwidth=2;
+      margin=14;
+
+      subgraph cluster_worker0 {
+        label=<<B>OS PROCESS C₀ — VllmWorker-0</B><BR/><FONT POINT-SIZE="9">TP rank 0 · driver/output rank for TP-only</FONT>>;
+        color="#B71C1C";
+        fillcolor="#FFF9F9";
+        style="rounded,filled";
+        margin=10;
+
+        worker0_rpc [
+          shape=box,
+          style="rounded,filled",
+          fillcolor="#E1BEE7",
+          color="#6A1B9A",
+          label=<<B>WorkerProc</B><BR/><FONT POINT-SIZE="9">shared-MQ RPC busy loop</FONT><BR/><FONT POINT-SIZE="8">multiproc_executor.py: 602–700, 1032–1062</FONT>>
+        ];
+        worker0_stack [
+          label=<<B>WorkerWrapperBase</B> → <B>gpu_worker.Worker</B><BR/><B>GPUModelRunner</B><BR/><FONT POINT-SIZE="9">model execution / sampling</FONT><BR/><FONT POINT-SIZE="8">multiproc_executor.py: 652–682<BR/>gpu_worker.py: 187–202, 525–557, 1234–1306</FONT>>
+        ];
+        gpu0 [
+          shape=cylinder,
+          fillcolor="#FFF2B2",
+          color="#B8860B",
+          label=<<B>CUDA device for local_rank 0</B><BR/><FONT POINT-SIZE="9">TP model shard · KV cache · activations</FONT>>
+        ];
+
+        worker0_rpc -> worker0_stack [label="dispatch method", color="#6A1B9A"];
+        worker0_stack -> gpu0 [dir=both, label="CUDA kernels / tensors", color="#B8860B"];
+      }
+
+      subgraph cluster_workerr {
+        label=<<B>OS PROCESS Cᵣ — VllmWorker-r</B><BR/><FONT POINT-SIZE="9">one separate process for every r = 1 … N−1</FONT>>;
+        color="#B71C1C";
+        fillcolor="#FFF9F9";
+        style="rounded,filled";
+        margin=10;
+
+        workerr_rpc [
+          shape=box,
+          style="rounded,filled",
+          fillcolor="#E1BEE7",
+          color="#6A1B9A",
+          label=<<B>WorkerProc × (N−1)</B><BR/><FONT POINT-SIZE="9">same shared-MQ RPC loop</FONT><BR/><FONT POINT-SIZE="8">multiproc_executor.py: 189–205, 706–757</FONT>>
+        ];
+        workerr_stack [
+          label=<<B>WorkerWrapperBase</B> → <B>gpu_worker.Worker</B><BR/><B>GPUModelRunner</B> × (N−1)<BR/><FONT POINT-SIZE="9">same component stack in every process</FONT>>
+        ];
+        gpur [
+          shape=cylinder,
+          fillcolor="#FFF2B2",
+          color="#B8860B",
+          label=<<B>CUDA device for local_rank r × (N−1)</B><BR/><FONT POINT-SIZE="9">TP model shard · KV cache · activations</FONT>>
+        ];
+
+        workerr_rpc -> workerr_stack [label="dispatch method", color="#6A1B9A"];
+        workerr_stack -> gpur [dir=both, label="CUDA kernels / tensors", color="#B8860B"];
+      }
+
+      gpu0 -> gpur [
+        dir=both,
+        color="#B71C1C",
+        fontcolor="#7A1111",
+        penwidth=2.2,
+        label="torch.distributed TP group\nNCCL on CUDA (or custom all-reduce)\nactivation / partial-result tensors",
+        constraint=false
+      ];
+
+      { rank=same; worker0_rpc; workerr_rpc; }
+      { rank=same; worker0_stack; workerr_stack; }
+      { rank=same; gpu0; gpur; }
+    }
+
+    // Explicit transport nodes keep the diagram structural rather than temporal.
+    frontend_core_transport [
+      shape=plain,
+      label=<<TABLE BORDER="1" COLOR="#2E86AB" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" BGCOLOR="#FFFDF1">
+        <TR><TD><B>FRONTEND ↔ ENGINECORE IPC</B></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9"><B>Requests →</B> ZeroMQ ROUTER → DEALER · multipart MsgPack</FONT></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">ADD EngineCoreRequest · ABORT request IDs · UTILITY calls</FONT></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9"><B>← Results</B> ZeroMQ PUSH → PULL · multipart MsgPack</FONT></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">EngineCoreOutputs: token IDs · finish state · stats · utility results</FONT></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="8" COLOR="#666666">Endpoint is local IPC or TCP from EngineZmqAddresses; startup handshake carries HELLO / config+addresses / READY.</FONT></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="8" COLOR="#725500">Optional MM path: multiprocessing Queue + torch shared memory carries out-of-band multimodal tensors.</FONT></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="8">core_client.py: 588–706, 1218–1237 · core.py: 1172–1200, 1757–1918</FONT></TD></TR>
+      </TABLE>>
+    ];
+
+    worker_rpc_transport [
+      shape=plain,
+      label=<<TABLE BORDER="1" COLOR="#B71C1C" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" BGCOLOR="#FFFDF1">
+        <TR><TD><B>ENGINECORE ↔ TP WORKER IPC</B></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9"><B>RPC broadcast →</B> shared-memory MessageQueue (<I>shm_broadcast</I>)</FONT></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">(method, args, kwargs, output_rank); execute_model carries SchedulerOutput to every rank</FONT></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9"><B>← Responses</B> one MessageQueue per worker: (ResponseStatus, result)</FONT></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">hot path selects rank 0 ModelRunnerOutput; all-rank RPCs return every result</FONT></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="8" COLOR="#666666">Lifecycle: multiprocessing Pipes / process sentinels carry READY + MQ handles, parent-death EOF, and liveness.</FONT></TD></TR>
+        <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="8">multiproc_executor.py: 31, 144–170, 377–445, 609–620, 706–816</FONT></TD></TR>
+      </TABLE>>
+    ];
+
+    mp_client -> frontend_core_transport [dir=both, color="#2E86AB", penwidth=2.0];
+    launch_mgr -> frontend_core_transport [style=dashed, color="#999999", arrowhead=none];
+    frontend_core_transport -> core_io [dir=both, color="#6A1B9A", penwidth=2.0];
+
+    executor -> worker_rpc_transport [dir=both, color="#D68A1A", penwidth=2.0];
+    worker_rpc_transport -> worker0_rpc [dir=both, color="#B71C1C", penwidth=2.0];
+    worker_rpc_transport -> workerr_rpc [dir=both, color="#B71C1C", penwidth=2.0];
+  }
+
+  evidence [
+    shape=plain,
+    label=<<TABLE BORDER="1" COLOR="#D6DEE5" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5" BGCOLOR="#F8FAFC">
+      <TR><TD ALIGN="LEFT"><B>Code evidence for transports and process count</B></TD></TR>
+      <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">Frontend ZMQ sockets + MsgPack: core_client.py: 588–706, 1218–1237 · Engine I/O threads/sockets: core.py: 1172–1200, 1757–1918</FONT></TD></TR>
+      <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">One worker process per local rank + lifecycle pipes: multiproc_executor.py: 189–214, 706–816 · shared-memory MessageQueue RPC: 31, 144–170, 377–445, 609–620</FONT></TD></TR>
+      <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">CUDA device + distributed/TP group init: gpu_worker.py: 474–557, 1586–1624 · Worker process title contains TP rank: multiproc_executor.py: 1064–1095</FONT></TD></TR>
+      <TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9"><B>Not separate OS processes:</B> Scheduler and MultiprocExecutor live inside EngineCore; GPUModelRunner lives inside each WorkerProc.</FONT></TD></TR>
+    </TABLE>>
+  ];
+
+  { rank=sink; evidence; }
+  gpur -> evidence [style=invis, weight=20];
+}
