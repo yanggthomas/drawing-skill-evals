@@ -7,3 +7,5 @@ The machine-readable source of truth is [run.yaml](run.yaml). Final artifacts ar
 The original evaluation design does not isolate the claimed value of each skill. Read [reviews/LIMITATIONS.md](reviews/LIMITATIONS.md) before interpreting the automated scores. The complete two-arm report is [REPORT.md](REPORT.md).
 
 The later 27-image comparison with Codex + ImageGen is a separate derived artifact under [comparisons/2026-10-02-three-arm](../../comparisons/2026-10-02-three-arm/REPORT.md).
+
+The blind 54-image review, which re-scores these images together with the Oct 4 `gpt-5.6-sol` run, is [comparisons/2026-10-04-blind-54](../../comparisons/2026-10-04-blind-54/REPORT.md).

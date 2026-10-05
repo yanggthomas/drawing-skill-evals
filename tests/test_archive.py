@@ -29,7 +29,7 @@ class ArchiveHelpersTest(unittest.TestCase):
     def test_repository_archive_is_valid(self):
         self.assertEqual(validate_repository(repository_root()), [])
 
-    def test_manifests_inventory_all_27_final_images(self):
+    def test_manifests_inventory_all_54_final_images(self):
         root = repository_root()
         image_count = 0
         for manifest_path in (root / "runs").glob("*/run.yaml"):
@@ -37,7 +37,7 @@ class ArchiveHelpersTest(unittest.TestCase):
             for case in run["cases"]:
                 for artifacts in case["arms"].values():
                     image_count += sum(item["path"].endswith(".png") for item in artifacts)
-        self.assertEqual(image_count, 27)
+        self.assertEqual(image_count, 54)
 
 
 if __name__ == "__main__":

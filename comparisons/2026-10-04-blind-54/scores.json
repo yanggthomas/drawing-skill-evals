@@ -1,0 +1,1204 @@
+{
+  "schema_version": 1,
+  "rubric": {
+    "dimensions": [
+      "fidelity",
+      "coverage",
+      "flow",
+      "legibility",
+      "visual_encoding"
+    ],
+    "range": [
+      1,
+      5
+    ],
+    "technical_score": "total + fidelity",
+    "judge": "Fable 5.1 (cloud), blind; rubric refined by the judge, see fable-results/RUBRIC-FINAL.md",
+    "reconciled": "human judgment replaces Fable on strong conflicts, see REPORT.md"
+  },
+  "note": "cases = Oct 4 run (gpt-5.6-sol); oct01_cases = the same 9 cases from the Oct 1 runs, scored in the same blind batch.",
+  "cases": {
+    "A1": {
+      "case": "vllm-v1-process-arch",
+      "arms": {
+        "imagegen": {
+          "fidelity": 4,
+          "coverage": 5,
+          "flow": 4,
+          "legibility": 4,
+          "visual_encoding": 4,
+          "total_25": 21,
+          "technical_30": 25,
+          "token": "0feeb41d",
+          "model": "gpt-5.6-sol",
+          "skill_used": [
+            "imagegen"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 25,
+          "overrides": {},
+          "human_comment": "配色太卡通了。但整体布局我很喜欢， 很清楚。"
+        },
+        "no_skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 5,
+          "legibility": 4,
+          "visual_encoding": 5,
+          "total_25": 24,
+          "technical_30": 29,
+          "token": "2e3e34c4",
+          "model": "gpt-5.6-sol",
+          "skill_used": [
+            "none"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 27,
+          "overrides": {
+            "V": {
+              "fable": 5,
+              "used": 3,
+              "why": "your style criticism vs Fable visual 5"
+            }
+          },
+          "human_comment": "这个也差不多，但主要问题还是配色。"
+        },
+        "skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 4,
+          "legibility": 3,
+          "visual_encoding": 3,
+          "total_25": 20,
+          "technical_30": 25,
+          "token": "44dce42a",
+          "model": "gpt-5.6-sol",
+          "skill_used": [
+            "graphviz"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 25,
+          "overrides": {},
+          "human_comment": "这个也没啥问题，挺好的。"
+        }
+      }
+    },
+    "A2": {
+      "case": "verl-resource-placement",
+      "arms": {
+        "no_skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 3,
+          "legibility": 3,
+          "visual_encoding": 4,
+          "total_25": 20,
+          "technical_30": 25,
+          "token": "3223b16a",
+          "model": "gpt-5.6-sol",
+          "skill_used": [
+            "none"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 25,
+          "overrides": {},
+          "human_comment": "这个主要是连线遮挡内容。"
+        },
+        "skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 4,
+          "legibility": 3,
+          "visual_encoding": 4,
+          "total_25": 21,
+          "technical_30": 26,
+          "token": "49f8027c",
+          "model": "gpt-5.6-sol",
+          "skill_used": [
+            "graphviz"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 26,
+          "overrides": {},
+          "human_comment": "这个第一是连线很乱，同时右下角的global pool几个大的填色block，很丑。不美观。"
+        },
+        "imagegen": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 4,
+          "legibility": 4,
+          "visual_encoding": 4,
+          "total_25": 22,
+          "technical_30": 27,
+          "token": "89ec0612",
+          "model": "gpt-5.6-sol",
+          "skill_used": [
+            "imagegen"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 27,
+          "overrides": {},
+          "human_comment": "配色太鲜艳了，我很喜欢左侧的control plane。"
+        }
+      }
+    },
+    "A3": {
+      "case": "megatron-parallel-groups",
+      "arms": {
+        "imagegen": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 4,
+          "legibility": 4,
+          "visual_encoding": 5,
+          "total_25": 23,
+          "technical_30": 28,
+          "token": "a00afc4a",
+          "model": "gpt-5.6-sol",
+          "skill_used": [
+            "imagegen"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 28,
+          "overrides": {},
+          "human_comment": "同样的表格，排版好一些吧。"
+        },
+        "skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 4,
+          "legibility": 4,
+          "visual_encoding": 4,
+          "total_25": 22,
+          "technical_30": 27,
+          "token": "c8fcd33b",
+          "model": "gpt-5.6-sol",
+          "skill_used": [
+            "graphviz"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 27,
+          "overrides": {},
+          "human_comment": "表格形式就是差强人意吧。"
+        },
+        "no_skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 5,
+          "legibility": 4,
+          "visual_encoding": 5,
+          "total_25": 24,
+          "technical_30": 29,
+          "token": "cabeeecb",
+          "model": "gpt-5.6-sol",
+          "skill_used": [
+            "none"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 27,
+          "overrides": {
+            "V": {
+              "fable": 5,
+              "used": 3,
+              "why": "your style criticism vs Fable visual 5"
+            }
+          },
+          "human_comment": "不喜欢黑色背景，但整体布局挺好。"
+        }
+      }
+    },
+    "G1": {
+      "case": "vllm-v1-schedule",
+      "arms": {
+        "imagegen": {
+          "fidelity": 4,
+          "coverage": 5,
+          "flow": 5,
+          "legibility": 4,
+          "visual_encoding": 5,
+          "total_25": 23,
+          "technical_30": 27,
+          "token": "28f89ba6",
+          "model": "gpt-5.6-sol",
+          "skill_used": [
+            "imagegen"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 25,
+          "overrides": {
+            "V": {
+              "fable": 5,
+              "used": 3,
+              "why": "your style criticism vs Fable visual 5"
+            }
+          },
+          "human_comment": "这一幅比上一幅更清楚，但颜色比较鲜艳，而且左下角绿色的kv-block pool好像不太对应。"
+        },
+        "no_skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 5,
+          "legibility": 4,
+          "visual_encoding": 5,
+          "total_25": 24,
+          "technical_30": 29,
+          "token": "3f2ea037",
+          "model": "gpt-5.6-sol",
+          "skill_used": [
+            "none"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 29,
+          "overrides": {},
+          "human_comment": "这一幅配色很清晰，也很素雅，但是箭头太大了。"
+        },
+        "skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 4,
+          "legibility": 2,
+          "visual_encoding": 3,
+          "total_25": 19,
+          "technical_30": 24,
+          "token": "db0db3ff",
+          "model": "gpt-5.6-sol",
+          "skill_used": [
+            "graphviz"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 24,
+          "overrides": {},
+          "human_comment": "应该说这个是排版最遭的一个，内容也还ok，但是横竖混排确实不太清楚。"
+        }
+      }
+    },
+    "G2": {
+      "case": "verl-ppo-step",
+      "arms": {
+        "imagegen": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 5,
+          "legibility": 4,
+          "visual_encoding": 5,
+          "total_25": 24,
+          "technical_30": 29,
+          "token": "43118728",
+          "model": "gpt-5.6-sol",
+          "skill_used": [
+            "imagegen"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 29,
+          "overrides": {},
+          "human_comment": "this brings the question, is A,B,C dataproto perfectly in between 1-2, 2-3 and others."
+        },
+        "no_skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 5,
+          "legibility": 4,
+          "visual_encoding": 5,
+          "total_25": 24,
+          "technical_30": 29,
+          "token": "c320d4b7",
+          "model": "gpt-5.6-sol",
+          "skill_used": [
+            "none"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 27,
+          "overrides": {
+            "V": {
+              "fable": 5,
+              "used": 3,
+              "why": "your style criticism vs Fable visual 5"
+            }
+          },
+          "human_comment": "don’t lie the dark scheme. Also error to big."
+        },
+        "skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 4,
+          "legibility": 3,
+          "visual_encoding": 4,
+          "total_25": 21,
+          "technical_30": 26,
+          "token": "e125d79e",
+          "model": "gpt-5.6-sol",
+          "skill_used": [
+            "graphviz"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 26,
+          "overrides": {},
+          "human_comment": "we can see this pic is trying to mini the multi column scheme, it is better though. but not as good as b22ede75. It is good enough though."
+        }
+      }
+    },
+    "G3": {
+      "case": "ffmpeg-transcode-threads",
+      "arms": {
+        "skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 4,
+          "legibility": 3,
+          "visual_encoding": 4,
+          "total_25": 21,
+          "technical_30": 26,
+          "token": "8c4c4637",
+          "model": "gpt-5.6-sol",
+          "skill_used": [
+            "graphviz"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 26,
+          "overrides": {},
+          "human_comment": ": I like the data plane in this case best, it clearly shows the function, data and interaction with different queues.  The only thing to wonder is the part stream copy send packet ref/eof to send_to_mux, I may have question about this part. 确实没懂那里是个信号好事什么。 control panel drawing is ok, but the blow part is very confusing. 那三个不同的框。而且没看出control panel和 data panel的交互。"
+        },
+        "no_skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 3,
+          "legibility": 2,
+          "visual_encoding": 4,
+          "total_25": 19,
+          "technical_30": 24,
+          "token": "d8edd397",
+          "model": "gpt-5.6-sol",
+          "skill_used": [
+            "none"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 24,
+          "overrides": {},
+          "human_comment": "这个就是线比较杂乱， 排版留白太多，不美观。"
+        },
+        "imagegen": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 5,
+          "legibility": 4,
+          "visual_encoding": 5,
+          "total_25": 24,
+          "technical_30": 29,
+          "token": "d9dc767f",
+          "model": "gpt-5.6-sol",
+          "skill_used": [
+            "imagegen"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 27,
+          "overrides": {
+            "V": {
+              "fable": 5,
+              "used": 3,
+              "why": "your style criticism vs Fable visual 5"
+            }
+          },
+          "human_comment": "从信息含量和整体布局排版上，这一幅应该最好，但我不喜欢这种字体和配色。"
+        }
+      }
+    },
+    "G4": {
+      "case": "redis-request-path",
+      "arms": {
+        "imagegen": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 5,
+          "legibility": 4,
+          "visual_encoding": 5,
+          "total_25": 24,
+          "technical_30": 29,
+          "token": "7bd02c74",
+          "model": "gpt-5.6-sol",
+          "skill_used": [
+            "imagegen"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 27,
+          "overrides": {
+            "V": {
+              "fable": 5,
+              "used": 3,
+              "why": "your style criticism vs Fable visual 5"
+            }
+          },
+          "human_comment": "配色太鲜艳，其实内容是很清楚的。"
+        },
+        "skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 5,
+          "legibility": 3,
+          "visual_encoding": 4,
+          "total_25": 22,
+          "technical_30": 27,
+          "token": "7d98c63e",
+          "model": "gpt-5.6-sol",
+          "skill_used": [
+            "graphviz"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 27,
+          "overrides": {},
+          "human_comment": "这一个应该是我觉得skill里最糟糕的一张图，配色很有问题。特别是这些大的block"
+        },
+        "no_skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 5,
+          "legibility": 4,
+          "visual_encoding": 4,
+          "total_25": 23,
+          "technical_30": 28,
+          "token": "a99b55ec",
+          "model": "gpt-5.6-sol",
+          "skill_used": [
+            "none"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 28,
+          "overrides": {},
+          "human_comment": "我觉得，除了黑色的背景和配色，应该说这一幅是我最喜欢，时序图本身就很适合吧。"
+        }
+      }
+    },
+    "M1": {
+      "case": "megatron-tp-sp-mlp",
+      "arms": {
+        "no_skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 5,
+          "legibility": 4,
+          "visual_encoding": 5,
+          "total_25": 24,
+          "technical_30": 29,
+          "token": "4a7c14b4",
+          "model": "gpt-5.6-sol",
+          "skill_used": [
+            "none"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 27,
+          "overrides": {
+            "V": {
+              "fable": 5,
+              "used": 3,
+              "why": "your style criticism vs Fable visual 5"
+            }
+          },
+          "human_comment": "箭头大小，每个block里文字的layout。以及不喜欢深色。"
+        },
+        "skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 4,
+          "legibility": 4,
+          "visual_encoding": 4,
+          "total_25": 22,
+          "technical_30": 27,
+          "token": "54a5fbd7",
+          "model": "gpt-5.6-sol",
+          "skill_used": [
+            "model-architecture"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 27,
+          "overrides": {},
+          "human_comment": "这一个主要还是有些box偏大，重叠了，而且一行没摆下，有拐弯不美观。"
+        },
+        "imagegen": {
+          "fidelity": 3,
+          "coverage": 5,
+          "flow": 4,
+          "legibility": 5,
+          "visual_encoding": 4,
+          "total_25": 21,
+          "technical_30": 24,
+          "token": "c87e8342",
+          "model": "gpt-5.6-sol",
+          "skill_used": [
+            "imagegen"
+          ],
+          "material_errors": 1,
+          "reconciled_technical_30": 22,
+          "overrides": {
+            "C": {
+              "fable": 5,
+              "used": 3,
+              "why": "your content-depth criticism vs Fable coverage 5"
+            }
+          },
+          "human_comment": "image gen的图，配色比较卡通，也喜欢圆角字体。比较适合演示，但同样，信息量没有skill的更大，更全面。"
+        }
+      }
+    },
+    "M2": {
+      "case": "vllm-v1-mixed-batch-attn",
+      "arms": {
+        "no_skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 5,
+          "legibility": 4,
+          "visual_encoding": 5,
+          "total_25": 24,
+          "technical_30": 29,
+          "token": "85ac7bde",
+          "model": "gpt-5.6-sol",
+          "skill_used": [
+            "none"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 27,
+          "overrides": {
+            "V": {
+              "fable": 5,
+              "used": 3,
+              "why": "your style criticism vs Fable visual 5"
+            }
+          },
+          "human_comment": "配色不好，橙色，深绿太高饱和了。"
+        },
+        "skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 4,
+          "legibility": 3,
+          "visual_encoding": 4,
+          "total_25": 21,
+          "technical_30": 26,
+          "token": "8ff5963f",
+          "model": "gpt-5.6-sol",
+          "skill_used": [
+            "model-architecture"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 26,
+          "overrides": {},
+          "human_comment": "其实就是我说的，这个图本身有连线遮挡的问题，但内容是全的，但我整体不喜欢这种poster风格。一个图，介绍所有步骤。而且这个case不适合m skill"
+        },
+        "imagegen": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 5,
+          "legibility": 4,
+          "visual_encoding": 5,
+          "total_25": 24,
+          "technical_30": 29,
+          "token": "b9950cf1",
+          "model": "gpt-5.6-sol",
+          "skill_used": [
+            "imagegen"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 25,
+          "overrides": {
+            "V": {
+              "fable": 5,
+              "used": 3,
+              "why": "your style criticism vs Fable visual 5"
+            },
+            "C": {
+              "fable": 5,
+              "used": 3,
+              "why": "your content-depth criticism vs Fable coverage 5"
+            }
+          },
+          "human_comment": "配色太卡通了。且信息偏少"
+        }
+      }
+    }
+  },
+  "oct01_cases": {
+    "A1": {
+      "case": "vllm-v1-process-arch",
+      "arms": {
+        "no_skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 4,
+          "legibility": 3,
+          "visual_encoding": 5,
+          "total_25": 22,
+          "technical_30": 27,
+          "token": "9c82de56",
+          "model": "claude-opus",
+          "skill_used": [
+            "none"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 27,
+          "overrides": {},
+          "human_comment": "这个内容就太多了，而且排版问题很大。"
+        },
+        "imagegen": {
+          "fidelity": 4,
+          "coverage": 5,
+          "flow": 4,
+          "legibility": 5,
+          "visual_encoding": 5,
+          "total_25": 23,
+          "technical_30": 27,
+          "token": "bba2c896",
+          "model": "gpt-6-astra",
+          "skill_used": [
+            "imagegen"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 27,
+          "overrides": {},
+          "human_comment": "这个也没啥大问题。就是最右边有两个箭头和左边不一致，容易引起误解。"
+        },
+        "skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 3,
+          "legibility": 3,
+          "visual_encoding": 3,
+          "total_25": 19,
+          "technical_30": 24,
+          "token": "fd86cbc4",
+          "model": "claude-opus",
+          "skill_used": [
+            "graphviz"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 24,
+          "overrides": {},
+          "human_comment": "排版不好，但其实内容是最全的。但是内容最清楚。"
+        }
+      }
+    },
+    "A2": {
+      "case": "verl-resource-placement",
+      "arms": {
+        "skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 3,
+          "legibility": 3,
+          "visual_encoding": 3,
+          "total_25": 19,
+          "technical_30": 24,
+          "token": "208d31f6",
+          "model": "claude-opus",
+          "skill_used": [
+            "graphviz"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 24,
+          "overrides": {},
+          "human_comment": "这幅也是清楚的，就是连线太乱看不清，而且布局不太好。"
+        },
+        "no_skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 4,
+          "legibility": 3,
+          "visual_encoding": 4,
+          "total_25": 21,
+          "technical_30": 26,
+          "token": "6eed9fef",
+          "model": "claude-opus",
+          "skill_used": [
+            "none"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 26,
+          "overrides": {},
+          "human_comment": "这个就比较乱了，当然layout 很不好。"
+        },
+        "imagegen": {
+          "fidelity": 2,
+          "coverage": 5,
+          "flow": 3,
+          "legibility": 4,
+          "visual_encoding": 3,
+          "total_25": 17,
+          "technical_30": 19,
+          "token": "cbd1fa32",
+          "model": "gpt-6-astra",
+          "skill_used": [
+            "imagegen"
+          ],
+          "material_errors": 2,
+          "reconciled_technical_30": 19,
+          "overrides": {},
+          "human_comment": "也应该说这幅图最清楚。除了配色和字体。"
+        }
+      }
+    },
+    "A3": {
+      "case": "megatron-parallel-groups",
+      "arms": {
+        "skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 4,
+          "legibility": 4,
+          "visual_encoding": 5,
+          "total_25": 23,
+          "technical_30": 28,
+          "token": "1daf798b",
+          "model": "claude-opus",
+          "skill_used": [
+            "graphviz"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 28,
+          "overrides": {},
+          "human_comment": "布局不太好。"
+        },
+        "imagegen": {
+          "fidelity": 4,
+          "coverage": 5,
+          "flow": 5,
+          "legibility": 5,
+          "visual_encoding": 4,
+          "total_25": 23,
+          "technical_30": 27,
+          "token": "73c5e8d6",
+          "model": "gpt-6-astra",
+          "skill_used": [
+            "imagegen"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 27,
+          "overrides": {},
+          "human_comment": "这个可能整组最好吧。"
+        },
+        "no_skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 5,
+          "legibility": 4,
+          "visual_encoding": 5,
+          "total_25": 24,
+          "technical_30": 29,
+          "token": "cca705dc",
+          "model": "claude-opus",
+          "skill_used": [
+            "none"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 27,
+          "overrides": {
+            "V": {
+              "fable": 5,
+              "used": 3,
+              "why": "your style criticism vs Fable visual 5"
+            }
+          },
+          "human_comment": "配色太丑了"
+        }
+      }
+    },
+    "G1": {
+      "case": "vllm-v1-schedule",
+      "arms": {
+        "skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 4,
+          "legibility": 3,
+          "visual_encoding": 3,
+          "total_25": 20,
+          "technical_30": 25,
+          "token": "1eba22c4",
+          "model": "claude-opus",
+          "skill_used": [
+            "graphviz"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 25,
+          "overrides": {},
+          "human_comment": "generally ok, just to many works in each box. 整体几个阶段是比较清楚，kv-cache池也有表达。"
+        },
+        "imagegen": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 4,
+          "legibility": 4,
+          "visual_encoding": 4,
+          "total_25": 22,
+          "technical_30": 27,
+          "token": "599e7123",
+          "model": "gpt-6-astra",
+          "skill_used": [
+            "imagegen"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 27,
+          "overrides": {},
+          "human_comment": "应该说这一幅除了配色是最好的，内容也很清楚。只是整体有点卡通风。"
+        },
+        "no_skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 4,
+          "legibility": 3,
+          "visual_encoding": 3,
+          "total_25": 20,
+          "technical_30": 25,
+          "token": "6e033b2b",
+          "model": "claude-opus",
+          "skill_used": [
+            "none"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 25,
+          "overrides": {},
+          "human_comment": "这一幅也是内容太多了，配色一般吧，进一步加剧杂乱。"
+        }
+      }
+    },
+    "G2": {
+      "case": "verl-ppo-step",
+      "arms": {
+        "no_skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 5,
+          "legibility": 4,
+          "visual_encoding": 5,
+          "total_25": 24,
+          "technical_30": 29,
+          "token": "b22ede75",
+          "model": "claude-opus",
+          "skill_used": [
+            "none"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 29,
+          "overrides": {},
+          "human_comment": "I like this 时序图-like scheme best. This would be best in this case."
+        },
+        "skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 3,
+          "legibility": 3,
+          "visual_encoding": 4,
+          "total_25": 20,
+          "technical_30": 25,
+          "token": "d46ecf7c",
+          "model": "claude-opus",
+          "skill_used": [
+            "graphviz"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 21,
+          "overrides": {
+            "F": {
+              "fable": 5,
+              "used": 3,
+              "why": "your arrow-direction error vs Fable fidelity 5"
+            }
+          },
+          "human_comment": "the major problem of this picture is direction of the arrow, for example, sleep replica is gen pointing to ckpt engine."
+        },
+        "imagegen": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 5,
+          "legibility": 4,
+          "visual_encoding": 5,
+          "total_25": 24,
+          "technical_30": 29,
+          "token": "f5a313af",
+          "model": "gpt-6-astra",
+          "skill_used": [
+            "imagegen"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 27,
+          "overrides": {
+            "V": {
+              "fable": 5,
+              "used": 3,
+              "why": "your style criticism vs Fable visual 5"
+            }
+          },
+          "human_comment": "don’t like the color scheme. good enough though."
+        }
+      }
+    },
+    "G3": {
+      "case": "ffmpeg-transcode-threads",
+      "arms": {
+        "no_skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 4,
+          "legibility": 3,
+          "visual_encoding": 4,
+          "total_25": 21,
+          "technical_30": 26,
+          "token": "1bdb9dba",
+          "model": "claude-opus",
+          "skill_used": [
+            "none"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 26,
+          "overrides": {},
+          "human_comment": "too many words in each box. although it shows the main flow clearly."
+        },
+        "imagegen": {
+          "fidelity": 4,
+          "coverage": 4,
+          "flow": 5,
+          "legibility": 5,
+          "visual_encoding": 5,
+          "total_25": 23,
+          "technical_30": 27,
+          "token": "77c4b51b",
+          "model": "gpt-6-astra",
+          "skill_used": [
+            "imagegen"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 25,
+          "overrides": {
+            "V": {
+              "fable": 5,
+              "used": 3,
+              "why": "your style criticism vs Fable visual 5"
+            }
+          },
+          "human_comment": "this cartoon like style would be perfact for illustration, but not tech enough and lose too many detail and not serious enough, it seems."
+        },
+        "skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 3,
+          "legibility": 3,
+          "visual_encoding": 4,
+          "total_25": 20,
+          "technical_30": 25,
+          "token": "d2237ccb",
+          "model": "claude-opus",
+          "skill_used": [
+            "graphviz"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 25,
+          "overrides": {},
+          "human_comment": "这个也还行吧，虽然排版没有另一个好，而且内容也偏多，确实这里更容易看出来 scheduler是中心。线会有点杂乱，但感觉控制模型比8c4c4637清楚。"
+        }
+      }
+    },
+    "G4": {
+      "case": "redis-request-path",
+      "arms": {
+        "no_skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 5,
+          "legibility": 4,
+          "visual_encoding": 4,
+          "total_25": 23,
+          "technical_30": 28,
+          "token": "02d4d074",
+          "model": "claude-opus",
+          "skill_used": [
+            "none"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 28,
+          "overrides": {},
+          "human_comment": "这个挺好，挺清楚的，就是每个box内容太多，字号偏小。"
+        },
+        "skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 4,
+          "legibility": 3,
+          "visual_encoding": 4,
+          "total_25": 21,
+          "technical_30": 26,
+          "token": "8555a918",
+          "model": "claude-opus",
+          "skill_used": [
+            "graphviz"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 26,
+          "overrides": {},
+          "human_comment": "内容是清楚的，但是一方面时排版的问题，另一方面是时序不是很清楚。"
+        },
+        "imagegen": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 5,
+          "legibility": 4,
+          "visual_encoding": 5,
+          "total_25": 24,
+          "technical_30": 29,
+          "token": "b638523b",
+          "model": "gpt-6-astra",
+          "skill_used": [
+            "imagegen"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 27,
+          "overrides": {
+            "V": {
+              "fable": 5,
+              "used": 3,
+              "why": "your style criticism vs Fable visual 5"
+            }
+          },
+          "human_comment": "我确实不喜欢这种卡通类型的配色。"
+        }
+      }
+    },
+    "M1": {
+      "case": "megatron-tp-sp-mlp",
+      "arms": {
+        "no_skill": {
+          "fidelity": 4,
+          "coverage": 5,
+          "flow": 5,
+          "legibility": 4,
+          "visual_encoding": 5,
+          "total_25": 23,
+          "technical_30": 27,
+          "token": "04eed4f3",
+          "model": "claude-opus",
+          "skill_used": [
+            "none"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 23,
+          "overrides": {
+            "C": {
+              "fable": 5,
+              "used": 1,
+              "why": "your content-depth criticism vs Fable coverage 5"
+            }
+          },
+          "human_comment": "Not what is required. fail."
+        },
+        "imagegen": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 5,
+          "legibility": 4,
+          "visual_encoding": 5,
+          "total_25": 24,
+          "technical_30": 29,
+          "token": "1a297a07",
+          "model": "gpt-6-astra",
+          "skill_used": [
+            "imagegen"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 29,
+          "overrides": {},
+          "human_comment": "good, nothing to comment."
+        },
+        "skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 5,
+          "legibility": 4,
+          "visual_encoding": 5,
+          "total_25": 24,
+          "technical_30": 29,
+          "token": "e0edfc5a",
+          "model": "claude-opus",
+          "skill_used": [
+            "model-architecture"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 29,
+          "overrides": {},
+          "human_comment": "这一幅应该是最好的，应该是得满分。"
+        }
+      }
+    },
+    "M2": {
+      "case": "vllm-v1-mixed-batch-attn",
+      "arms": {
+        "no_skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 5,
+          "legibility": 4,
+          "visual_encoding": 5,
+          "total_25": 24,
+          "technical_30": 29,
+          "token": "61583ee3",
+          "model": "claude-opus",
+          "skill_used": [
+            "none"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 29,
+          "overrides": {},
+          "human_comment": "其实我不是很喜欢这种poster-like的感觉。虽然这幅图实际没啥问题。其实这个case不是model architecture cover的范围，他不属于模型结构。当然也还ok。"
+        },
+        "skill": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 4,
+          "legibility": 3,
+          "visual_encoding": 5,
+          "total_25": 22,
+          "technical_30": 27,
+          "token": "6fe5779e",
+          "model": "claude-opus",
+          "skill_used": [
+            "model-architecture"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 28,
+          "overrides": {
+            "L": {
+              "fable": 3,
+              "used": 4,
+              "why": "you found crossing lines readable vs Fable legibility 3"
+            }
+          },
+          "human_comment": "这个一样的，我觉得倒是不影响阅读。中间的线。本身也表达，kv cache的存储顺序是乱的。"
+        },
+        "imagegen": {
+          "fidelity": 5,
+          "coverage": 5,
+          "flow": 5,
+          "legibility": 5,
+          "visual_encoding": 5,
+          "total_25": 25,
+          "technical_30": 30,
+          "token": "a58a7a4d",
+          "model": "gpt-6-astra",
+          "skill_used": [
+            "imagegen"
+          ],
+          "material_errors": 0,
+          "reconciled_technical_30": 26,
+          "overrides": {
+            "V": {
+              "fable": 5,
+              "used": 3,
+              "why": "your style criticism vs Fable visual 5"
+            },
+            "C": {
+              "fable": 5,
+              "used": 3,
+              "why": "your content-depth criticism vs Fable coverage 5"
+            }
+          },
+          "human_comment": "配色太卡通了。且信息偏少"
+        }
+      }
+    }
+  }
+}

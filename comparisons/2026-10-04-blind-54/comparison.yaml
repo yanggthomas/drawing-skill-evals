@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "id": "2026-10-04-blind-54",
+  "date": "2026-10-04",
+  "source_runs": [
+    "../../runs/2026-10-01-skill-v0.1.0/run.yaml",
+    "../../runs/2026-10-01-codex-imagegen-v1/run.yaml",
+    "../../runs/2026-10-04-gpt-5.6-sol-three-arm/run.yaml"
+  ],
+  "scores": "scores.json",
+  "report": "REPORT.md",
+  "gallery": "GALLERY.md"
+}

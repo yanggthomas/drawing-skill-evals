@@ -433,6 +433,7 @@
     "archive_total_including_historical_attempts": 26.46
   },
   "comparison_refs": [
-    "../../comparisons/2026-10-02-three-arm/comparison.yaml"
+    "../../comparisons/2026-10-02-three-arm/comparison.yaml",
+    "../../comparisons/2026-10-04-blind-54/comparison.yaml"
   ]
 }

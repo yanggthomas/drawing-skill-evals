@@ -1,0 +1,835 @@
+{
+  "rubric": "results/RUBRIC-FINAL.md",
+  "images": {
+    "0feeb41d": {
+      "case": "A1",
+      "scores": {
+        "fidelity": 4,
+        "coverage": 5,
+        "flow": 4,
+        "legibility": 4,
+        "visual_encoding": 4
+      },
+      "total_25": 21,
+      "technical_30": 25,
+      "defects": [
+        {
+          "severity": "minor",
+          "claim": "The blue per-worker response MessageQueue line ends in arrowheads pointing into the GPU worker processes as well as into EngineCore; worker_response_mq carries results only from each worker to the executor (the label states this, so the arrow direction alone is wrong)",
+          "evidence": "src/vllm/v1/executor/multiproc_executor.py:619"
+        }
+      ],
+      "rationale": "Three process tiers, ZMQ ROUTER->DEALER / PUSH->PULL with msgpack payloads, the shared-memory broadcast and per-worker MessageQueues, lifecycle pipes, the NCCL TP group and the engine I/O threads all match the source; the response-queue arrows also point into the workers, and the blue/orange colour split is not keyed."
+    },
+    "2e3e34c4": {
+      "case": "A1",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 5,
+        "legibility": 4,
+        "visual_encoding": 5
+      },
+      "total_25": 24,
+      "technical_30": 29,
+      "defects": [],
+      "rationale": "Every element checked (N+2 processes, socket types and directions, I/O threads, shm MQs, file-store rendezvous, lifecycle pipes, worker-owned weights/KV) matches the pinned code; numbered code anchors and a legend make the encoding explicit. Small grey footnote text is the only legibility cost."
+    },
+    "44dce42a": {
+      "case": "A1",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 4,
+        "legibility": 3,
+        "visual_encoding": 3
+      },
+      "total_25": 20,
+      "technical_30": 25,
+      "defects": [],
+      "rationale": "Content is correct and complete (socket types, payloads, shm MQ, pipes, N worker processes, TP group), but the 0.54 aspect ratio forces scrolling, the IPC boxes float between processes with double-headed arrows, and four node shapes are used without a legend."
+    },
+    "9c82de56": {
+      "case": "A1",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 4,
+        "legibility": 3,
+        "visual_encoding": 5
+      },
+      "total_25": 22,
+      "technical_30": 27,
+      "defects": [],
+      "rationale": "Exhaustively cited and, on every claim checked (driver-worker rule, output_rank formula, handshake READY payload, monitor threads, pipes, batch_queue), correct; colour per process and a full edge legend. The 2:1 banner with very small text is readable only when zoomed."
+    },
+    "bba2c896": {
+      "case": "A1",
+      "scores": {
+        "fidelity": 4,
+        "coverage": 5,
+        "flow": 4,
+        "legibility": 5,
+        "visual_encoding": 5
+      },
+      "total_25": 23,
+      "technical_30": 27,
+      "defects": [
+        {
+          "severity": "minor",
+          "claim": "AsyncLLM is labelled as vllm.entrypoints.openai.async_llm.AsyncLLM",
+          "evidence": "src/vllm/v1/engine/async_llm.py:80"
+        },
+        {
+          "severity": "minor",
+          "claim": "EngineCoreProc is labelled as vllm.v1.core.EngineCoreProc",
+          "evidence": "src/vllm/v1/engine/core.py:1088"
+        },
+        {
+          "severity": "minor",
+          "claim": "WorkerProc is labelled as vllm.v1.worker.gpu_worker.WorkerProc",
+          "evidence": "src/vllm/v1/executor/multiproc_executor.py:602"
+        }
+      ],
+      "rationale": "Clean three-tier layout with correct transports, payloads, I/O threads, pipes and NCCL collectives and a complete legend; the three module paths under the process titles are wrong, which is cosmetic for the mechanism but would misdirect a reader opening the code."
+    },
+    "fd86cbc4": {
+      "case": "A1",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 3,
+        "legibility": 3,
+        "visual_encoding": 3
+      },
+      "total_25": 19,
+      "technical_30": 24,
+      "defects": [],
+      "rationale": "Every node and edge is cited and checks out, down to bind/connect sides, queue objects and helper threads, but the auto-laid-out graph puts the frontend on the far right and workers bottom-left with long crossing arcs, leaves large empty areas, and uses four node shapes with no legend."
+    },
+    "208d31f6": {
+      "case": "A2",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 3,
+        "legibility": 3,
+        "visual_encoding": 3
+      },
+      "total_25": 19,
+      "technical_30": 24,
+      "defects": [],
+      "rationale": "Driver, managers, three pools with their GPU formulas, the per-GPU WorkerDict holding ActorRolloutRefWorker + TrainingWorker, rollout replicas on global_pool, the colocated/standalone reward paths and the sender/receiver checkpoint-engine pair are all correct and cited, but long crossing arcs, a half-empty top-right quadrant and four unexplained node shapes make it hard to read at normal size."
+    },
+    "3223b16a": {
+      "case": "A2",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 3,
+        "legibility": 3,
+        "visual_encoding": 4
+      },
+      "total_25": 20,
+      "technical_30": 25,
+      "defects": [],
+      "rationale": "Role-to-pool table, one-OS-process-per-rank WorkerDict, logical worker-group views, separate rollout processes on the same GPU set, the 1/max_colocate_count sharing model and the weight-sync data plane all match the source and a legend explains the box semantics; however several long edges run straight through other boxes and the 'worker-group RPCs' label overprints the placement-group text."
+    },
+    "49f8027c": {
+      "case": "A2",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 4,
+        "legibility": 3,
+        "visual_encoding": 4
+      },
+      "total_25": 21,
+      "technical_30": 26,
+      "defects": [],
+      "rationale": "The 'one GPU slot' panel shows exactly which objects share one Ray process versus live beside it, the weight path row names every hop (model engine + sender CE -> backend -> rollout CE worker -> CUDA IPC -> server), and pool formulas and conditions are cited; the 2.35:1 banner leaves the driver column half empty and the dense text needs zooming."
+    },
+    "6eed9fef": {
+      "case": "A2",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 4,
+        "legibility": 3,
+        "visual_encoding": 4
+      },
+      "total_25": 21,
+      "technical_30": 26,
+      "defects": [],
+      "rationale": "Driver objects and their spawned worker-group views, the per-bundle WorkerDict with fused actor/rollout/ref + optional critic, the rollout replica worker with its separate CheckpointEngineWorker and CUDA-IPC hop, and the naive vs NCCL/NIXL weight path are all right; the 2.3:1 layout with thin dotted edges is readable only zoomed and has no legend."
+    },
+    "89ec0612": {
+      "case": "A2",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 4,
+        "legibility": 4,
+        "visual_encoding": 4
+      },
+      "total_25": 22,
+      "technical_30": 27,
+      "defects": [],
+      "rationale": "Compact raster that still states the driver/single-controller, the global/reward/teacher pools with their GPU formulas, the fused ActorRolloutRef + critic objects in one process, the rollout server on the same GPUs with CUDA-IPC weight updates and the conditional reward loop; text is small at native size but crisp, and colour is used consistently per pool."
+    },
+    "cbd1fa32": {
+      "case": "A2",
+      "scores": {
+        "fidelity": 2,
+        "coverage": 5,
+        "flow": 3,
+        "legibility": 4,
+        "visual_encoding": 3
+      },
+      "total_25": 17,
+      "technical_30": 19,
+      "defects": [
+        {
+          "severity": "material",
+          "claim": "The solid weight-sync arrow from CheckpointEngineManager terminates in reward_pool; the checkpoint manager connects the actor worker group to the rollout replicas, not to the reward pool",
+          "evidence": "key#9"
+        },
+        {
+          "severity": "material",
+          "claim": "A 'teacher_client' arrow from MultiTeacherModelManager terminates in reward_pool and another 'teacher_client' arrow leaves CheckpointEngineManager into teacher_pool; the teacher manager is the only object tied to teacher_pool and the checkpoint manager has no teacher link",
+          "evidence": "src/verl/trainer/ppo/ray_trainer.py:925-934"
+        }
+      ],
+      "rationale": "Pools, roles, the shared WorkerDict process and the rollout/checkpoint worker pair are drawn correctly, but the three manager-to-pool arrows are crossed so the diagram asserts that weights flow to the reward pool and that the checkpoint manager owns a teacher client, which inverts the wiring the prompt asked for."
+    },
+    "1daf798b": {
+      "case": "A3",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 4,
+        "legibility": 4,
+        "visual_encoding": 5
+      },
+      "total_25": 23,
+      "technical_30": 28,
+      "defects": [],
+      "rationale": "Every rank card carries the correct (tp,dp,pp) decomposition, formula and all five group memberships, node = rank // 8 and the stage-1-to-2 inter-node hop are stated, and the rule table ties each group to its get_ranks call; the crossing dashed DP arcs are the only thing that needs a second look."
+    },
+    "73c5e8d6": {
+      "case": "A3",
+      "scores": {
+        "fidelity": 4,
+        "coverage": 5,
+        "flow": 5,
+        "legibility": 5,
+        "visual_encoding": 4
+      },
+      "total_25": 23,
+      "technical_30": 27,
+      "defects": [
+        {
+          "severity": "minor",
+          "claim": "Only ranks 0, 3, 12 and 15 are circled as embedding-group members although the legend says the circle marks first/last PP ranks; ranks 1, 2, 13, 14 (E1 {1,13}, E2 {2,14}) are left unmarked while the roster lists them",
+          "evidence": "key#8"
+        }
+      ],
+      "rationale": "Clean grid where r = t + 2d + 4p is visible in the layout itself, with correct TP brackets, PP columns, MP blocks and full rosters for all five group types; the incomplete embedding circles are the one slip, and the roster table is correct."
+    },
+    "a00afc4a": {
+      "case": "A3",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 4,
+        "legibility": 4,
+        "visual_encoding": 5
+      },
+      "total_25": 23,
+      "technical_30": 28,
+      "defects": [],
+      "rationale": "Two per-node tables give every rank's TP/PP/DP/MP/EMB membership exactly as the source produces it, the rank formula and DP derivation are stated, and rosters use the same colour-coded IDs; it is a table rather than a picture of the group topology, but it is complete and correct."
+    },
+    "c8fcd33b": {
+      "case": "A3",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 4,
+        "legibility": 4,
+        "visual_encoding": 4
+      },
+      "total_25": 22,
+      "technical_30": 27,
+      "defects": [],
+      "rationale": "Rule box (order collapse, r = t + 2d + 4p, embedding = first+last of each PP group), per-node tables with (t,d,p) coordinates and all memberships, and complete rosters all match the source; the hexagon/cylinder framing is decorative but colours are consistent between table headers and rosters."
+    },
+    "cabeeecb": {
+      "case": "A3",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 5,
+        "legibility": 4,
+        "visual_encoding": 5
+      },
+      "total_25": 24,
+      "technical_30": 29,
+      "defects": [],
+      "rationale": "Rank cards grouped by node and pipeline stage carry correct colour-coded pills for every group, the fastest-to-slowest stride panel and the derived index formulas (TP# = 2p + d, etc.) make the rule explicit, and the exhaustive rosters match; small dark-theme text is the only cost."
+    },
+    "cca705dc": {
+      "case": "A3",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 5,
+        "legibility": 4,
+        "visual_encoding": 5
+      },
+      "total_25": 24,
+      "technical_30": 29,
+      "defects": [],
+      "rationale": "Grid draws all five group types with distinct encodings (TP outline, DP bracket, PP arrow, MP band, EMB border) and a full legend, the right panel derives sizes, strides and the rank equation with line refs, and every pill and roster was checked against the source; pills are small at normal size."
+    },
+    "1eba22c4": {
+      "case": "G1",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 4,
+        "legibility": 3,
+        "visual_encoding": 3
+      },
+      "total_25": 20,
+      "technical_30": 25,
+      "defects": [],
+      "rationale": "Every stage (shared budget, running-first loop, allocate_slots retry with FCFS/priority victim, prepend-to-waiting, skip-Phase-2-on-preemption, prefix-hit admission, no preemption for waiting, SchedulerOutput fields, chunk arithmetic 2048/2048/904) matches the cited lines; the auto-layout leaves a quarter of the canvas empty, routes long looping edges, and uses four node shapes with no legend."
+    },
+    "28f89ba6": {
+      "case": "G1",
+      "scores": {
+        "fidelity": 4,
+        "coverage": 5,
+        "flow": 5,
+        "legibility": 4,
+        "visual_encoding": 5
+      },
+      "total_25": 23,
+      "technical_30": 27,
+      "defects": [
+        {
+          "severity": "minor",
+          "claim": "Example places 'req D (PREEMPTED, blocks held)' in the KV-holding queue; _preempt_request frees the victim's blocks and prepends it to the plain waiting queue, so a preempted request normally re-enters through 'waiting', not 'kv_holding_waiting'",
+          "evidence": "src/vllm/v1/core/sched/scheduler.py:1558"
+        }
+      ],
+      "rationale": "Compact three-panel layout states both budgets, the running-then-waiting order with the preemption gate, victim choice, prepend-to-waiting, prefix-hit admission, allocate-before-commit and the full SchedulerOutput, with a correct 6/13/18 chunk example; the only slip is an illustrative queue entry that puts a preempted request on the wrong waiting list."
+    },
+    "3f2ea037": {
+      "case": "G1",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 5,
+        "legibility": 4,
+        "visual_encoding": 5
+      },
+      "total_25": 24,
+      "technical_30": 29,
+      "defects": [],
+      "rationale": "State-at-start, shared limits, Step 1 (compute delta, allocate, preempt-then-retry with the victim rule and budget restore), Step 2 gated on 'no request was preempted', allocate-before-admit with no victim, the three SchedulerOutput groups and the post-step counter advance are all correct and cited; colours map cleanly to running / waiting / KV / preemption and the step timeline shows chunking across steps."
+    },
+    "599e7123": {
+      "case": "G1",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 4,
+        "legibility": 4,
+        "visual_encoding": 4
+      },
+      "total_25": 22,
+      "technical_30": 27,
+      "defects": [],
+      "rationale": "Five numbered stages with the right formulas (n = min(need, B, I - draft_slots, cap)), allocate-before-schedule on both paths, the preemption box with FCFS tail / priority victim and prepend-to-waiting, the 'no eviction for waiting' rule and a correct 8-slot worked example; one word is garbled ('Sse') and the shared allocate_slots box pulls arrows from both phases, which needs a second look."
+    },
+    "6e033b2b": {
+      "case": "G1",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 4,
+        "legibility": 3,
+        "visual_encoding": 3
+      },
+      "total_25": 20,
+      "technical_30": 25,
+      "defects": [],
+      "rationale": "The most line-accurate of the set: n==0 continue-not-break, both allocate_slots call sites, FCFS running.pop() with the 'victim == current request' stop, skip_request re-queueing, the chunk cut formula, the WAITING/PREEMPTED classification and a correct 2045/2045/910 worked table; but the square canvas is a third empty, edges cross the page, and solid/dashed/dotted styles are unexplained."
+    },
+    "db0db3ff": {
+      "case": "G1",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 4,
+        "legibility": 2,
+        "visual_encoding": 3
+      },
+      "total_25": 19,
+      "technical_30": 24,
+      "defects": [],
+      "rationale": "Content is complete and correct (catch-up rule, shared ledgers, running-first with victim selection and retry, preemption gate, waiting admission that never evicts, batch close, SchedulerOutput groups, optimistic state advance, chunk timeline), but the 8000-px canvas is mostly whitespace so labels are unreadable at normal size and only legible at 2x zoom, and node shapes/edge colours have no legend."
+    },
+    "43118728": {
+      "case": "G2",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 5,
+        "legibility": 4,
+        "visual_encoding": 5
+      },
+      "total_25": 24,
+      "technical_30": 29,
+      "defects": [],
+      "rationale": "Ten numbered driver stages in the source order, a DataProto strip that grows A to F with the exact keys, RPC arrows down to the reward / actor / reference / critic worker groups, and a separate red weights arrow from the actor group to the rollout replicas with both the naive and disaggregated paths; every line anchor checked resolves to the stated code, and the only cost is dense small text."
+    },
+    "b22ede75": {
+      "case": "G2",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 5,
+        "legibility": 4,
+        "visual_encoding": 5
+      },
+      "total_25": 24,
+      "technical_30": 29,
+      "defects": [],
+      "rationale": "Swim-lane table with twelve steps, the driver-side advantage computation, the critic-warmup skip, the batch ledger per step, and the most complete weight-sync description of the set (naive resume/get_per_tensor_param/update_weights/offload/resume kv_cache versus abort/release/build group/receive/finalize/resume) all matching the cited lines; small text at normal size is the only drawback."
+    },
+    "c320d4b7": {
+      "case": "G2",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 5,
+        "legibility": 4,
+        "visual_encoding": 5
+      },
+      "total_25": 24,
+      "technical_30": 29,
+      "defects": [],
+      "rationale": "Three-column dark layout: driver steps 0-9, the Ray worker or service each step calls, and a cumulative DataProto ledger ending in the final training payload, plus a weights row that states weights never stage on the driver; a chip legend fixes the colour meaning, and all step order, placement and estimator claims match the source."
+    },
+    "d46ecf7c": {
+      "case": "G2",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 3,
+        "legibility": 3,
+        "visual_encoding": 4
+      },
+      "total_25": 20,
+      "technical_30": 25,
+      "defects": [],
+      "rationale": "Content is correct down to method lines (compute_log_prob 703, update_actor 713, update_weights 728, value_loss 243) and the CheckpointEngineManager hexagon lists the naive versus NCCL/NIXL paths accurately, but the driver sequence sits at the far right while the RPC targets and rollout engine sit at the far left, so edges sweep across the whole canvas and the reader must hop between columns."
+    },
+    "e125d79e": {
+      "case": "G2",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 4,
+        "legibility": 3,
+        "visual_encoding": 4
+      },
+      "total_25": 21,
+      "technical_30": 26,
+      "defects": [],
+      "rationale": "Numbered driver spine with conditional stages dashed, worker boxes beside each RPC, DataProto cylinders accumulating keys, a critic-warmup branch and the checkpoint-engine transfer returning weights to the replicas; everything checked is right, but the 0.9 aspect ratio and sparse top-left leave the text small at normal size."
+    },
+    "f5a313af": {
+      "case": "G2",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 5,
+        "legibility": 4,
+        "visual_encoding": 5
+      },
+      "total_25": 24,
+      "technical_30": 29,
+      "defects": [],
+      "rationale": "Nine-row table with driver / Ray-worker / DataProto columns, each row cited, the advantage row marked DRIVER, the actor update gated on critic warm-up, the pre-loop update_weights, and a separate weight-transfer panel showing actor workers to rollout via CheckpointEngineManager with the naive and other-backend paths; legend covers line styles, text is small but crisp."
+    },
+    "1bdb9dba": {
+      "case": "G3",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 4,
+        "legibility": 3,
+        "visual_encoding": 4
+      },
+      "total_25": 21,
+      "technical_30": 26,
+      "defects": [],
+      "rationale": "Five thread boxes each carry their input ThreadQueue with the right stream count and size, the stream-copy and subtitle bypasses, the SchSyncQueue running in the sender's thread, pre-mux buffering, and a six-step schedule_update_locked description that matches the source (trailing_dts, 100 ms tolerance, upstream walk, UNCHOKE_ONCE, choke_demux -> tq_choke); the 2.5:1 banner needs zooming and a few red control arrows cross the data path."
+    },
+    "77c4b51b": {
+      "case": "G3",
+      "scores": {
+        "fidelity": 4,
+        "coverage": 4,
+        "flow": 5,
+        "legibility": 5,
+        "visual_encoding": 5
+      },
+      "total_25": 23,
+      "technical_30": 27,
+      "defects": [
+        {
+          "severity": "minor",
+          "claim": "Choke / unchoke arrows terminate on the demuxer and filtergraph only, and 'Unknown timestamps get priority' is an imprecise rendering of the rule that an unfinished stream with no DTS yet keeps all sources choked except the one guaranteed by UNCHOKE_ONCE",
+          "evidence": "src/fftools/ffmpeg_sched.c:1459-1462"
+        },
+        {
+          "severity": "minor",
+          "claim": "The queue between decoder and filtergraph is labelled 'per stream' without the extra control stream that the filtergraph queue carries",
+          "evidence": "key#3"
+        }
+      ],
+      "rationale": "A clean left-to-right pipeline with a queue card between every pair of threads, the stream-copy bypass, the scheduler drawn as shared state rather than a thread, and two panels for bounded-queue backpressure and the four-step DTS alignment; it omits the pre-mux queue / sync queue detail and the thread-start order but states everything the prompt asks, with one loosely worded sync note."
+    },
+    "8c4c4637": {
+      "case": "G3",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 4,
+        "legibility": 3,
+        "visual_encoding": 4
+      },
+      "total_25": 21,
+      "technical_30": 26,
+      "defects": [],
+      "rationale": "Data plane with every queue (decoder, filter N+1, SyncQueue, encoder, PreMuxQueue, mux) and bypasses, a control plane that walks scheduler -> progress window -> upstream resolution -> choke/unchoke, a thread-model box with the enc -> filters -> dec -> demux start order and a backpressure box, all cited and verified; the bottom third of the canvas is white space so the text is small at normal size."
+    },
+    "d2237ccb": {
+      "case": "G3",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 3,
+        "legibility": 3,
+        "visual_encoding": 4
+      },
+      "total_25": 20,
+      "technical_30": 25,
+      "defects": [],
+      "rationale": "Vertical pipeline with every queue and its size, waiter hexagons, the sync-queue and pre-mux queue, the main-thread box with sch_start order, a correct five-step schedule_update_locked summary, and an edge key; but the stream-copy, choke, and DTS-report edges loop around the whole page and the scheduler node sits far to the right, so the reader has to trace long curves to connect control to data."
+    },
+    "d8edd397": {
+      "case": "G3",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 3,
+        "legibility": 2,
+        "visual_encoding": 4
+      },
+      "total_25": 19,
+      "technical_30": 24,
+      "defects": [],
+      "rationale": "Thread topology, data plane with queues, stream copy, subtitle path, pre-encode SyncQueue, startup AVFifo, and a control plane with local queue pressure and the 100 ms global DTS rule are all right and cited, but the 2:1 canvas is mostly empty, the diagram occupies a small central band with 10-px text, and the orange control edges fan across the empty area; only readable at 2x zoom."
+    },
+    "d9dc767f": {
+      "case": "G3",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 5,
+        "legibility": 4,
+        "visual_encoding": 5
+      },
+      "total_25": 24,
+      "technical_30": 29,
+      "defects": [],
+      "rationale": "One-row data plane with five threads, cylinder queues (packet cap 2, frame cap 2, N streams per mux), the optional SyncQueue, pre-mux AVFifo, stream-copy and subtitle bypasses, STOP/GO choke points, plus a control plane with the four-step scheduler loop, local backpressure and the thread start order, all with line anchors that resolve; a legend defines the three arrow styles and text is crisp."
+    },
+    "02d4d074": {
+      "case": "G4",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 5,
+        "legibility": 4,
+        "visual_encoding": 4
+      },
+      "total_25": 23,
+      "technical_30": 28,
+      "defects": [],
+      "rationale": "Three-lane layout (main / hand-off queues / I/O thread) with twelve numbered steps whose line anchors all resolve: least-loaded assignment, beforeSleep flush, rebind to t->el with readQueryFromClient, the READ_ENABLED early-return, CLIENT_IO_PENDING_COMMAND, batched notify-only-if-asleep hand-back, main-thread execution, isClientMustHandledByMainThread, and the write via processClientsFromMainThread; the hand-off column is mostly empty and there is no legend for the lane colours."
+    },
+    "7bd02c74": {
+      "case": "G4",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 5,
+        "legibility": 4,
+        "visual_encoding": 5
+      },
+      "total_25": 24,
+      "technical_30": 29,
+      "defects": [],
+      "rationale": "Eight numbered steps alternate correctly between the main thread (accept, assign, execute, return) and the I/O thread (bind, read, parse, write), the no-execution-on-I/O rule and the disable-read/write hand-off are explicit, every cited range checks out, and a bottom band encodes which thread owns each phase; a few raster glyphs are garbled ('conwriite', the commit hash) but nothing a reader acts on."
+    },
+    "7d98c63e": {
+      "case": "G4",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 5,
+        "legibility": 3,
+        "visual_encoding": 4
+      },
+      "total_25": 22,
+      "technical_30": 27,
+      "defects": [],
+      "rationale": "A strictly linear top-to-bottom story with nine steps and three hand-off hexagons; the ownership invariant (c->tid vs c->running_tid, flags cleared in flight, fd stays bound to t->el) and every cited range are correct, but the 0.30 aspect ratio makes it unreadable without scrolling and the hexagons waste most of the width."
+    },
+    "8555a918": {
+      "case": "G4",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 4,
+        "legibility": 3,
+        "visual_encoding": 4
+      },
+      "total_25": 21,
+      "technical_30": 26,
+      "defects": [],
+      "rationale": "The most line-precise of the set (createClient tid lines, assignClientToIOThread 337-358, sendPendingClientsToIOThreads 509-515, enqueuePendingClientsToMainThread 133-136, keepClientInMainThread exception, writeToClient 828-831) and all of it correct, but the 2:1 canvas with long looping edges and tiny text needs zooming, and the three edge colours are unexplained."
+    },
+    "a99b55ec": {
+      "case": "G4",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 5,
+        "legibility": 4,
+        "visual_encoding": 4
+      },
+      "total_25": 23,
+      "technical_30": 28,
+      "defects": [],
+      "rationale": "Client / main / I/O lanes with seven steps, explicit 'not executed here' and 'no socket write on this path' notes, a 'what hand-off means' box (same client*, mutex, notifier, flags off), and correct ranges throughout; dark theme with small hand-off labels that brush the lane borders, and step-number colours are not keyed."
+    },
+    "b638523b": {
+      "case": "G4",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 5,
+        "legibility": 4,
+        "visual_encoding": 5
+      },
+      "total_25": 24,
+      "technical_30": 29,
+      "defects": [
+        {
+          "severity": "minor",
+          "claim": "Cosmetic: execute step cites networking.c:3355-3603; processCommandAndResetClient/processPendingCommandAndInputBuffer live at 3555-3603 (line-number typo)",
+          "evidence": "src/src/networking.c:3585"
+        }
+      ],
+      "rationale": "Six steps zig-zag between the two threads with three orange hand-off boxes that name the lists, the mutex and the notifier, the retained event-loop binding on hand-back, the AOF appendfsync=always delay and the special-client scope; one line range is off by a digit, otherwise every claim matches the source."
+    },
+    "04eed4f3": {
+      "case": "M1",
+      "scores": {
+        "fidelity": 4,
+        "coverage": 5,
+        "flow": 5,
+        "legibility": 4,
+        "visual_encoding": 5
+      },
+      "total_25": 23,
+      "technical_30": 27,
+      "defects": [
+        {
+          "severity": "minor",
+          "claim": "fc1 backward box states 'db1 = dZ1.sum -> [F/p] (layers.py:895)'; fc1 is built with skip_bias_add=True so the linear receives bias=None and its backward computes no bias grad; db1 comes from autograd through the activation's bias add",
+          "evidence": "src/megatron/core/tensor_parallel/layers.py:1338"
+        }
+      ],
+      "rationale": "Forward column (AG -> fc1 [F/p,h] -> local act -> fc2 [h,F/p] -> RS) and mirrored backward column (AG of dY, local fc2 dgrad/wgrad, re-gather of the saved X shard, RS of fc1 dgrad) carry correct shapes and verified line anchors, with a colour legend and a collectives summary; one misattributed bias-gradient line."
+    },
+    "1a297a07": {
+      "case": "M1",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 5,
+        "legibility": 4,
+        "visual_encoding": 5
+      },
+      "total_25": 24,
+      "technical_30": 29,
+      "defects": [],
+      "rationale": "Forward row left-to-right and backward row right-to-left with every tensor and weight shape, AG/RS in both passes, and a dashed side-branch that re-gathers the saved input for dW1; legend and notes are correct, only a few raster sub/superscripts render oddly ('dX partial^r_r', 'W1,r')."
+    },
+    "4a7c14b4": {
+      "case": "M1",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 5,
+        "legibility": 4,
+        "visual_encoding": 5
+      },
+      "total_25": 24,
+      "technical_30": 29,
+      "defects": [],
+      "rationale": "Dark two-lane layout with hexagonal collectives (AG concat dim 0, RS sum + split dim 0, AG as backward of forward RS, RS of fc1 input grad, async AG of the saved shard for dW1) and correct per-rank shapes and code anchors; a few labels overflow their hexagons and one activation note overprints its line reference."
+    },
+    "54a5fbd7": {
+      "case": "M1",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 4,
+        "legibility": 4,
+        "visual_encoding": 4
+      },
+      "total_25": 22,
+      "technical_30": 27,
+      "defects": [],
+      "rationale": "Correct shapes, collectives and formulas in both passes plus callouts for fc1 weight-gradient input reconstruction and the local fc2 weight gradient, and accurate scope/bias/weight-orientation notes; the forward and backward rows wrap back on themselves at the ends and colours (blue/pink/green/orange) are not keyed."
+    },
+    "c87e8342": {
+      "case": "M1",
+      "scores": {
+        "fidelity": 3,
+        "coverage": 5,
+        "flow": 4,
+        "legibility": 5,
+        "visual_encoding": 4
+      },
+      "total_25": 21,
+      "technical_30": 24,
+      "defects": [
+        {
+          "severity": "material",
+          "claim": "In the backward lane the 'ALL-GATHER saved X_r for dW1_r' box is drawn downstream of the fc1 backward box (which already lists dW1_r) and its output joins the arrow into dX_r; the gathered input feeds the dW1 GEMM inside fc1's backward and never contributes to dX",
+          "evidence": "src/megatron/core/tensor_parallel/layers.py:767-781"
+        }
+      ],
+      "rationale": "Shapes, the forward AG/RS pair and the backward AG of dY are all right and very readable, but the fc1-backward collectives are wired so the saved-input all-gather appears to happen after dW1 is computed and to flow into the input gradient."
+    },
+    "e0edfc5a": {
+      "case": "M1",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 5,
+        "legibility": 4,
+        "visual_encoding": 5
+      },
+      "total_25": 24,
+      "technical_30": 29,
+      "defects": [],
+      "rationale": "Three aligned lanes (forward, dgrad, wgrad) inside shaded sequence-parallel / tensor-parallel regions make the shard boundaries visible, every node carries a correct shape and line anchor, and chamfered colour-coded collectives plus a line-style key complete the encoding; the 2.2:1 canvas leaves the small anchors hard to read without zoom."
+    },
+    "61583ee3": {
+      "case": "M2",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 5,
+        "legibility": 4,
+        "visual_encoding": 5
+      },
+      "total_25": 24,
+      "technical_30": 29,
+      "defects": [],
+      "rationale": "A four-request batch (two decodes, a second prefill chunk, a new prefill) is carried through every array: query_start_loc [0,1,7,8,11], positions, input_ids, seq_lens [18,18,6,3], block_table rows and slot_mapping (33, 92-95, 144-145, 53, 176-178, pad -1, all verified), then the write into colour-coded physical blocks and the varlen read with a causal mask for request B; dense but organised into numbered panels."
+    },
+    "6fe5779e": {
+      "case": "M2",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 4,
+        "legibility": 3,
+        "visual_encoding": 5
+      },
+      "total_25": 22,
+      "technical_30": 27,
+      "defects": [],
+      "rationale": "Correct three-request example (qsl [0,5,6,9], seq_lens [9,7,3], slot_mapping 8-11, 36, 46, 20-22) with per-token slot derivations, a block-by-block cache picture and per-request causal read grids, plus an honest note that block_size 4 is illustrative; the curved write arrows criss-cross the cache row and most annotations are small enough to need zoom."
+    },
+    "85ac7bde": {
+      "case": "M2",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 5,
+        "legibility": 4,
+        "visual_encoding": 5
+      },
+      "total_25": 24,
+      "technical_30": 29,
+      "defects": [],
+      "rationale": "Five numbered panels take a two-request batch from scheduler rows to flat tokens (qsl [0,3,4], seq_lens [6,6]) to slot_mapping [11,28,29,37] (verified), a scatter-write into physical blocks 2/7/5/9 and the paged read with per-query causal ranges; a closing note separates slot_mapping (write address) from block_table + seq_lens (read view); write arrows cover a block label."
+    },
+    "8ff5963f": {
+      "case": "M2",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 4,
+        "legibility": 3,
+        "visual_encoding": 4
+      },
+      "total_25": 21,
+      "technical_30": 26,
+      "defects": [],
+      "rationale": "Mathematically careful (slot = 16*block_table[r, p//16] + p mod 16 -> 127, 32, 33, 145; seq_lens [18,18]; bottom-right causal alignment) with a numbered code ledger, but several labels are clipped or overprinted by the [n] markers ('pag', 'cached before this st'), inter-column elbows cross panel borders, and request A changes colour between panels."
+    },
+    "a58a7a4d": {
+      "case": "M2",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 5,
+        "legibility": 5,
+        "visual_encoding": 5
+      },
+      "total_25": 25,
+      "technical_30": 30,
+      "defects": [],
+      "rationale": "Four quadrant panels with a decode + chunked-prefill example whose flattening, qsl [0,1,4], seq_lens [6,17], block_table and slot_mapping [117,46,47,144] are all correct, a paged-cache view that marks cached versus new slots, and a read panel tying each metadata array to its kernel argument and per-query visibility; crisp text and consistent per-request colours."
+    },
+    "b9950cf1": {
+      "case": "M2",
+      "scores": {
+        "fidelity": 5,
+        "coverage": 5,
+        "flow": 5,
+        "legibility": 4,
+        "visual_encoding": 5
+      },
+      "total_25": 24,
+      "technical_30": 29,
+      "defects": [],
+      "rationale": "Four columns (scheduler rows, flatten, page lookup, backend) plus a bottom cache strip; the example's positions, qsl [0,3,4], seq_lens [5,6], per-token block/offset derivation and slot_mapping [30,31,12,49] are verified, and the cache strip shows old versus new slots per physical block; text is dense at native size."
+    }
+  }
+}

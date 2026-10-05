@@ -1,0 +1,1158 @@
+{
+  "02d4d074": {
+    "case_id": "G4",
+    "case": "redis-request-path",
+    "set": "oct01",
+    "arm": "without",
+    "model": "claude-opus",
+    "skills_installed": [],
+    "skill_used": [
+      "none"
+    ],
+    "tools": [
+      "graphviz",
+      "matplotlib"
+    ],
+    "image_calls": null,
+    "original": "runs/2026-10-01-skill-v0.1.0/cases/redis-request-path/arms/without/request-path.png",
+    "original_sha256": "e3fe6a53c31a7a1542130d7c0dcc992825bae453180433bb79bf23ab100074be",
+    "stripped_sha256": "93d0295e45584cc1325a1d42f74696ea2ac2ed4b7e162ac02fbabcd23715ab59",
+    "idat_sha256": "2909f259f04bb69d216fb20543a636919c8545caded5c72e0f21e1eba5de1d10"
+  },
+  "04eed4f3": {
+    "case_id": "M1",
+    "case": "megatron-tp-sp-mlp",
+    "set": "oct01",
+    "arm": "without",
+    "model": "claude-opus",
+    "skills_installed": [],
+    "skill_used": [
+      "none"
+    ],
+    "tools": [
+      "matplotlib",
+      "graphviz"
+    ],
+    "image_calls": null,
+    "original": "runs/2026-10-01-skill-v0.1.0/cases/megatron-tp-sp-mlp/arms/without/tp-sp-mlp.png",
+    "original_sha256": "843841b2a60c7213fa171d2ede8583e6f073540be8fe1702d5ea9cba178426f3",
+    "stripped_sha256": "9a51a11d2c6949d5ae1592fc17a2302414b18d8ac412c8428d76a42c78b29040",
+    "idat_sha256": "6282fb07fde9c4a94c14ff030df8253b5f162aae12678525bef93ee9bb2e845b"
+  },
+  "0feeb41d": {
+    "case_id": "A1",
+    "case": "vllm-v1-process-arch",
+    "set": "oct04",
+    "arm": "imagegen",
+    "model": "gpt-5.6-sol",
+    "skills_installed": [
+      "imagegen"
+    ],
+    "skill_used": [
+      "imagegen"
+    ],
+    "tools": [
+      "png"
+    ],
+    "image_calls": 2,
+    "original": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-process-arch/arms/imagegen/out/process-arch.png",
+    "original_sha256": "d8a7437cd7ff4eeb6a82df42f21c2e4879a2314e38311c698b8257e831c93a51",
+    "stripped_sha256": "c696edefd91bb935dbe8a500838289c190f4d492141ef00f28ffa66fc81ddddc",
+    "idat_sha256": "241b78a2fc240557d3a81f2b737186b62d3877aff8eadd4aa6c7292ce44d7a43"
+  },
+  "1a297a07": {
+    "case_id": "M1",
+    "case": "megatron-tp-sp-mlp",
+    "set": "oct01",
+    "arm": "imagegen",
+    "model": "gpt-6-astra",
+    "skills_installed": [
+      "imagegen"
+    ],
+    "skill_used": [
+      "imagegen"
+    ],
+    "tools": [
+      "image_gen"
+    ],
+    "image_calls": 1,
+    "original": "runs/2026-10-01-codex-imagegen-v1/cases/megatron-tp-sp-mlp/arms/imagegen/tp-sp-mlp.png",
+    "original_sha256": "1fca1d367bbce97027cd8997df355b7e38a68893d14d44540fa7648949e59dfe",
+    "stripped_sha256": "965b5c3bbaa826b70e1ba11a871a46ec56830003a3225172346efc1b7cbb663e",
+    "idat_sha256": "1ae1d11e879c51c0a01a975504c6f5ea6d0f8ee20a668521e7a1504e09007c41"
+  },
+  "1bdb9dba": {
+    "case_id": "G3",
+    "case": "ffmpeg-transcode-threads",
+    "set": "oct01",
+    "arm": "without",
+    "model": "claude-opus",
+    "skills_installed": [],
+    "skill_used": [
+      "none"
+    ],
+    "tools": [
+      "matplotlib",
+      "graphviz",
+      "pillow"
+    ],
+    "image_calls": null,
+    "original": "runs/2026-10-01-skill-v0.1.0/cases/ffmpeg-transcode-threads/arms/without/transcode-threads.png",
+    "original_sha256": "9a29f4e59b37dcea1a1aa88e9257ce33900b5829a262da0ea46e052af0045c33",
+    "stripped_sha256": "5b2b23d520d29a45d8e8ddac48663c42440e74d5a68c0f15b0e3e33c5dce23f7",
+    "idat_sha256": "a6b0f0575a0d9342290126543606d807b72d9e55429f4a4d1eb612836d96173e"
+  },
+  "1daf798b": {
+    "case_id": "A3",
+    "case": "megatron-parallel-groups",
+    "set": "oct01",
+    "arm": "with",
+    "model": "claude-opus",
+    "skills_installed": [
+      "graphviz",
+      "model-architecture"
+    ],
+    "skill_used": [
+      "graphviz"
+    ],
+    "tools": [
+      "graphviz"
+    ],
+    "image_calls": null,
+    "original": "runs/2026-10-01-skill-v0.1.0/cases/megatron-parallel-groups/arms/with/parallel-groups.png",
+    "original_sha256": "80ce6e361dec0c0202012c6911d595d3f103b4c400b34614883871da9b1933ec",
+    "stripped_sha256": "2717f9852a1ea818e7e524db6ab4628bc39f3da9010811198baba00980382c1c",
+    "idat_sha256": "d21574b625a69a2aa092de2e189d86b5b5b33d825eb13eb31c529f0a077121c5"
+  },
+  "1eba22c4": {
+    "case_id": "G1",
+    "case": "vllm-v1-schedule",
+    "set": "oct01",
+    "arm": "with",
+    "model": "claude-opus",
+    "skills_installed": [
+      "graphviz",
+      "model-architecture"
+    ],
+    "skill_used": [
+      "graphviz"
+    ],
+    "tools": [
+      "graphviz"
+    ],
+    "image_calls": null,
+    "original": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-schedule/arms/with/schedule-step.png",
+    "original_sha256": "acea8fe2add2bc91f463ec67744e14bae23d2426c4da331397c31264a941e26c",
+    "stripped_sha256": "890bc0f31c490a645f9443b695911c849fbdc1b3d50780395ab02f250e02aace",
+    "idat_sha256": "abc8ddda84016bdde8cd06074ba21232637854d59095ee42d82b070ccd51b1b4"
+  },
+  "208d31f6": {
+    "case_id": "A2",
+    "case": "verl-resource-placement",
+    "set": "oct01",
+    "arm": "with",
+    "model": "claude-opus",
+    "skills_installed": [
+      "graphviz",
+      "model-architecture"
+    ],
+    "skill_used": [
+      "graphviz"
+    ],
+    "tools": [
+      "graphviz"
+    ],
+    "image_calls": null,
+    "original": "runs/2026-10-01-skill-v0.1.0/cases/verl-resource-placement/arms/with/resource-placement.png",
+    "original_sha256": "9145755713dc4bb5902634a6af4f662660b0a838a423c740573e7bdc61311186",
+    "stripped_sha256": "2db643872b96af22b32e72b58cd4e1acdb7306faa7756c5d27cb24579d49e123",
+    "idat_sha256": "a0f2a5ef16b67b6582d6d7dc81e07e876e0a2b87f2266c5f42cc8894ef4d1103"
+  },
+  "28f89ba6": {
+    "case_id": "G1",
+    "case": "vllm-v1-schedule",
+    "set": "oct04",
+    "arm": "imagegen",
+    "model": "gpt-5.6-sol",
+    "skills_installed": [
+      "imagegen"
+    ],
+    "skill_used": [
+      "imagegen"
+    ],
+    "tools": [
+      "png"
+    ],
+    "image_calls": 1,
+    "original": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-schedule/arms/imagegen/out/schedule-step.png",
+    "original_sha256": "60bb4991cfad2ccd572b92fb4aeedb10d230864050743e3513a58d4ec36ebcf4",
+    "stripped_sha256": "185ca03a28bb725adcd7fdda595ea78926cd07ef77b6e15b509fc61002d89d12",
+    "idat_sha256": "7acdba128a109aa617460e3856950027c8cfab55bd43fb9770f47ede9a92e69d"
+  },
+  "2e3e34c4": {
+    "case_id": "A1",
+    "case": "vllm-v1-process-arch",
+    "set": "oct04",
+    "arm": "without",
+    "model": "gpt-5.6-sol",
+    "skills_installed": [],
+    "skill_used": [
+      "none"
+    ],
+    "tools": [
+      "png",
+      "svg"
+    ],
+    "image_calls": null,
+    "original": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-process-arch/arms/without/out/process-arch.png",
+    "original_sha256": "29a95f5ef96d441427e6d4e92225ca662318c2d909ba584336b320c48bdaf6cb",
+    "stripped_sha256": "c75ab8a90d91d4a380f2762ce45dea6aa0b91da01c62118ad5f016f6783ced59",
+    "idat_sha256": "48aff2bea0a96d626d51146d91d29ccacc071dc09752b507d2a79a3067a595d5"
+  },
+  "3223b16a": {
+    "case_id": "A2",
+    "case": "verl-resource-placement",
+    "set": "oct04",
+    "arm": "without",
+    "model": "gpt-5.6-sol",
+    "skills_installed": [],
+    "skill_used": [
+      "none"
+    ],
+    "tools": [
+      "png"
+    ],
+    "image_calls": null,
+    "original": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-resource-placement/arms/without/out/resource-placement.png",
+    "original_sha256": "0e1574e6f667850d72c76eb302a7461179d02d8c39c11a6be5dd1fbd2da2a25a",
+    "stripped_sha256": "c715c1b48c57f77214af25f341845ce780c5348dc75923de0bcb2c1eed894cd3",
+    "idat_sha256": "303257606b905b0c368552d8a7e4a7629de0e872488d081eb22c5f2d20be125e"
+  },
+  "3f2ea037": {
+    "case_id": "G1",
+    "case": "vllm-v1-schedule",
+    "set": "oct04",
+    "arm": "without",
+    "model": "gpt-5.6-sol",
+    "skills_installed": [],
+    "skill_used": [
+      "none"
+    ],
+    "tools": [
+      "png",
+      "svg"
+    ],
+    "image_calls": null,
+    "original": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-schedule/arms/without/out/schedule-step.png",
+    "original_sha256": "25822d2613e56553ff787ce47d387c1db0241727bcfd2eb788b729048c8537fc",
+    "stripped_sha256": "a892a5f17c54ee24340e0a826050cf4eadaaf50389a3a3907286aef0c481bfb6",
+    "idat_sha256": "227c76916e81a20922524bbe5e7308be233c5a8385dc200cfeca93c0b1b4d480"
+  },
+  "43118728": {
+    "case_id": "G2",
+    "case": "verl-ppo-step",
+    "set": "oct04",
+    "arm": "imagegen",
+    "model": "gpt-5.6-sol",
+    "skills_installed": [
+      "imagegen"
+    ],
+    "skill_used": [
+      "imagegen"
+    ],
+    "tools": [
+      "png"
+    ],
+    "image_calls": 2,
+    "original": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-ppo-step/arms/imagegen/out/ppo-step.png",
+    "original_sha256": "13088a90bc97be4c2bff7facd9222524099405df1adb5a1b87f434dbf610b0ec",
+    "stripped_sha256": "86d4f9462d9cb73f472e24d1b5474bbdac97cd3feea8d2c20925748c1bad098a",
+    "idat_sha256": "8fb6ec47cfbc195dc5fada78c4de4ec583cbb0957b8a6e39d79bdede5d6cb98f"
+  },
+  "44dce42a": {
+    "case_id": "A1",
+    "case": "vllm-v1-process-arch",
+    "set": "oct04",
+    "arm": "with",
+    "model": "gpt-5.6-sol",
+    "skills_installed": [
+      "graphviz",
+      "model-architecture"
+    ],
+    "skill_used": [
+      "graphviz"
+    ],
+    "tools": [
+      "dot",
+      "png"
+    ],
+    "image_calls": null,
+    "original": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-process-arch/arms/with/out/process-arch.png",
+    "original_sha256": "e2300668026cd07607cd3a87f76cb6d32bff8d93d0ad45f58a60e4146e04ecea",
+    "stripped_sha256": "aab76affc2e965e9511204a92074690d0e9939909cec4bd272fea7a1526a5731",
+    "idat_sha256": "78784d6d69f8855134c6057e0c56036215a640034f15b2732ba8cbb5c4d83dc5"
+  },
+  "49f8027c": {
+    "case_id": "A2",
+    "case": "verl-resource-placement",
+    "set": "oct04",
+    "arm": "with",
+    "model": "gpt-5.6-sol",
+    "skills_installed": [
+      "graphviz",
+      "model-architecture"
+    ],
+    "skill_used": [
+      "graphviz"
+    ],
+    "tools": [
+      "dot",
+      "png"
+    ],
+    "image_calls": null,
+    "original": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-resource-placement/arms/with/out/resource-placement.png",
+    "original_sha256": "87504f120660fa8087905e5abfdf652b35017b23d5444bf4331c6b19dbb000b8",
+    "stripped_sha256": "48e60bd75d7c440a65fc7445c9eb8a034652e499d0cffe445857c13b735125ba",
+    "idat_sha256": "a6e159b87724ae90f558945a7e696f338f1865090fd8695162c2096d3624e035"
+  },
+  "4a7c14b4": {
+    "case_id": "M1",
+    "case": "megatron-tp-sp-mlp",
+    "set": "oct04",
+    "arm": "without",
+    "model": "gpt-5.6-sol",
+    "skills_installed": [],
+    "skill_used": [
+      "none"
+    ],
+    "tools": [
+      "png",
+      "svg"
+    ],
+    "image_calls": null,
+    "original": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-tp-sp-mlp/arms/without/out/tp-sp-mlp.png",
+    "original_sha256": "a8b063885a8cd613f1f48b94b9cc6bde0eb511b6b90de1a594094ad1f242eae5",
+    "stripped_sha256": "6318052b8ed2dc159946152f420ea4dc7538fb19d6a413efd6dec2c26689b6a7",
+    "idat_sha256": "5eef760668e4c560f4e28ff2800b0225cc4c723971a303eb7e99f44763c2911b"
+  },
+  "54a5fbd7": {
+    "case_id": "M1",
+    "case": "megatron-tp-sp-mlp",
+    "set": "oct04",
+    "arm": "with",
+    "model": "gpt-5.6-sol",
+    "skills_installed": [
+      "graphviz",
+      "model-architecture"
+    ],
+    "skill_used": [
+      "model-architecture"
+    ],
+    "tools": [
+      "aux",
+      "fdb_latexmk",
+      "fls",
+      "log",
+      "pdf",
+      "png",
+      "tex",
+      "xdv"
+    ],
+    "image_calls": null,
+    "original": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-tp-sp-mlp/arms/with/out/tp-sp-mlp.png",
+    "original_sha256": "3f698fc9d78898a4cc2f874ff068a618e84598b33f33f98ccc2568b20d21a6d7",
+    "stripped_sha256": "ed636a2f868655bc32cd8a94fdfe9e6eaf1075216abd85e1ffd13a4eb934be39",
+    "idat_sha256": "5b3a3b05a1b84e10e4f9676b440d2ffdd92ea5684f86610ad8b50f03b5ba520c"
+  },
+  "599e7123": {
+    "case_id": "G1",
+    "case": "vllm-v1-schedule",
+    "set": "oct01",
+    "arm": "imagegen",
+    "model": "gpt-6-astra",
+    "skills_installed": [
+      "imagegen"
+    ],
+    "skill_used": [
+      "imagegen"
+    ],
+    "tools": [
+      "image_gen"
+    ],
+    "image_calls": 1,
+    "original": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-schedule/arms/imagegen/schedule-step.png",
+    "original_sha256": "c5262da3d0f5eb622356ef6e85a6e548b6bb5e6e9e67229e52dfaef7feb36754",
+    "stripped_sha256": "8ddc6d20def29c54fbd7c2bc0fc15b3fc191e7714f3655f87ab83e27abade011",
+    "idat_sha256": "92b916b9a4ab40f89fc87b3d058ffc4f7402d3feb9a37023b3e12655c8424fb4"
+  },
+  "61583ee3": {
+    "case_id": "M2",
+    "case": "vllm-v1-mixed-batch-attn",
+    "set": "oct01",
+    "arm": "without",
+    "model": "claude-opus",
+    "skills_installed": [],
+    "skill_used": [
+      "none"
+    ],
+    "tools": [
+      "matplotlib",
+      "pillow",
+      "svg"
+    ],
+    "image_calls": null,
+    "original": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-mixed-batch-attn/arms/without/mixed-batch-attn.png",
+    "original_sha256": "3ee55c79d25fe3340533d9bd27fe5129e9498ed7d828be67aa2b6568b804455e",
+    "stripped_sha256": "3ee55c79d25fe3340533d9bd27fe5129e9498ed7d828be67aa2b6568b804455e",
+    "idat_sha256": "5ee484c380a718de479ac360f5c7a50c443027f1a89e13dd53f1c5709d4a6d10"
+  },
+  "6e033b2b": {
+    "case_id": "G1",
+    "case": "vllm-v1-schedule",
+    "set": "oct01",
+    "arm": "without",
+    "model": "claude-opus",
+    "skills_installed": [],
+    "skill_used": [
+      "none"
+    ],
+    "tools": [
+      "graphviz",
+      "matplotlib"
+    ],
+    "image_calls": null,
+    "original": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-schedule/arms/without/schedule-step.png",
+    "original_sha256": "c67ec395eab3446a15a9e73b8586dee2ddc80f4b6b3e190369361feafcc0a272",
+    "stripped_sha256": "09e0b5d101f713fceec8f15fea178f8e1f76f75adc1ddfbb9c21d024c2416bea",
+    "idat_sha256": "249f0bc5d93a55fe85f45b5c94df519df6c42cde3a52c5cd56b9b0940988bd97"
+  },
+  "6eed9fef": {
+    "case_id": "A2",
+    "case": "verl-resource-placement",
+    "set": "oct01",
+    "arm": "without",
+    "model": "claude-opus",
+    "skills_installed": [],
+    "skill_used": [
+      "none"
+    ],
+    "tools": [
+      "graphviz",
+      "matplotlib"
+    ],
+    "image_calls": null,
+    "original": "runs/2026-10-01-skill-v0.1.0/cases/verl-resource-placement/arms/without/resource-placement.png",
+    "original_sha256": "738c3787ab7ea1f0468e1d82bba9cee295ba55ce9ae1d11efb9f93bb271b1273",
+    "stripped_sha256": "2986d7fa7e1ce78eabeaa9788a54acabda7030243f55e51824eab4458bd2cd02",
+    "idat_sha256": "2fbe036146d84f765434da77da1d452e8d30f1990605ad24a0c0d3f2565a130c"
+  },
+  "6fe5779e": {
+    "case_id": "M2",
+    "case": "vllm-v1-mixed-batch-attn",
+    "set": "oct01",
+    "arm": "with",
+    "model": "claude-opus",
+    "skills_installed": [
+      "graphviz",
+      "model-architecture"
+    ],
+    "skill_used": [
+      "model-architecture"
+    ],
+    "tools": [
+      "tikz/latex"
+    ],
+    "image_calls": null,
+    "original": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-mixed-batch-attn/arms/with/mixed-batch-attn.png",
+    "original_sha256": "94334638c7d7bca52e6b27bcd28153c1b3dbc7338d85fa2c61afa227c86ee0f2",
+    "stripped_sha256": "afb2c0bbf8141bd3e71866c5143794bda675f06d0bb2592cfd5c7ac57f3a814d",
+    "idat_sha256": "32579dd392d03c503bd0e9ead79fb1dd87d5048066be2b6f45c4ba6406cb5af1"
+  },
+  "73c5e8d6": {
+    "case_id": "A3",
+    "case": "megatron-parallel-groups",
+    "set": "oct01",
+    "arm": "imagegen",
+    "model": "gpt-6-astra",
+    "skills_installed": [
+      "imagegen"
+    ],
+    "skill_used": [
+      "imagegen"
+    ],
+    "tools": [
+      "image_gen"
+    ],
+    "image_calls": 1,
+    "original": "runs/2026-10-01-codex-imagegen-v1/cases/megatron-parallel-groups/arms/imagegen/parallel-groups.png",
+    "original_sha256": "1d52d0a8066fc587c3c29cb32372f3e4b7797aa3b8114f6664e141e1ce917527",
+    "stripped_sha256": "eaceb419ef74433bbf44493a760464397fe7e44ebc873206654d4adccb71d92e",
+    "idat_sha256": "00b49a3dab577124c5c0dc40acf756fe7b1f54b0a068483d944aa64f18496636"
+  },
+  "77c4b51b": {
+    "case_id": "G3",
+    "case": "ffmpeg-transcode-threads",
+    "set": "oct01",
+    "arm": "imagegen",
+    "model": "gpt-6-astra",
+    "skills_installed": [
+      "imagegen"
+    ],
+    "skill_used": [
+      "imagegen"
+    ],
+    "tools": [
+      "image_gen"
+    ],
+    "image_calls": 1,
+    "original": "runs/2026-10-01-codex-imagegen-v1/cases/ffmpeg-transcode-threads/arms/imagegen/transcode-threads.png",
+    "original_sha256": "848fc5f39a21eff05069314e1e54ab18930575ca3a543deb82ea5ee5b44f46f9",
+    "stripped_sha256": "cf65baf68e903b979addbce50532aabf0b1e786657026a4af3ea11aa1b4526ee",
+    "idat_sha256": "459d0606dc7af1a1bdce8b9178f522eeecefea44e16bb08e69b63a89a88f7a5a"
+  },
+  "7bd02c74": {
+    "case_id": "G4",
+    "case": "redis-request-path",
+    "set": "oct04",
+    "arm": "imagegen",
+    "model": "gpt-5.6-sol",
+    "skills_installed": [
+      "imagegen"
+    ],
+    "skill_used": [
+      "imagegen"
+    ],
+    "tools": [
+      "png"
+    ],
+    "image_calls": 2,
+    "original": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/redis-request-path/arms/imagegen/out/request-path.png",
+    "original_sha256": "1235c9b1fb3180a19c51f95ef61c0f1ccb74e1196bfbcdc0983de7733050f095",
+    "stripped_sha256": "df11b84ebc4b24f8bd4208347590ac81df0a9f26188eca33cef1083805c10047",
+    "idat_sha256": "4dd832689c27452252179e91cb0c6262b29d5c4e7471199eca65c739dda13507"
+  },
+  "7d98c63e": {
+    "case_id": "G4",
+    "case": "redis-request-path",
+    "set": "oct04",
+    "arm": "with",
+    "model": "gpt-5.6-sol",
+    "skills_installed": [
+      "graphviz",
+      "model-architecture"
+    ],
+    "skill_used": [
+      "graphviz"
+    ],
+    "tools": [
+      "dot",
+      "png"
+    ],
+    "image_calls": null,
+    "original": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/redis-request-path/arms/with/out/request-path.png",
+    "original_sha256": "5eb0aba5976de46d7715bb0a57e271fba9cd79b81065a72a046af98a6a3c2fd9",
+    "stripped_sha256": "89f8960ab19f117ee1b511a2ba0343e24a89c628a6b5d5d16765d07490895bba",
+    "idat_sha256": "ab5e762563dcd87ffb93eb20838ebbf65226cb9460e673c18e5421fb51b56272"
+  },
+  "8555a918": {
+    "case_id": "G4",
+    "case": "redis-request-path",
+    "set": "oct01",
+    "arm": "with",
+    "model": "claude-opus",
+    "skills_installed": [
+      "graphviz",
+      "model-architecture"
+    ],
+    "skill_used": [
+      "graphviz"
+    ],
+    "tools": [
+      "graphviz"
+    ],
+    "image_calls": null,
+    "original": "runs/2026-10-01-skill-v0.1.0/cases/redis-request-path/arms/with/request-path.png",
+    "original_sha256": "981136b03b9776f4a382a1da5d0d5205013bc24e2ffca1c979ef4ef2b17718e6",
+    "stripped_sha256": "570f0171052fb4fa5f920104cd6b769b2b238b0fb468aac56d5126249d315e24",
+    "idat_sha256": "6c76739c84b07f3281b6147f983cf1d783f7a18d2e68feefc89091575dd55632"
+  },
+  "85ac7bde": {
+    "case_id": "M2",
+    "case": "vllm-v1-mixed-batch-attn",
+    "set": "oct04",
+    "arm": "without",
+    "model": "gpt-5.6-sol",
+    "skills_installed": [],
+    "skill_used": [
+      "none"
+    ],
+    "tools": [
+      "png",
+      "svg"
+    ],
+    "image_calls": null,
+    "original": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-mixed-batch-attn/arms/without/out/mixed-batch-attn.png",
+    "original_sha256": "3701b338224d5a5dcb2352cd51e7ab130f6c7b937f77b9caca3abb243114cca0",
+    "stripped_sha256": "ea9d74b2d908bb40ffc6a62cc62efd00c2cdab0e2bdc9ea0deddf096c62d40ba",
+    "idat_sha256": "e2ea950fb86ba9a299d1cbe3259a2931be4f5babba54b9812b7d6fb2b001cf67"
+  },
+  "89ec0612": {
+    "case_id": "A2",
+    "case": "verl-resource-placement",
+    "set": "oct04",
+    "arm": "imagegen",
+    "model": "gpt-5.6-sol",
+    "skills_installed": [
+      "imagegen"
+    ],
+    "skill_used": [
+      "imagegen"
+    ],
+    "tools": [
+      "png"
+    ],
+    "image_calls": 1,
+    "original": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-resource-placement/arms/imagegen/out/resource-placement.png",
+    "original_sha256": "a50befbc4172653ab021593a894fc86cbf83be3a7b8d489dc50c0eec51a06cbc",
+    "stripped_sha256": "66c236882cf10f01e34dff7b17d92f0d8d90a14f5fd86ea294214021eee60e93",
+    "idat_sha256": "9471d0fe90b8a346d74e25e48335f9cef7d497339a54e9c26880f1560de22931"
+  },
+  "8c4c4637": {
+    "case_id": "G3",
+    "case": "ffmpeg-transcode-threads",
+    "set": "oct04",
+    "arm": "with",
+    "model": "gpt-5.6-sol",
+    "skills_installed": [
+      "graphviz",
+      "model-architecture"
+    ],
+    "skill_used": [
+      "graphviz"
+    ],
+    "tools": [
+      "dot",
+      "png"
+    ],
+    "image_calls": null,
+    "original": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/ffmpeg-transcode-threads/arms/with/out/transcode-threads.png",
+    "original_sha256": "459ec149107329043c484dd20adbe9355a08fff569fc40b8f33def525e2c2c0d",
+    "stripped_sha256": "02f4399ee2921af6ee7305d3013f935c7897eca505206324b9ab82f851d17fdc",
+    "idat_sha256": "4a2682c93f57744eef357c88c303f7d540870645b5285d9fd2ff3d1f37fe6868"
+  },
+  "8ff5963f": {
+    "case_id": "M2",
+    "case": "vllm-v1-mixed-batch-attn",
+    "set": "oct04",
+    "arm": "with",
+    "model": "gpt-5.6-sol",
+    "skills_installed": [
+      "graphviz",
+      "model-architecture"
+    ],
+    "skill_used": [
+      "model-architecture"
+    ],
+    "tools": [
+      "aux",
+      "fdb_latexmk",
+      "fls",
+      "log",
+      "pdf",
+      "png",
+      "tex",
+      "xdv"
+    ],
+    "image_calls": null,
+    "original": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-mixed-batch-attn/arms/with/out/mixed-batch-attn.png",
+    "original_sha256": "1e2b9078b42d1f16f7c138a3bbb12691b72547d4c92925fa524d6e71bccc2318",
+    "stripped_sha256": "6c8e9349829f2c7b27d2be4e02d006f327b4387fc2103a5b4bdfaf4dc79c1de6",
+    "idat_sha256": "b189af9076dc4eb3c389e644a29b4b1464f27a022331d51ac829c6dc4a923504"
+  },
+  "9c82de56": {
+    "case_id": "A1",
+    "case": "vllm-v1-process-arch",
+    "set": "oct01",
+    "arm": "without",
+    "model": "claude-opus",
+    "skills_installed": [],
+    "skill_used": [
+      "none"
+    ],
+    "tools": [
+      "matplotlib",
+      "graphviz",
+      "pillow"
+    ],
+    "image_calls": null,
+    "original": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-process-arch/arms/without/process-arch.png",
+    "original_sha256": "839d62a0b9ca40584a704a8ec4a90697d666ca0fc98a25e2f31a369a4a51e5ee",
+    "stripped_sha256": "839d62a0b9ca40584a704a8ec4a90697d666ca0fc98a25e2f31a369a4a51e5ee",
+    "idat_sha256": "9b4e53e4681b6379e8e2ebd1f787b604ce0031be2ff31ee1829af5250f1f4dac"
+  },
+  "a00afc4a": {
+    "case_id": "A3",
+    "case": "megatron-parallel-groups",
+    "set": "oct04",
+    "arm": "imagegen",
+    "model": "gpt-5.6-sol",
+    "skills_installed": [
+      "imagegen"
+    ],
+    "skill_used": [
+      "imagegen"
+    ],
+    "tools": [
+      "png"
+    ],
+    "image_calls": 2,
+    "original": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-parallel-groups/arms/imagegen/out/parallel-groups.png",
+    "original_sha256": "089d238dc7f4d06e317add2431326e92d002a5e23e866a89cc5961f39b3c9ddc",
+    "stripped_sha256": "b74c3a2f6f3888a78bff7adf83020d4d85d306422c402e75e49cf2784a2b485c",
+    "idat_sha256": "9763bc9ccbcd3e3c7a7ab77f8ad189964ffd072d6e02af006514d7d5edc055bc"
+  },
+  "a58a7a4d": {
+    "case_id": "M2",
+    "case": "vllm-v1-mixed-batch-attn",
+    "set": "oct01",
+    "arm": "imagegen",
+    "model": "gpt-6-astra",
+    "skills_installed": [
+      "imagegen"
+    ],
+    "skill_used": [
+      "imagegen"
+    ],
+    "tools": [
+      "image_gen"
+    ],
+    "image_calls": 1,
+    "original": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-mixed-batch-attn/arms/imagegen/mixed-batch-attn.png",
+    "original_sha256": "8dafaae093b312b9d5d161b4f50b3a3718243c2bef63bda4aee65aaf92e8b388",
+    "stripped_sha256": "9cccb68c6bca517318aa3a49d6e68c2895f6f80f4a9852b73b2279d236d5ccac",
+    "idat_sha256": "3546665da65447596ad0e6a2002818a2ed81925445895e2a3a6863a9183769d8"
+  },
+  "a99b55ec": {
+    "case_id": "G4",
+    "case": "redis-request-path",
+    "set": "oct04",
+    "arm": "without",
+    "model": "gpt-5.6-sol",
+    "skills_installed": [],
+    "skill_used": [
+      "none"
+    ],
+    "tools": [
+      "png",
+      "svg"
+    ],
+    "image_calls": null,
+    "original": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/redis-request-path/arms/without/out/request-path.png",
+    "original_sha256": "2a4d563e6cd12ba2894f26171b87f3e1204f58aae9b435369461aaa8432b95cb",
+    "stripped_sha256": "ae3dd8494657263f84d9ea66b8e0696ca39b22a9d6de0fb952392018da5c99bd",
+    "idat_sha256": "0ab798450407246bd8c62518e501ab73d566860e1639f6761692318ec40fc859"
+  },
+  "b22ede75": {
+    "case_id": "G2",
+    "case": "verl-ppo-step",
+    "set": "oct01",
+    "arm": "without",
+    "model": "claude-opus",
+    "skills_installed": [],
+    "skill_used": [
+      "none"
+    ],
+    "tools": [
+      "matplotlib",
+      "pillow"
+    ],
+    "image_calls": null,
+    "original": "runs/2026-10-01-skill-v0.1.0/cases/verl-ppo-step/arms/without/ppo-step.png",
+    "original_sha256": "702ab46089b0b1d7e1d0905d2bbe21a998937e7d4489fbdab149d6b3caa53eea",
+    "stripped_sha256": "702ab46089b0b1d7e1d0905d2bbe21a998937e7d4489fbdab149d6b3caa53eea",
+    "idat_sha256": "0a73a84f0d10f7673f574a4ae1359243d779d24f4d53bee2d5b6c8368cb935ed"
+  },
+  "b638523b": {
+    "case_id": "G4",
+    "case": "redis-request-path",
+    "set": "oct01",
+    "arm": "imagegen",
+    "model": "gpt-6-astra",
+    "skills_installed": [
+      "imagegen"
+    ],
+    "skill_used": [
+      "imagegen"
+    ],
+    "tools": [
+      "image_gen"
+    ],
+    "image_calls": 1,
+    "original": "runs/2026-10-01-codex-imagegen-v1/cases/redis-request-path/arms/imagegen/request-path.png",
+    "original_sha256": "447cf2e99dbe71506063a1a5543725c2ef1905bddea69fd3241656b0d31905c3",
+    "stripped_sha256": "f0e8632909c93240ceb23d318ab2e04c5306c6221e24a0085db96256649edf9b",
+    "idat_sha256": "6f82b0831459ab6494fbf0093bfb7b8e6b443b10700884943fa9b05dac679364"
+  },
+  "b9950cf1": {
+    "case_id": "M2",
+    "case": "vllm-v1-mixed-batch-attn",
+    "set": "oct04",
+    "arm": "imagegen",
+    "model": "gpt-5.6-sol",
+    "skills_installed": [
+      "imagegen"
+    ],
+    "skill_used": [
+      "imagegen"
+    ],
+    "tools": [
+      "png"
+    ],
+    "image_calls": 1,
+    "original": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-mixed-batch-attn/arms/imagegen/out/mixed-batch-attn.png",
+    "original_sha256": "4efbd4b09a2a03d5aeb750d37942f28537fe99464887861fff95adb6f3a8b93b",
+    "stripped_sha256": "a848f4db8732d82c784f6a81d73d0007ac1938e63c4850e66e2841449473a7fe",
+    "idat_sha256": "9c0185fac53fa7ce1e39919795cc4c6ceee093063a75ed4d4bad408a925b3693"
+  },
+  "bba2c896": {
+    "case_id": "A1",
+    "case": "vllm-v1-process-arch",
+    "set": "oct01",
+    "arm": "imagegen",
+    "model": "gpt-6-astra",
+    "skills_installed": [
+      "imagegen"
+    ],
+    "skill_used": [
+      "imagegen"
+    ],
+    "tools": [
+      "image_gen"
+    ],
+    "image_calls": 1,
+    "original": "runs/2026-10-01-codex-imagegen-v1/cases/vllm-v1-process-arch/arms/imagegen/process-arch.png",
+    "original_sha256": "b7d62d9ff3968ea3000ec659648d3adee9440fe07a8e532747be10939e5cfd80",
+    "stripped_sha256": "a3ae23ed9eed5e8cb08ba2143abf694e72b23c03a6a31447b2ec104bc9918042",
+    "idat_sha256": "c574c5b9822aefb90c76bbace2a999c4349ce7d9b4d505306ced336c2fae5e11"
+  },
+  "c320d4b7": {
+    "case_id": "G2",
+    "case": "verl-ppo-step",
+    "set": "oct04",
+    "arm": "without",
+    "model": "gpt-5.6-sol",
+    "skills_installed": [],
+    "skill_used": [
+      "none"
+    ],
+    "tools": [
+      "png",
+      "svg"
+    ],
+    "image_calls": null,
+    "original": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-ppo-step/arms/without/out/ppo-step.png",
+    "original_sha256": "239443a680d807e1e1f199c5425941b3ea0eb26efcda2f48a83e6d45d82097f6",
+    "stripped_sha256": "47f639ea01fbe45e15dddfa327edb3dab40dc52853ea42a04cd398268f7ebebe",
+    "idat_sha256": "c32b0ec29b797cb09709476306ba93b02e6e3b08e257ef5f6cee0432095e2abf"
+  },
+  "c87e8342": {
+    "case_id": "M1",
+    "case": "megatron-tp-sp-mlp",
+    "set": "oct04",
+    "arm": "imagegen",
+    "model": "gpt-5.6-sol",
+    "skills_installed": [
+      "imagegen"
+    ],
+    "skill_used": [
+      "imagegen"
+    ],
+    "tools": [
+      "png"
+    ],
+    "image_calls": 1,
+    "original": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-tp-sp-mlp/arms/imagegen/out/tp-sp-mlp.png",
+    "original_sha256": "a6267b19c2fb5b6edaab89e137043b2a129bd93639cab4b7441d137b56e47875",
+    "stripped_sha256": "6da3c7b2526540da18be45f6801c797f85d9b555f545f6ab52d295ce67a1b6f9",
+    "idat_sha256": "5b1a1db3735c15555d1ecbb483e3c2fb114b2e2eff86417fdc655fb7038e6d4e"
+  },
+  "c8fcd33b": {
+    "case_id": "A3",
+    "case": "megatron-parallel-groups",
+    "set": "oct04",
+    "arm": "with",
+    "model": "gpt-5.6-sol",
+    "skills_installed": [
+      "graphviz",
+      "model-architecture"
+    ],
+    "skill_used": [
+      "graphviz"
+    ],
+    "tools": [
+      "dot",
+      "png"
+    ],
+    "image_calls": null,
+    "original": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-parallel-groups/arms/with/out/parallel-groups.png",
+    "original_sha256": "cda858d58f2ecb5d0471665f19f45d2e1ead1b9bf9b6719795ab251577a4185d",
+    "stripped_sha256": "f9b20989969f7efbf2d30b014da3db74e5a3e8ffdffc0ed7fd9b9555dbb1322d",
+    "idat_sha256": "679b51b5b4e1dc56cc166d273a35b9dfef2018017c12c67f1a959e9ff8c2b7e4"
+  },
+  "cabeeecb": {
+    "case_id": "A3",
+    "case": "megatron-parallel-groups",
+    "set": "oct04",
+    "arm": "without",
+    "model": "gpt-5.6-sol",
+    "skills_installed": [],
+    "skill_used": [
+      "none"
+    ],
+    "tools": [
+      "png",
+      "svg"
+    ],
+    "image_calls": null,
+    "original": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/megatron-parallel-groups/arms/without/out/parallel-groups.png",
+    "original_sha256": "71323040a20ca1c5e5349f25a5a9d48c0354b7b929b1941414a9ab0815ce0e9b",
+    "stripped_sha256": "db272564e6d4d99dac7acc5f54ab8192b29879e22b28103be13d171431750083",
+    "idat_sha256": "eace25b897ef8610901485e681716e70992075ab60a6acff9c9856bec7c55a90"
+  },
+  "cbd1fa32": {
+    "case_id": "A2",
+    "case": "verl-resource-placement",
+    "set": "oct01",
+    "arm": "imagegen",
+    "model": "gpt-6-astra",
+    "skills_installed": [
+      "imagegen"
+    ],
+    "skill_used": [
+      "imagegen"
+    ],
+    "tools": [
+      "image_gen"
+    ],
+    "image_calls": 1,
+    "original": "runs/2026-10-01-codex-imagegen-v1/cases/verl-resource-placement/arms/imagegen/resource-placement.png",
+    "original_sha256": "25de3364e09fbc34893cc8df624ad7cd5b0b8f9f10c0145530b0314ce9386fa7",
+    "stripped_sha256": "6a6c6ad38da77007a6df53228613e052b130cc457b40de643a7ca04a2b5fa5a0",
+    "idat_sha256": "ecd32a269a9bf6cc675472cdbd10753192b4a6161990900731fa34c93095e1ef"
+  },
+  "cca705dc": {
+    "case_id": "A3",
+    "case": "megatron-parallel-groups",
+    "set": "oct01",
+    "arm": "without",
+    "model": "claude-opus",
+    "skills_installed": [],
+    "skill_used": [
+      "none"
+    ],
+    "tools": [
+      "matplotlib",
+      "pillow"
+    ],
+    "image_calls": null,
+    "original": "runs/2026-10-01-skill-v0.1.0/cases/megatron-parallel-groups/arms/without/parallel-groups.png",
+    "original_sha256": "0b2b6c2fe8067b02b631190d0683b66f0f425adf36d5f0150e4032dcae2cc787",
+    "stripped_sha256": "0b2b6c2fe8067b02b631190d0683b66f0f425adf36d5f0150e4032dcae2cc787",
+    "idat_sha256": "759a420d8b6b4978ca2db3626795989b6eb87a307bff6f53e446e2d3592e3db1"
+  },
+  "d2237ccb": {
+    "case_id": "G3",
+    "case": "ffmpeg-transcode-threads",
+    "set": "oct01",
+    "arm": "with",
+    "model": "claude-opus",
+    "skills_installed": [
+      "graphviz",
+      "model-architecture"
+    ],
+    "skill_used": [
+      "graphviz"
+    ],
+    "tools": [
+      "graphviz"
+    ],
+    "image_calls": null,
+    "original": "runs/2026-10-01-skill-v0.1.0/cases/ffmpeg-transcode-threads/arms/with/transcode-threads.png",
+    "original_sha256": "c43834ba17566ee9c92190298f645091a2f8a6e4fe7f446d66e75eb90c54e717",
+    "stripped_sha256": "eba3afa27c25d501e295d58d6e8db90e6372669e5686bfc4b4e3ec75e0a57684",
+    "idat_sha256": "ad9473703b09a15a4e3a3a8b09a1811b278473096c3fde393d95df989744d78d"
+  },
+  "d46ecf7c": {
+    "case_id": "G2",
+    "case": "verl-ppo-step",
+    "set": "oct01",
+    "arm": "with",
+    "model": "claude-opus",
+    "skills_installed": [
+      "graphviz",
+      "model-architecture"
+    ],
+    "skill_used": [
+      "graphviz"
+    ],
+    "tools": [
+      "graphviz"
+    ],
+    "image_calls": null,
+    "original": "runs/2026-10-01-skill-v0.1.0/cases/verl-ppo-step/arms/with/ppo-step.png",
+    "original_sha256": "541374519b6b2b77690d5a5ccab86b6444b7971c4b8a12f70d72d391ada08c6e",
+    "stripped_sha256": "4a30790eb1f8140a0c89361c7b5c94625266b02a8688a1e5370fe219ed2579cd",
+    "idat_sha256": "3809bc64acc61c0f0e9213e7ce536d7cdebd29d04276136fa1cde5dc9b5b0fee"
+  },
+  "d8edd397": {
+    "case_id": "G3",
+    "case": "ffmpeg-transcode-threads",
+    "set": "oct04",
+    "arm": "without",
+    "model": "gpt-5.6-sol",
+    "skills_installed": [],
+    "skill_used": [
+      "none"
+    ],
+    "tools": [
+      "png"
+    ],
+    "image_calls": null,
+    "original": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/ffmpeg-transcode-threads/arms/without/out/transcode-threads.png",
+    "original_sha256": "f7e9b1a2fa51064b2812abf2341762366601a99fc7cb8bdde3ebc79bf9f8a586",
+    "stripped_sha256": "119a386606bd57f96f874d48c9a5cb19b04c813c933e8ddb8af32fbd8c3cfcac",
+    "idat_sha256": "2fa0b05eaa50a63dfd6e19721dbe79ec91735f15e8e2440193f3915bab6db3aa"
+  },
+  "d9dc767f": {
+    "case_id": "G3",
+    "case": "ffmpeg-transcode-threads",
+    "set": "oct04",
+    "arm": "imagegen",
+    "model": "gpt-5.6-sol",
+    "skills_installed": [
+      "imagegen"
+    ],
+    "skill_used": [
+      "imagegen"
+    ],
+    "tools": [
+      "png"
+    ],
+    "image_calls": 3,
+    "original": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/ffmpeg-transcode-threads/arms/imagegen/out/transcode-threads.png",
+    "original_sha256": "7fc19e0d1d9126e034e0cd3e6d78790b76fad027b3301bab006c31e172747010",
+    "stripped_sha256": "36a09010dc0c70adc1193461be25b86097514a19514b5b5a6bbb23be23e8af1f",
+    "idat_sha256": "896cbfc17e95bf3206e63b93e2dd9f59a6752bbf2161952b841e0f286f76a130"
+  },
+  "db0db3ff": {
+    "case_id": "G1",
+    "case": "vllm-v1-schedule",
+    "set": "oct04",
+    "arm": "with",
+    "model": "gpt-5.6-sol",
+    "skills_installed": [
+      "graphviz",
+      "model-architecture"
+    ],
+    "skill_used": [
+      "graphviz"
+    ],
+    "tools": [
+      "dot",
+      "png"
+    ],
+    "image_calls": null,
+    "original": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/vllm-v1-schedule/arms/with/out/schedule-step.png",
+    "original_sha256": "2985f4ec7f92edcd4619190c76886bbb1a4ce88f649f461fb0927ccb5e1fe555",
+    "stripped_sha256": "62a9eabec4d2c05e14a2c0e415915e71f4d929ad0863dd24f08d803b588bb95f",
+    "idat_sha256": "10f590e51bd9f3c84b57e84267fb222962a6d55dc071ddc88eaee05986a15b64"
+  },
+  "e0edfc5a": {
+    "case_id": "M1",
+    "case": "megatron-tp-sp-mlp",
+    "set": "oct01",
+    "arm": "with",
+    "model": "claude-opus",
+    "skills_installed": [
+      "graphviz",
+      "model-architecture"
+    ],
+    "skill_used": [
+      "model-architecture"
+    ],
+    "tools": [
+      "tikz/latex"
+    ],
+    "image_calls": null,
+    "original": "runs/2026-10-01-skill-v0.1.0/cases/megatron-tp-sp-mlp/arms/with/tp-sp-mlp.png",
+    "original_sha256": "f4e1ef7818f0eda0ce98996bcc8e81ae2a1c9b2b641a4547781aed71b1565154",
+    "stripped_sha256": "fb95c16367ad56270091c3764ca3bc21f90cbf3be98a6048a04cda82790db946",
+    "idat_sha256": "62a460243608a6e50265f51af1a32f0294b2e01aa6351f7cc70ff2d706036113"
+  },
+  "e125d79e": {
+    "case_id": "G2",
+    "case": "verl-ppo-step",
+    "set": "oct04",
+    "arm": "with",
+    "model": "gpt-5.6-sol",
+    "skills_installed": [
+      "graphviz",
+      "model-architecture"
+    ],
+    "skill_used": [
+      "graphviz"
+    ],
+    "tools": [
+      "dot",
+      "png"
+    ],
+    "image_calls": null,
+    "original": "runs/2026-10-04-gpt-5.6-sol-three-arm/cases/verl-ppo-step/arms/with/out/ppo-step.png",
+    "original_sha256": "9dd523991406f3c7d934dd0b1deceb08421d452cfe5d081c2412494a24962472",
+    "stripped_sha256": "a013fbbbb49e961808cee212f2186a6f34a8ea8f9e42e900fd5695733a2fa652",
+    "idat_sha256": "c6c85c055cbc214df9766c143dc898f769340b18c0892f37f4158cce3eedb556"
+  },
+  "f5a313af": {
+    "case_id": "G2",
+    "case": "verl-ppo-step",
+    "set": "oct01",
+    "arm": "imagegen",
+    "model": "gpt-6-astra",
+    "skills_installed": [
+      "imagegen"
+    ],
+    "skill_used": [
+      "imagegen"
+    ],
+    "tools": [
+      "image_gen"
+    ],
+    "image_calls": 1,
+    "original": "runs/2026-10-01-codex-imagegen-v1/cases/verl-ppo-step/arms/imagegen/ppo-step.png",
+    "original_sha256": "974f955f4c74818e9ecff140b54d263c9cb66875655752d7ec88d5a1cc81edb1",
+    "stripped_sha256": "fadb70e22449f70528caa0291f22eecd0284247c09d33ce9725bbe45eaa8a0c8",
+    "idat_sha256": "7b62d4f727e4e3cc929854d662ffc7ab50f889df8f5a1a109f5e69e7677fe3a2"
+  },
+  "fd86cbc4": {
+    "case_id": "A1",
+    "case": "vllm-v1-process-arch",
+    "set": "oct01",
+    "arm": "with",
+    "model": "claude-opus",
+    "skills_installed": [
+      "graphviz",
+      "model-architecture"
+    ],
+    "skill_used": [
+      "graphviz"
+    ],
+    "tools": [
+      "graphviz"
+    ],
+    "image_calls": null,
+    "original": "runs/2026-10-01-skill-v0.1.0/cases/vllm-v1-process-arch/arms/with/process-arch.png",
+    "original_sha256": "983b948148f9d11ced9bacdd2e65ddfb26ce20fcf823946a6b950e1a0a8da0cc",
+    "stripped_sha256": "4897feb2ae70246afd4adbc8a4523e65df64f2b6e89bdc5a50e3b6094a9487e2",
+    "idat_sha256": "d6cabb4ea77b5a77a0b15401ed6fd45d6fe81bdcd6951f61338b22aefcf3c3cc"
+  }
+}

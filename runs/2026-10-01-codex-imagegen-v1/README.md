@@ -9,3 +9,5 @@ Each `cases/<case>/arms/imagegen/` directory contains the generated PNG, generat
 The independent cross-arm review, scores, cost estimate, and gallery live in [comparisons/2026-10-02-three-arm](../../comparisons/2026-10-02-three-arm/REPORT.md).
 
 The built-in image tool did not expose its architecture, exact model version, or output quality tier. `run.yaml` therefore labels the image model as unknown and records API cost as an estimate range.
+
+The blind 54-image review, which re-scores these images together with the Oct 4 `gpt-5.6-sol` run, is [comparisons/2026-10-04-blind-54](../../comparisons/2026-10-04-blind-54/REPORT.md).

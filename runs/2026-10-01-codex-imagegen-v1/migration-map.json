@@ -14,7 +14,9 @@
       "action": "move",
       "old": "runs/2026-10-01-codex-imagegen-v1/MANUAL-SCORES.md",
       "new": "comparisons/2026-10-02-three-arm/REPORT.md",
-      "sha256": "75f621731e12d41c48009c39321130e5b695893e6b08074996ff8436c19e261e"
+      "sha256": "75f621731e12d41c48009c39321130e5b695893e6b08074996ff8436c19e261e",
+      "edited_after_move": true,
+      "sha256_after": "11be16bb749839990fae0dbcabafdfb90e6f770c4518c4996298a84a57932d6e"
     },
     {
       "action": "move",

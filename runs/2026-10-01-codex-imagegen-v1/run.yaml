@@ -25,7 +25,8 @@
     "report": "../../comparisons/2026-10-02-three-arm/REPORT.md"
   },
   "comparison_refs": [
-    "../../comparisons/2026-10-02-three-arm/comparison.yaml"
+    "../../comparisons/2026-10-02-three-arm/comparison.yaml",
+    "../../comparisons/2026-10-04-blind-54/comparison.yaml"
   ],
   "cases": [
     {

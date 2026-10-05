@@ -1,5 +1,7 @@
 # Manual evaluation of 27 diagrams
 
+> **Superseded (2026-10-04):** these 27 images were re-scored blind, together with the 27 images of the Oct 4 `gpt-5.6-sol` run, by the reviewer and by Fable 5.1. See [comparisons/2026-10-04-blind-54](../2026-10-04-blind-54/REPORT.md). This report is kept unchanged as the earlier record.
+
 This review compares the skill-assisted, no-skill, and Codex ImageGen outputs for all nine cases. Every PNG was inspected at native resolution. The automated grader results in the earlier run remain separate from this human visual and semantic review.
 
 ## Rubric
