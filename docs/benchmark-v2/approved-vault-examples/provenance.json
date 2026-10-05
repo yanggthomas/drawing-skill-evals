@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-05",
+  "status": "Explicitly approved by the user in the report follow-up; development references, not evaluation outputs.",
+  "files": [
+    {
+      "file": "ray-object-data-path.png",
+      "source_vault_relative": "_resources/projects/ray/ray-object-data-path.png",
+      "sha256": "032731b7f7023995bbb4379233b9b7b85f8749eb8daf89644fea2f63e71fece0"
+    },
+    {
+      "file": "timely-agent-hierarchy.png",
+      "source_vault_relative": "_resources/projects/timely/multi-agent-timely-rfc/img-20260430150744580.png",
+      "sha256": "99c274aaaf103ba80e1bb271e36dbedd150312cc2131fdeda89382dc0475288b"
+    },
+    {
+      "file": "nixl-mooncake-hixl-layering.png",
+      "source_vault_relative": "_resources/projects/mooncake/nixl-mooncake-hixl-layering.png",
+      "sha256": "29303ae603c38cb2ca7ac1507bdb86a2cbe37c992563327dc86131ecadf50ba8"
+    },
+    {
+      "file": "ascend-kv-pooling-stack.png",
+      "source_vault_relative": "_resources/projects/mooncake/ascend-kv-pooling-stack.png",
+      "sha256": "d32804eac207c7bbbfb85d6a07c6cbd2d27c6d355b679d0bc7f66d9a11f07fca"
+    },
+    {
+      "file": "mooncake-stack.png",
+      "source_vault_relative": "_resources/projects/mooncake/mooncake-stack.png",
+      "sha256": "b66eea9938952b7534744cfc452ba03aad1c6755a0dc46d38f639ab46d049dde"
+    }
+  ],
+  "removed": [
+    {
+      "file": "ascend-read-fanout-path.png",
+      "date": "2026-10-05",
+      "reason": "Reviewer: not good enough as a golden; removed from the positive examples."
+    }
+  ]
+}
